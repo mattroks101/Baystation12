@@ -47,17 +47,25 @@
 	power_rating = 7500			//7500 W ~ 10 HP
 	opacity = 1
 	density = 1
+	atmos_canpass = CANPASS_NEVER
+	connect_types = CONNECT_TYPE_REGULAR|CONNECT_TYPE_FUEL
+	construct_state = /decl/machine_construction/default/panel_closed
 	var/on = 1
 	var/datum/ship_engine/gas_thruster/controller
 	var/thrust_limit = 1	//Value between 1 and 0 to limit the resulting thrust
-	var/moles_per_burn = 5
+	var/volume_per_burn = 20 //litres
+
+/obj/machinery/atmospherics/unary/engine/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
+	return 0
 
 /obj/machinery/atmospherics/unary/engine/Initialize()
 	. = ..()
 	controller = new(src)
+	update_nearby_tiles(need_rebuild=1)
 
 /obj/machinery/atmospherics/unary/engine/Destroy()
 	QDEL_NULL(controller)
+	update_nearby_tiles()
 	. = ..()
 
 /obj/machinery/atmospherics/unary/engine/proc/get_status()
@@ -69,7 +77,7 @@
 		.+= "Insufficient fuel for a burn."
 
 	.+= "Propellant total mass: [round(air_contents.get_mass(),0.01)] kg."
-	.+= "Propellant used per burn: [round(air_contents.specific_mass() * moles_per_burn * thrust_limit,0.01)] kg."
+	.+= "Propellant used per burn: [round(air_contents.get_mass() * volume_per_burn * thrust_limit / air_contents.volume,0.01)] kg."
 	.+= "Propellant pressure: [round(air_contents.return_pressure()/1000,0.1)] MPa."
 	. = jointext(.,"<br>")
 
@@ -77,12 +85,12 @@
 	return on && powered()
 
 /obj/machinery/atmospherics/unary/engine/proc/check_fuel()
-	return air_contents.total_moles > moles_per_burn * thrust_limit
+	return air_contents.total_moles > 5 // minimum fuel usage is five moles, for EXTREMELY hot mix or super low pressure
 
 /obj/machinery/atmospherics/unary/engine/proc/get_thrust()
 	if(!is_on() || !check_fuel())
 		return 0
-	var/used_part = moles_per_burn/air_contents.get_total_moles() * thrust_limit
+	var/used_part = volume_per_burn * thrust_limit / air_contents.volume
 	. = calculate_thrust(air_contents, used_part)
 	return
 
@@ -94,16 +102,20 @@
 		on = !on
 		return 0
 	var/exhaust_dir = reverse_direction(dir)
-	var/datum/gas_mixture/removed = air_contents.remove(moles_per_burn * thrust_limit)
+	var/datum/gas_mixture/removed = air_contents.remove_ratio(volume_per_burn * thrust_limit / air_contents.volume)
+	if(!removed)
+		return 0
 	. = calculate_thrust(removed)
 	playsound(loc, 'sound/machines/thruster.ogg', 100 * thrust_limit, 0, world.view * 4, 0.1)
+	if(network)
+		network.update = 1
 	var/turf/T = get_step(src,exhaust_dir)
 	if(T)
 		T.assume_air(removed)
 		new/obj/effect/engine_exhaust(T, exhaust_dir, air_contents.check_combustability() && air_contents.temperature >= PHORON_MINIMUM_BURN_TEMPERATURE)
 
 /obj/machinery/atmospherics/unary/engine/proc/calculate_thrust(datum/gas_mixture/propellant, used_part = 1)
-	return round(sqrt(propellant.get_mass() * used_part * air_contents.return_pressure()/100),0.1)
+	return round(sqrt(propellant.get_mass() * used_part * sqrt(air_contents.return_pressure()/200)),0.1)
 
 //Exhaust effect
 /obj/effect/engine_exhaust
@@ -123,10 +135,10 @@
 	spawn(20)
 		qdel(src)
 
-/obj/item/weapon/circuitboard/unary_atmos/engine
+/obj/item/weapon/stock_parts/circuitboard/unary_atmos/engine
 	name = T_BOARD("gas thruster")
 	icon_state = "mcontroller"
-	build_path = /obj/machinery/atmospherics/unary/engine/
+	build_path = /obj/machinery/atmospherics/unary/engine
 	origin_tech = list(TECH_POWER = 1, TECH_ENGINEERING = 2)
 	req_components = list(
 							/obj/item/stack/cable_coil = 2,

@@ -41,11 +41,14 @@
 	job_access_type = /datum/job/doctor
 	detail_color = COLOR_PALE_BLUE_GRAY
 
+/obj/item/weapon/card/id/torch/crew/medical/senior
+	job_access_type = /datum/job/senior_doctor
+
 /obj/item/weapon/card/id/torch/contractor/medical
 	job_access_type = /datum/job/doctor
 	detail_color = COLOR_PALE_BLUE_GRAY
 
-/obj/item/weapon/card/id/torch/crew/medical/senior
+/obj/item/weapon/card/id/torch/contractor/medical/senior
 	job_access_type = /datum/job/senior_doctor
 
 /obj/item/weapon/card/id/torch/contractor/chemist
@@ -59,7 +62,6 @@
 /obj/item/weapon/card/id/torch/contractor/medical/counselor
 	job_access_type = /datum/job/psychiatrist
 
-
 /obj/item/weapon/card/id/torch/silver/security
 	job_access_type = /datum/job/hos
 	detail_color = "#e00000"
@@ -68,7 +70,7 @@
 	job_access_type = /datum/job/officer
 	detail_color = "#e00000"
 
-/obj/item/weapon/card/id/torch/crew/security/brigofficer
+/obj/item/weapon/card/id/torch/crew/security/brigchief
 	job_access_type = /datum/job/warden
 	extra_details = list("onegoldstripe")
 
@@ -118,6 +120,9 @@
 
 /obj/item/weapon/card/id/torch/crew/service/chef
 	job_access_type = /datum/job/chef
+
+/obj/item/weapon/card/id/torch/crew/service/chaplain
+	job_access_type = /datum/job/chaplain
 
 /obj/item/weapon/card/id/torch/contractor/service //unused
 	job_access_type = /datum/job/assistant

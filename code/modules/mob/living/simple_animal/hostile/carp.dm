@@ -1,7 +1,7 @@
 /mob/living/simple_animal/hostile/carp
 	name = "space carp"
 	desc = "A ferocious, fang-bearing creature that resembles a fish."
-	icon = 'icons/mob/carp.dmi'
+	icon = 'icons/mob/simple_animal/carp.dmi'
 	icon_state = "carp" //for mapping purposes
 	icon_gib = "carp_gib"
 	speak_chance = 0
@@ -20,6 +20,7 @@
 	attacktext = "bitten"
 	attack_sound = 'sound/weapons/bite.ogg'
 	pry_time = 10 SECONDS
+	melee_damage_flags = DAM_SHARP
 	pry_desc = "biting"
 
 	//Space carp aren't affected by atmos.

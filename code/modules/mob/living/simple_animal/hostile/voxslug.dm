@@ -20,10 +20,11 @@ Small, little HP, poisonous.
 	density = 1
 	min_gas = null
 	mob_size = MOB_MINISCULE
-	can_escape = 1
+	can_escape = TRUE
 	pass_flags = PASS_FLAG_TABLE
 	melee_damage_lower = 5
 	melee_damage_upper = 10
+	melee_damage_flags = DAM_SHARP
 	holder_type = /obj/item/weapon/holder/voxslug
 	faction = SPECIES_VOX
 

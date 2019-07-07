@@ -9,10 +9,12 @@
 
 	var/active = 0
 	var/power_gen = 5000
-	var/open = 0
 	var/recent_fault = 0
 	var/power_output = 1
 	atom_flags = ATOM_FLAG_CLIMBABLE
+	var/datum/sound_token/sound_token
+	var/sound_id
+	var/working_sound
 
 /obj/machinery/power/port_gen/proc/IsBroken()
 	return (stat & (BROKEN|EMPED))
@@ -29,7 +31,22 @@
 /obj/machinery/power/port_gen/proc/handleInactive()
 	return
 
+/obj/machinery/power/port_gen/proc/update_sound()
+	if(!working_sound)
+		return
+	if(!sound_id)
+		sound_id = "[type]_[sequential_id(/obj/machinery/power/port_gen)]"
+	if(active && HasFuel() && !IsBroken())
+		var/volume = 10 + 15*power_output
+		if(!sound_token)
+			sound_token = GLOB.sound_player.PlayLoopingSound(src, sound_id, working_sound, volume = volume)
+		sound_token.SetVolume(volume)
+	else if(sound_token)
+		QDEL_NULL(sound_token)
+
+
 /obj/machinery/power/port_gen/Process()
+	..()
 	if(active && HasFuel() && !IsBroken() && anchored && powernet)
 		add_avail(power_gen * power_output)
 		UseFuel()
@@ -38,6 +55,7 @@
 		active = 0
 		handleInactive()
 	update_icon()
+	update_sound()
 
 /obj/machinery/power/port_gen/on_update_icon()
 	if(!active)
@@ -46,12 +64,11 @@
 	else
 		icon_state = "[initial(icon_state)]on"
 
-/obj/machinery/power/port_gen/attack_hand(mob/user as mob)
-	if(..())
-		return
+/obj/machinery/power/port_gen/CanUseTopic(mob/user)
 	if(!anchored)
-		to_chat(usr, "<span class='warning'>The generator needs to be secured first.</span>")
-		return
+		to_chat(user, "<span class='warning'>The generator needs to be secured first.</span>")
+		return STATUS_CLOSE
+	return ..()
 
 /obj/machinery/power/port_gen/examine(mob/user)
 	if(!..(user,1 ))
@@ -94,7 +111,6 @@
 
 	var/sheet_name = "Phoron Sheets"
 	var/sheet_path = /obj/item/stack/material/phoron
-	var/board_path = /obj/item/weapon/circuitboard/pacman
 
 	/*
 		These values were chosen so that the generator can run safely up to 80 kW
@@ -103,6 +119,8 @@
 		Setting to 5 or higher can only be done temporarily before the generator overheats.
 	*/
 	power_gen = 20000			//Watts output per power_output level
+	working_sound = 'sound/machines/engine.ogg'
+	construct_state = /decl/machine_construction/default/panel_closed
 	var/max_power_output = 5	//The maximum power setting without emagging.
 	var/max_safe_output = 4		// For UI use, maximal output that won't cause overheat.
 	var/time_per_sheet = 96		//fuel efficiency - how long 1 sheet lasts at power level 1
@@ -121,30 +139,18 @@
 	if(anchored)
 		connect_to_network()
 
-/obj/machinery/power/port_gen/pacman/New()
-	..()
-	component_parts = list()
-	component_parts += new /obj/item/weapon/stock_parts/matter_bin(src)
-	component_parts += new /obj/item/weapon/stock_parts/micro_laser(src)
-	component_parts += new /obj/item/stack/cable_coil(src)
-	component_parts += new /obj/item/stack/cable_coil(src)
-	component_parts += new /obj/item/weapon/stock_parts/capacitor(src)
-	component_parts += new board_path(src)
-	RefreshParts()
-
 /obj/machinery/power/port_gen/pacman/Destroy()
 	DropFuel()
 	return ..()
 
 /obj/machinery/power/port_gen/pacman/RefreshParts()
-	var/temp_rating = 0
-	for(var/obj/item/weapon/stock_parts/SP in component_parts)
-		if(istype(SP, /obj/item/weapon/stock_parts/matter_bin))
-			max_sheets = SP.rating * SP.rating * 50
-		else if(istype(SP, /obj/item/weapon/stock_parts/micro_laser) || istype(SP, /obj/item/weapon/stock_parts/capacitor))
-			temp_rating += SP.rating
+	var/temp_rating = total_component_rating_of_type(/obj/item/weapon/stock_parts/micro_laser)
+	temp_rating += total_component_rating_of_type(/obj/item/weapon/stock_parts/capacitor)
 
-	power_gen = round(initial(power_gen) * (max(2, temp_rating) / 2))
+	max_sheets = 50 * Clamp(total_component_rating_of_type(/obj/item/weapon/stock_parts/matter_bin), 0, 5) ** 2
+
+	power_gen = round(initial(power_gen) * Clamp(temp_rating, 0, 20) / 2)
+	..()
 
 /obj/machinery/power/port_gen/pacman/examine(mob/user)
 	. = ..(user)
@@ -265,6 +271,14 @@
 		emagged = 1
 		return 1
 
+/obj/machinery/power/port_gen/pacman/components_are_accessible(path)
+	return !active && ..()
+
+/obj/machinery/power/port_gen/pacman/cannot_transition_to(state_path, mob/user)
+	if(active)
+		return SPAN_WARNING("You cannot do this while \the [src] is running!")
+	return ..()
+
 /obj/machinery/power/port_gen/pacman/attackby(var/obj/item/O as obj, var/mob/user as mob)
 	if(istype(O, sheet_path))
 		var/obj/item/stack/addstack = O
@@ -277,45 +291,26 @@
 		addstack.use(amount)
 		updateUsrDialog()
 		return
-	else if(!active)
-		if(isWrench(O))
+	if(isWrench(O) && !active)
+		if(!anchored)
+			connect_to_network()
+			to_chat(user, "<span class='notice'>You secure the generator to the floor.</span>")
+		else
+			disconnect_from_network()
+			to_chat(user, "<span class='notice'>You unsecure the generator from the floor.</span>")
 
-			if(!anchored)
-				connect_to_network()
-				to_chat(user, "<span class='notice'>You secure the generator to the floor.</span>")
-			else
-				disconnect_from_network()
-				to_chat(user, "<span class='notice'>You unsecure the generator from the floor.</span>")
+		playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
+		anchored = !anchored
+	return component_attackby(O, user)
 
-			playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
-			anchored = !anchored
+/obj/machinery/power/port_gen/pacman/dismantle()
+	while (sheets > 0)
+		DropFuel()
+	. = ..()
 
-		else if(isScrewdriver(O))
-			open = !open
-			playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, 1)
-			if(open)
-				to_chat(user, "<span class='notice'>You open the access panel.</span>")
-			else
-				to_chat(user, "<span class='notice'>You close the access panel.</span>")
-		else if(isCrowbar(O) && open)
-			var/obj/machinery/constructable_frame/machine_frame/new_frame = new /obj/machinery/constructable_frame/machine_frame(src.loc)
-			for(var/obj/item/I in component_parts)
-				I.dropInto(loc)
-			while ( sheets > 0 )
-				DropFuel()
-
-			new_frame.state = 2
-			new_frame.icon_state = "box_1"
-			qdel(src)
-
-/obj/machinery/power/port_gen/pacman/attack_hand(mob/user as mob)
-	..()
-	if (!anchored)
-		return
+/obj/machinery/power/port_gen/pacman/interface_interact(mob/user)
 	ui_interact(user)
-
-/obj/machinery/power/port_gen/pacman/attack_ai(mob/user as mob)
-	ui_interact(user)
+	return TRUE
 
 /obj/machinery/power/port_gen/pacman/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null, var/force_open = 1)
 	if(IsBroken())
@@ -414,7 +409,6 @@
 	sheet_path = /obj/item/stack/material/uranium
 	sheet_name = "Uranium Sheets"
 	time_per_sheet = 576 //same power output, but a 50 sheet stack will last 2 hours at max safe power
-	board_path = /obj/item/weapon/circuitboard/pacman/super
 	var/rad_power = 2
 
 //nuclear energy is green energy!
@@ -462,7 +456,6 @@
 	time_per_sheet = 400
 	rad_power = 6
 	atom_flags = ATOM_FLAG_OPEN_CONTAINER
-	board_path = /obj/item/weapon/circuitboard/pacman/super/potato
 	anchored = 1
 
 /obj/machinery/power/port_gen/pacman/super/potato/New()
@@ -519,7 +512,6 @@
 	time_per_sheet = 576
 	max_temperature = 800
 	temperature_gain = 90
-	board_path = /obj/item/weapon/circuitboard/pacman/mrs
 
 /obj/machinery/power/port_gen/pacman/mrs/explode()
 	//no special effects, but the explosion is pretty big (same as a supermatter shard).

@@ -33,10 +33,10 @@
 	var/damage = 10
 	var/damage_type = BRUTE //BRUTE, BURN, TOX, OXY, CLONE, PAIN are the only things that should be in here
 	var/nodamage = 0 //Determines if the projectile will skip any damage inflictions
-	var/check_armour = "bullet" //Defines what armor to use when it hits things.  Must be set to bullet, laser, energy,or bomb	//Cael - bio and rad are also valid
+	var/damage_flags = DAM_BULLET
 	var/projectile_type = /obj/item/projectile
 	var/penetrating = 0 //If greater than zero, the projectile will pass through dense objects as specified by on_penetrate()
-	var/kill_count = 50 //This will de-increment every process(). When 0, it will delete the projectile.
+	var/life_span = 50 //This will de-increment every process(). When 0, it will delete the projectile.
 		//Effects
 	var/stun = 0
 	var/weaken = 0
@@ -59,6 +59,7 @@
 
 	var/fire_sound
 	var/miss_sounds
+	var/ricochet_sounds
 	var/shrapnel_type = /obj/item/weapon/material/shard/shrapnel
 
 	var/vacuum_traversal = 1 //Determines if the projectile can exist in vacuum, if false, the projectile will be deleted if it enters vacuum.
@@ -75,13 +76,8 @@
 	else animate_movement = NO_STEPS
 	. = ..()
 
-/obj/item/projectile/Destroy()
-	return ..()
-
-/obj/item/projectile/forceMove()
-	..()
-	if(istype(loc, /turf/space/) && istype(loc.loc, /area/space))
-		qdel(src)
+/obj/item/projectile/damage_flags()
+	return damage_flags
 
 //TODO: make it so this is called more reliably, instead of sometimes by bullet_act() and sometimes not
 /obj/item/projectile/proc/on_hit(var/atom/target, var/blocked = 0, var/def_zone = null)
@@ -91,11 +87,10 @@
 
 	var/mob/living/L = target
 
-	L.apply_effects(0, weaken, paralyze, 0, stutter, eyeblur, drowsy, 0, blocked)
+	L.apply_effects(0, weaken, paralyze, stutter, eyeblur, drowsy, 0, blocked)
 	L.stun_effect_act(stun, agony, def_zone, src)
 	//radiation protection is handled separately from other armour types.
-	L.apply_effect(irradiate, IRRADIATE, L.getarmor(null, "rad"))
-
+	L.apply_damage(irradiate, IRRADIATE, damage_flags = DAM_DISPERSED)
 
 	return 1
 
@@ -291,7 +286,9 @@
 	//the bullet passes through a dense object!
 	if(passthrough)
 		//move ourselves onto A so we can continue on our way.
-		forceMove(get_turf(A))
+		var/turf/T = get_turf(A)
+		if(T)
+			forceMove(T)
 		permutated.Add(A)
 		bumped = 0 //reset bumped variable!
 		return 0
@@ -315,7 +312,7 @@
 	var/first_step = 1
 
 	spawn while(src && src.loc)
-		if(kill_count-- < 1)
+		if(life_span-- < 1)
 			on_impact(src.loc) //for any final impact behaviours
 			qdel(src)
 			return
@@ -348,7 +345,7 @@
 		if(first_step)
 			muzzle_effect(effect_transform)
 			first_step = 0
-		else if(!bumped && kill_count > 0)
+		else if(!bumped && life_span > 0)
 			tracer_effect(effect_transform)
 		if(!hitscan)
 			sleep(step_delay)	//add delay between movement iterations if it's not a hitscan weapon

@@ -189,8 +189,10 @@
 	var/heal = amount < 0
 	amount = abs(amount)
 
-	if(!heal && (CE_ANTITOX in chem_effects))
-		amount *= 1 - (chem_effects[CE_ANTITOX] * 0.25)
+	if (!heal)
+		amount = amount * species.toxins_mod
+		if (CE_ANTITOX in chem_effects)
+			amount *= 1 - (chem_effects[CE_ANTITOX] * 0.25)
 
 	var/list/pick_organs = shuffle(internal_organs.Copy())
 
@@ -261,11 +263,11 @@
 //Heals ONE external organ, organ gets randomly selected from damaged ones.
 //It automatically updates damage overlays if necesary
 //It automatically updates health status
-/mob/living/carbon/human/heal_organ_damage(var/brute, var/burn)
+/mob/living/carbon/human/heal_organ_damage(var/brute, var/burn, var/affect_robo = 0)
 	var/list/obj/item/organ/external/parts = get_damaged_organs(brute,burn)
 	if(!parts.len)	return
 	var/obj/item/organ/external/picked = pick(parts)
-	if(picked.heal_damage(brute,burn))
+	if(picked.heal_damage(brute,burn,robo_repair = affect_robo))
 		BITSET(hud_updateflag, HEALTH_HUD)
 	updatehealth()
 
@@ -321,10 +323,15 @@ In most cases it makes more sense to use apply_damage() instead! And make sure t
 	var/brute_avg = brute / parts.len
 	var/burn_avg = burn / parts.len
 	for(var/obj/item/organ/external/E in parts)
+		if(QDELETED(E))
+			continue
+		if(E.owner != src)
+			continue // The code below may affect the children of an organ.
+
 		if(brute_avg)
-			apply_damage(damage = brute_avg, damagetype = BRUTE, blocked = getarmor_organ(E, "melee"), damage_flags = dam_flags, used_weapon = used_weapon, given_organ = E)
+			apply_damage(damage = brute_avg, damagetype = BRUTE, damage_flags = dam_flags, used_weapon = used_weapon, silent = TRUE, given_organ = E)
 		if(burn_avg)
-			apply_damage(damage = burn_avg, damagetype = BURN, damage_flags = dam_flags, used_weapon = used_weapon, given_organ = E)
+			apply_damage(damage = burn_avg, damagetype = BURN, damage_flags = dam_flags, used_weapon = used_weapon, silent = TRUE, given_organ = E)
 
 	updatehealth()
 	BITSET(hud_updateflag, HEALTH_HUD)
@@ -363,29 +370,42 @@ This function restores all organs.
 /mob/living/carbon/human/proc/get_organ(var/zone)
 	return organs_by_name[check_zone(zone)]
 
-/mob/living/carbon/human/apply_damage(var/damage = 0, var/damagetype = BRUTE, var/def_zone = null, var/blocked = 0, var/damage_flags = 0, var/obj/used_weapon = null, var/obj/item/organ/external/given_organ = null)
+/mob/living/carbon/human/apply_damage(var/damage = 0, var/damagetype = BRUTE, var/def_zone = null, var/damage_flags = 0, var/obj/used_weapon = null, var/armor_pen, var/silent = FALSE, var/obj/item/organ/external/given_organ = null)
 
 	var/obj/item/organ/external/organ = given_organ
 	if(!organ)
 		if(isorgan(def_zone))
 			organ = def_zone
 		else
-			if(!def_zone)	def_zone = ran_zone(def_zone)
+			if(!def_zone)
+				if(damage_flags & DAM_DISPERSED)
+					var/old_damage = damage
+					var/tally
+					silent = TRUE // Will damage a lot of organs, probably, so avoid spam.
+					for(var/zone in organ_rel_size)
+						tally += organ_rel_size[zone]
+					for(var/zone in organ_rel_size)
+						damage = old_damage * organ_rel_size[zone]/tally
+						def_zone = zone
+						. = .() || .
+					return
+				def_zone = ran_zone(def_zone)
 			organ = get_organ(check_zone(def_zone))
 
 	//Handle other types of damage
 	if(!(damagetype in list(BRUTE, BURN, PAIN, CLONE)))
-		..(damage, damagetype, def_zone, blocked)
-		return 1
+		return ..()
+	if(!istype(organ))
+		return 0 // This is reasonable and means the organ is missing.
 
 	handle_suit_punctures(damagetype, damage, def_zone)
 
-	if(blocked >= 100)	return 0
-
-	if(!organ)	return 0
-
-	if(blocked)
-		damage *= blocked_mult(blocked)
+	var/list/after_armor = modify_damage_by_armor(def_zone, damage, damagetype, damage_flags, src, armor_pen, silent)
+	damage = after_armor[1]
+	damagetype = after_armor[2]
+	damage_flags = after_armor[3]
+	if(!damage)
+		return 0
 
 	if(damage > 15 && prob(damage*4))
 		make_reagent(round(damage/10), /datum/reagent/adrenaline)
@@ -420,8 +440,3 @@ This function restores all organs.
 	if(stat == UNCONSCIOUS)
 		traumatic_shock *= 0.6
 	return max(0,traumatic_shock)
-
-/mob/living/carbon/human/apply_effect(var/effect = 0,var/effecttype = STUN, var/blocked = 0)
-	if(effecttype == IRRADIATE && (effect * blocked_mult(blocked) <= RAD_LEVEL_LOW))
-		return 0
-	return ..()

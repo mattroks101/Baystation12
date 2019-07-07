@@ -157,14 +157,14 @@
 		var/hide_item = !has_edge(W) || !can_slice_here
 
 		if (hide_item)
-			if (W.w_class >= src.w_class || is_robot_module(W))
+			if (W.w_class >= src.w_class || is_robot_module(W) || istype(W,/obj/item/weapon/reagent_containers/food/condiment))
 				return
 			if(!user.unEquip(W, src))
 				return
 
 			to_chat(user, "<span class='warning'>You slip \the [W] inside \the [src].</span>")
 			add_fingerprint(user)
-			contents += W
+			W.forceMove(src)
 			return
 
 		if (has_edge(W))
@@ -1371,9 +1371,11 @@
 /obj/item/weapon/reagent_containers/food/snacks/monkeycube/proc/Unwrap(var/mob/user)
 	icon_state = "monkeycube"
 	desc = "Just add water!"
-	to_chat(user, "You unwrap the cube.")
+	to_chat(user, SPAN_NOTICE("You unwrap \the [src]."))
 	wrapped = 0
 	atom_flags |= ATOM_FLAG_OPEN_CONTAINER
+	var/trash = new /obj/item/trash/cubewrapper(get_turf(user))
+	user.put_in_hands(trash)
 
 /obj/item/weapon/reagent_containers/food/snacks/monkeycube/On_Consume(var/mob/M)
 	if(ishuman(M))
@@ -2104,7 +2106,7 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/sliceable/tofubread
 	name = "tofubread"
-	icon_state = "Like meatbread but for vegetarians. Not guaranteed to give superpowers."
+	desc = "Like meatbread but for vegetarians. Not guaranteed to give superpowers."
 	icon_state = "tofubread"
 	slice_path = /obj/item/weapon/reagent_containers/food/snacks/slice/tofubread
 	slices_num = 5
@@ -2386,7 +2388,7 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/sliceable/bread
 	name = "bread"
-	icon_state = "Some plain old Earthen bread."
+	desc = "Some plain old Earthen bread."
 	icon_state = "bread"
 	slice_path = /obj/item/weapon/reagent_containers/food/snacks/slice/bread
 	slices_num = 5
@@ -3054,7 +3056,7 @@
 
 // potato + knife = raw sticks
 /obj/item/weapon/reagent_containers/food/snacks/grown/potato/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if(istype(W,/obj/item/weapon/material/kitchen/utensil/knife))
+	if(istype(W,/obj/item/weapon/material/knife))
 		new /obj/item/weapon/reagent_containers/food/snacks/rawsticks(src)
 		to_chat(user, "You cut the potato.")
 		qdel(src)

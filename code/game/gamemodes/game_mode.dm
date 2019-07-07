@@ -238,7 +238,7 @@ var/global/list/additional_antag_types = list()
 	// Update goals, now that antag status and jobs are both resolved.
 	for(var/thing in SSticker.minds)
 		var/datum/mind/mind = thing
-		mind.generate_goals(mind.assigned_job)
+		mind.generate_goals(mind.assigned_job, is_spawning=TRUE)
 		mind.current.show_goals()
 
 	if(evacuation_controller && auto_recall_shuttle)
@@ -284,7 +284,7 @@ var/global/list/additional_antag_types = list()
 		"artifacts of eldritch horror",
 		"a brain slug infestation",
 		"killer bugs that lay eggs in the husks of the living",
-		"a deserted transport carrying xenomorph specimens",
+		"a deserted transport carrying xenofauna specimens",
 		"an emissary for the gestalt requesting a security detail",
 		"radical Skrellian transevolutionaries",
 		"classified security operations",
@@ -368,7 +368,7 @@ var/global/list/additional_antag_types = list()
 		text += "There were <b>no survivors</b> (<b>[ghosts] ghosts</b>)."
 
 	to_world(text)
-	
+
 	if(clients > 0)
 		SSstatistics.set_field("round_end_clients",clients)
 	if(ghosts > 0)
@@ -383,6 +383,7 @@ var/global/list/additional_antag_types = list()
 		SSstatistics.set_field("escaped_total",escaped_total)
 
 	send2mainirc("A round of [src.name] has ended - [surviving_total] survivor\s, [ghosts] ghost\s.")
+	SSwebhooks.send(WEBHOOK_ROUNDEND, list("survivors" = surviving_total, "escaped" = escaped_total, "ghosts" = ghosts))
 
 	return 0
 
@@ -424,7 +425,7 @@ var/global/list/additional_antag_types = list()
 		// If we don't have enough antags, draft people who voted for the round.
 		if(candidates.len < required_enemies)
 			for(var/mob/new_player/player in players)
-				if(!antag_id || !(antag_id in player.client.prefs.never_be_special_role))
+				if(!antag_id || ((antag_id in player.client.prefs.be_special_role) || (antag_id in player.client.prefs.may_be_special_role)))
 					log_debug("[player.key] has not selected never for this role, so we are drafting them.")
 					candidates += player.mind
 					players -= player

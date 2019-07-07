@@ -6,7 +6,7 @@
 	damage = 40
 	damage_type = BURN
 	sharp = 1 //concentrated burns
-	check_armour = "laser"
+	damage_flags = DAM_LASER
 	eyeblur = 4
 	hitscan = 1
 	invisibility = 101	//beam projectiles are invisible as they are rendered by the effect engine
@@ -115,7 +115,6 @@
 	damage = 0
 	no_attack_log = 1
 	damage_type = BURN
-	check_armour = "laser"
 
 	muzzle_type = /obj/effect/projectile/laser/blue/muzzle
 	tracer_type = /obj/effect/projectile/laser/blue/tracer
@@ -135,7 +134,6 @@
 	damage = 0
 	no_attack_log = 1
 	damage_type = BURN
-	check_armour = "laser"
 
 /obj/item/projectile/beam/lastertag/red/on_hit(var/atom/target, var/blocked = 0)
 	if(istype(target, /mob/living/carbon/human))
@@ -150,7 +148,6 @@
 	pass_flags = PASS_FLAG_TABLE | PASS_FLAG_GLASS | PASS_FLAG_GRILLE
 	damage = 0
 	damage_type = BURN
-	check_armour = "laser"
 
 	muzzle_type = /obj/effect/projectile/laser/omni/muzzle
 	tracer_type = /obj/effect/projectile/laser/omni/tracer
@@ -181,7 +178,7 @@
 	name = "stun beam"
 	icon_state = "stun"
 	fire_sound = 'sound/weapons/Taser.ogg'
-	check_armour = "energy"
+	damage_flags = 0
 	sharp = 0 //not a laser
 	agony = 40
 	damage_type = STUN
@@ -214,8 +211,7 @@
 	sharp = 1
 	edge = 1
 	damage_type = BURN
-	check_armour = "laser"
-	kill_count = 5
+	life_span = 5
 	pass_flags = PASS_FLAG_TABLE
 	distance_falloff = 4
 
@@ -226,9 +222,53 @@
 /obj/item/projectile/beam/plasmacutter/on_impact(var/atom/A)
 	if(istype(A, /turf/simulated/mineral))
 		var/turf/simulated/mineral/M = A
-		if(prob(33))
-			M.GetDrilled(1)
-			return
-		else
-			M.emitter_blasts_taken += 2
+		M.GetDrilled(1)
 	. = ..()
+
+/obj/item/projectile/beam/confuseray
+	name = "disorientator ray"
+	icon_state = "beam_grass"
+	fire_sound='sound/weapons/confuseray.ogg'
+	damage = 2
+	agony = 7
+	sharp = FALSE
+	distance_falloff = 5
+	damage_flags = 0
+	damage_type = STUN
+	life_span = 3
+	penetration_modifier = 0
+	var/potency_min = 4
+	var/potency_max = 6
+
+	muzzle_type = /obj/effect/projectile/confuseray/muzzle
+	tracer_type = /obj/effect/projectile/confuseray/tracer
+	impact_type = /obj/effect/projectile/confuseray/impact
+
+/obj/item/projectile/beam/confuseray/on_hit(var/atom/target, var/blocked = 0)
+	if(istype(target, /mob/living))
+		var/mob/living/L = target
+		var/potency = rand(potency_min, potency_max)
+		L.confused += potency
+		L.eye_blurry += potency
+		if(L.confused >= 10)
+			L.Stun(1)
+			L.drop_l_hand()
+			L.drop_r_hand()
+		
+	return 1
+
+/obj/item/projectile/beam/particle
+	name = "particle lance"
+	icon_state = "particle"
+	damage = 35
+	armor_penetration = 50
+	muzzle_type = /obj/effect/projectile/laser_particle/muzzle
+	tracer_type = /obj/effect/projectile/laser_particle/tracer
+	impact_type = /obj/effect/projectile/laser_particle/impact
+	penetration_modifier = 0.5
+
+/obj/item/projectile/beam/particle/small
+	name = "particle beam"
+	damage = 20
+	armor_penetration = 20
+	penetration_modifier = 0.3

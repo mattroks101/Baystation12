@@ -91,7 +91,7 @@
 			output += "&nbsp;&nbsp;[filter]: [f.len]<br>"
 			for (var/device in f)
 				if (isobj(device))
-					output += "&nbsp;&nbsp;&nbsp;&nbsp;[device] ([device:x],[device:y],[device:z] in area [get_area(device:loc)])<br>"
+					output += "&nbsp;&nbsp;&nbsp;&nbsp;[device] ([device:x],[device:y],[device:z] in area [get_area(device)])<br>"
 				else
 					output += "&nbsp;&nbsp;&nbsp;&nbsp;[device]<br>"
 
@@ -107,15 +107,6 @@
 	message_admins("[usr] manually reloaded admins")
 	load_admins()
 	SSstatistics.add_field_details("admin_verb","RLDA") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
-
-/client/proc/reload_mentors()
-	set name = "Reload Mentors"
-	set category = "Debug"
-
-	if(!check_rights(R_SERVER)) return
-
-	message_admins("[usr] manually reloaded Mentors")
-	world.load_mods()
 
 /client/proc/print_jobban_old()
 	set name = "Print Jobban Log"

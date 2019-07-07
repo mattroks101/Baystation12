@@ -262,11 +262,6 @@
 	desc = "This plaque memorializes those engineers and technicians who made the ultimate sacrifice to save their vessel and its crew."
 	icon_state = "atmosplaque"
 
-/obj/structure/sign/floorplaque
-	name = "\improper commemorative plaque"
-	desc = "A list of dead explorers who gave their lives in search of the next great discovery. Hope you don't join them."
-	icon_state = "floorplaque"
-
 /obj/structure/sign/double/maltesefalcon	//The sign is 64x32, so it needs two tiles. ;3
 	name = "The Maltese Falcon"
 	desc = "The Maltese Falcon, Space Bar and Grill."
@@ -411,6 +406,10 @@
 /obj/structure/sign/deck/fourth
 	name = "\improper Fourth Deck"
 	icon_state = "deck-4"
+
+/obj/structure/sign/deck/fifth
+	name = "\improper Fifth Deck"
+	icon_state = "deck-5"
 
 /obj/item/sign/medipolma
 	name = "medical diploma"

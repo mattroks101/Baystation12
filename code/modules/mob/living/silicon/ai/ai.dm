@@ -48,8 +48,10 @@ var/list/ai_verbs_default = list(
 	anchored = 1 // -- TLE
 	density = 1
 	status_flags = CANSTUN|CANPARALYSE|CANPUSH
+	mob_flags = MOB_FLAG_NO_SHADOW
 	shouldnt_see = list(/obj/effect/rune)
 	maxHealth = 200
+	pixel_z = 0
 	var/list/network = list("Exodus")
 	var/obj/machinery/camera/camera = null
 	var/list/connected_robots = list()
@@ -147,17 +149,20 @@ var/list/ai_verbs_default = list(
 		add_ai_verbs(src)
 
 	//Languages
-	add_language("Robot Talk", 1)
-	add_language(LANGUAGE_GALCOM, 1)
+	add_language(LANGUAGE_ROBOT_GLOBAL, 1)
 	add_language(LANGUAGE_EAL, 1)
-	add_language(LANGUAGE_SOL_COMMON, 1)
-	add_language(LANGUAGE_UNATHI, 1)
+	add_language(LANGUAGE_HUMAN_EURO, 1)
+	add_language(LANGUAGE_HUMAN_ARABIC, 1)
+	add_language(LANGUAGE_HUMAN_CHINESE, 1)
+	add_language(LANGUAGE_HUMAN_IBERIAN, 1)
+	add_language(LANGUAGE_HUMAN_INDIAN, 1)
+	add_language(LANGUAGE_HUMAN_RUSSIAN, 1)
+	add_language(LANGUAGE_HUMAN_SELENIAN, 1)
+	add_language(LANGUAGE_UNATHI_SINTA, 1)
 	add_language(LANGUAGE_SKRELLIAN, 1)
-	add_language(LANGUAGE_LUNAR, 1)
 	add_language(LANGUAGE_GUTTER, 1)
-	add_language(LANGUAGE_SIGN, 0)
-	add_language(LANGUAGE_INDEPENDENT, 1)
 	add_language(LANGUAGE_SPACER, 1)
+	add_language(LANGUAGE_SIGN, 0)
 
 	if(!safety)//Only used by AIize() to successfully spawn an AI.
 		if (!B)//If there is no player/brain inside.
@@ -205,7 +210,7 @@ var/list/ai_verbs_default = list(
 
 	if (GLOB.malf && !(mind in GLOB.malf.current_antagonists))
 		show_laws()
-		to_chat(src, "<b>These laws may be changed by other players, or by you being the traitor.</b>")
+		to_chat(src, "<b>These laws may be changed by other players or by other random events.</b>")
 
 	job = "AI"
 	setup_icon()

@@ -2,6 +2,7 @@
 	name = "plating"
 	icon = 'icons/turf/flooring/plating.dmi'
 	icon_state = "plating"
+	permit_ao = TRUE
 
 	// Damage to flooring.
 	var/broken
@@ -35,7 +36,7 @@
 	if(!floortype && initial_flooring)
 		floortype = initial_flooring
 	if(floortype)
-		set_flooring(get_flooring_data(floortype))
+		set_flooring(decls_repository.get_decl(floortype))
 
 /turf/simulated/floor/proc/set_flooring(var/decl/flooring/newflooring)
 	make_plating(defer_icon_update = 1)
@@ -94,3 +95,6 @@
 
 /turf/simulated/floor/shuttle_ceiling/air
 	initial_gas = list("oxygen" = MOLES_O2STANDARD, "nitrogen" = MOLES_N2STANDARD)
+
+/turf/simulated/floor/is_floor()
+	return TRUE

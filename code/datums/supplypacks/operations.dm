@@ -1,13 +1,6 @@
 /decl/hierarchy/supply_pack/operations
 	name = "Operations"
 
-/decl/hierarchy/supply_pack/operations/mule
-	name = "Equipment - MULEbot"
-	contains = list()
-	cost = 20
-	containertype = /obj/structure/largecrate/animal/mulebot
-	containername = "mulebot crate"
-
 /decl/hierarchy/supply_pack/operations/cargotrain
 	name = "Equipment - Cargo Train Tug"
 	contains = list(/obj/vehicle/train/cargo/engine)
@@ -42,6 +35,13 @@
 	cost = 80
 	containertype = /obj/structure/largecrate/hoverpod
 	containername = "hoverpod crate"
+
+/decl/hierarchy/supply_pack/operations/orebox
+	name = "Equipment - Ore box"
+	contains = list(/obj/structure/ore_box)
+	cost = 15
+	containertype = /obj/structure/largecrate
+	containername = "Ore box crate"
 
 /decl/hierarchy/supply_pack/operations/webbing
 	name = "Gear - Webbing, vests, holsters."

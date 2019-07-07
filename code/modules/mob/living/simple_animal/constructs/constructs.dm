@@ -13,8 +13,8 @@
 	a_intent = I_HURT
 	stop_automated_movement = 1
 	status_flags = CANPUSH
-	universal_speak = 0
-	universal_understand = 1
+	universal_speak = FALSE
+	universal_understand = TRUE
 	attack_sound = 'sound/weapons/spiderlunge.ogg'
 	min_gas = null
 	max_gas = null
@@ -40,8 +40,8 @@
 	..()
 	name = text("[initial(name)] ([random_id(/mob/living/simple_animal/construct, 1000, 9999)])")
 	real_name = name
-	add_language("Cult")
-	add_language(LANGUAGE_OCCULT)
+	add_language(LANGUAGE_CULT)
+	add_language(LANGUAGE_CULT_GLOBAL)
 	for(var/spell in construct_spells)
 		src.add_spell(new spell, "const_spell_ready")
 	update_icon()
@@ -114,7 +114,7 @@
 	status_flags = 0
 	resistance = 10
 	construct_spells = list(/spell/aoe_turf/conjure/forcewall/lesser)
-	can_escape = 1
+	can_escape = TRUE
 
 /mob/living/simple_animal/construct/armoured/Life()
 	weakened = 0
@@ -222,7 +222,7 @@
 	var/energy = 0
 	var/max_energy = 1000
 	construct_spells = list(/spell/aoe_turf/conjure/forcewall/lesser)
-	can_escape = 1
+	can_escape = TRUE
 
 ////////////////////////Harvester////////////////////////////////
 
@@ -256,7 +256,7 @@
 	eye_glow.plane = EFFECTS_ABOVE_LIGHTING_PLANE
 	eye_glow.layer = EYE_GLOW_LAYER
 	overlays += eye_glow
-	set_light(-10, 0.1, 3, l_color = "#ffffff")
+	set_light(-2, 0.1, 1.5, l_color = "#ffffff")
 
 ////////////////HUD//////////////////////
 

@@ -12,8 +12,13 @@
 	QDEL_NULL(touching)
 	bloodstr = null // We don't qdel(bloodstr) because it's the same as qdel(reagents)
 	QDEL_NULL_LIST(internal_organs)
-	QDEL_NULL_LIST(stomach_contents)
 	QDEL_NULL_LIST(hallucinations)
+	if(loc)
+		for(var/mob/M in contents)
+			M.dropInto(loc)
+	else
+		for(var/mob/M in contents)
+			qdel(M)
 	return ..()
 
 /mob/living/carbon/rejuvenate()
@@ -22,7 +27,8 @@
 	var/datum/reagents/R = get_ingested_reagents()
 	if(istype(R)) 
 		R.clear_reagents()
-	nutrition = 400
+	set_nutrition(400)
+	set_hydration(400)
 	..()
 
 /mob/living/carbon/Move(NewLoc, direct)
@@ -30,19 +36,25 @@
 	if(!.)
 		return
 
-	if (src.nutrition && src.stat != 2)
-		src.nutrition -= DEFAULT_HUNGER_FACTOR/10
+	if(stat != DEAD)
+
+		if((MUTATION_FAT in src.mutations) && (move_intent.flags & MOVE_INTENT_EXERTIVE) && src.bodytemperature <= 360)
+			bodytemperature += 2
+
+		var/nut_removed = DEFAULT_HUNGER_FACTOR/10
+		var/hyd_removed = DEFAULT_THIRST_FACTOR/10
 		if (move_intent.flags & MOVE_INTENT_EXERTIVE)
-			src.nutrition -= DEFAULT_HUNGER_FACTOR/10
-	if((MUTATION_FAT in src.mutations) && (move_intent.flags & MOVE_INTENT_EXERTIVE) && src.bodytemperature <= 360)
-		src.bodytemperature += 2
+			nut_removed *= 2
+			hyd_removed *= 2
+		adjust_nutrition(-nut_removed)
+		adjust_hydration(-hyd_removed)
 
 	// Moving around increases germ_level faster
 	if(germ_level < GERM_LEVEL_MOVE_CAP && prob(8))
 		germ_level++
 
 /mob/living/carbon/relaymove(var/mob/living/user, direction)
-	if((user in src.stomach_contents) && istype(user))
+	if((user in contents) && istype(user))
 		if(user.last_special <= world.time)
 			user.last_special = world.time + 50
 			src.visible_message("<span class='danger'>You hear something rumbling inside [src]'s stomach...</span>")
@@ -61,19 +73,12 @@
 				playsound(user.loc, 'sound/effects/attackblob.ogg', 50, 1)
 
 				if(prob(src.getBruteLoss() - 50))
-					for(var/atom/movable/A in stomach_contents)
-						A.dropInto(loc)
-						stomach_contents.Remove(A)
-					src.gib()
+					gib()
 
 /mob/living/carbon/gib()
-	for(var/mob/M in src)
-		if(M in src.stomach_contents)
-			src.stomach_contents.Remove(M)
+	for(var/mob/M in contents)
 		M.dropInto(loc)
-		for(var/mob/N in viewers(src, null))
-			if(N.client)
-				N.show_message(text("<span class='danger'>[M] bursts out of [src]!</span>"), 2)
+		visible_message(SPAN_DANGER("\The [M] bursts out of \the [src]!"))
 	..()
 
 /mob/living/carbon/attack_hand(mob/M as mob)
@@ -236,9 +241,6 @@
 				AdjustWeakened(-3)
 
 			playsound(src.loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
-
-/mob/living/carbon/proc/eyecheck()
-	return 0
 
 /mob/living/carbon/flash_eyes(intensity = FLASH_PROTECTION_MODERATE, override_blindness_check = FALSE, affect_silicon = FALSE, visual = FALSE, type = /obj/screen/fullscreen/flash)
 	if(eyecheck() < intensity || override_blindness_check)
@@ -404,6 +406,17 @@
 	if(default_language && can_speak(default_language))
 		return default_language
 
+/mob/living/carbon/proc/get_any_good_language(set_default=FALSE)
+	var/datum/language/result = get_default_language()
+	if (!result)
+		for (var/datum/language/L in languages)
+			if (can_speak(L))
+				result = L
+				if (set_default)
+					set_default_language(result)
+				break
+	return result
+
 /mob/living/carbon/show_inv(mob/user as mob)
 	user.set_machine(src)
 	var/dat = {"
@@ -426,21 +439,8 @@
  *  Return FALSE if victim can't be devoured, DEVOUR_FAST if they can be devoured quickly, DEVOUR_SLOW for slow devour
  */
 /mob/living/carbon/proc/can_devour(atom/movable/victim)
-	if((MUTATION_FAT in mutations) && issmall(victim))
-		return DEVOUR_FAST
-
 	return FALSE
 
-/mob/living/carbon/onDropInto(var/atom/movable/AM)
-	for(var/e in stomach_contents)
-		var/atom/movable/stomach_content = e
-		if(stomach_content.contains(AM))
-			if(can_devour(AM))
-				stomach_contents += AM
-				return null
-			src.visible_message("<span class='warning'>\The [src] regurgitates \the [AM]!</span>")
-			return loc
-	return ..()
 /mob/living/carbon/proc/should_have_organ(var/organ_check)
 	return 0
 
@@ -492,3 +492,30 @@
 
 /mob/living/carbon/proc/get_ingested_reagents()
 	return reagents
+
+/mob/living/carbon/proc/set_nutrition(var/amt)
+	nutrition = Clamp(amt, 0, initial(nutrition))
+
+/mob/living/carbon/proc/adjust_nutrition(var/amt)
+	set_nutrition(nutrition + amt)
+
+/mob/living/carbon/proc/set_hydration(var/amt)
+	hydration = Clamp(amt, 0, initial(hydration))
+
+/mob/living/carbon/proc/adjust_hydration(var/amt)
+	set_hydration(hydration + amt)
+
+/mob/living/carbon/proc/set_internals(obj/item/weapon/tank/source, source_string)
+	var/old_internal = internal
+
+	internal = source
+
+	if(!old_internal && internal)
+		if(!source_string)
+			source_string = source.name
+		to_chat(src, "<span class='notice'>You are now running on internals from \the [source_string].</span>")
+		playsound(src, 'sound/effects/internals.ogg', 50, 0)
+	if(old_internal && !internal)
+		to_chat(src, "<span class='warning'>You are no longer running on internals.</span>")
+	if(internals)
+		internals.icon_state = "internal[!!internal]"

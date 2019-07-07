@@ -17,6 +17,7 @@ var/list/department_radio_keys = list(
 	  ":p" = "AI Private",	".p" = "AI Private",
 	  ":z" = "Entertainment",".z" = "Entertainment",
 	  ":y" = "Exploration",		".y" = "Exploration",
+	  ":k" = "Recon",		".k" = "Recon",	//Skrell Recon ship
 
 	  ":R" = "right ear",	".R" = "right ear",
 	  ":L" = "left ear",	".L" = "left ear",
@@ -206,6 +207,9 @@ proc/get_radio_key_from_channel(var/channel)
 	message = trim_left(message)
 	message = handle_autohiss(message, speaking)
 	message = format_say_message(message)
+
+	if(speaking && !speaking.can_be_spoken_properly_by(src))
+		message = speaking.muddle(message)
 
 	if(!(speaking && (speaking.flags & NO_STUTTER)))
 		var/list/message_data = list(message, verb, 0)

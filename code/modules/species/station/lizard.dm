@@ -58,7 +58,7 @@
 
 	move_trail = /obj/effect/decal/cleanable/blood/tracks/claw
 
-	heat_discomfort_level = 295
+	heat_discomfort_level = 320
 	heat_discomfort_strings = list(
 		"You feel soothingly warm.",
 		"You feel the heat sink into your bones.",
@@ -83,7 +83,7 @@
 
 	prone_overlay_offset = list(-4, -4)
 
-	override_limb_types = list(BP_HEAD = /obj/item/organ/external/head/unathi)
+	override_organ_types = list(BP_EYES = /obj/item/organ/internal/eyes/unathi)
 
 	descriptors = list(
 		/datum/mob_descriptor/height = 2,

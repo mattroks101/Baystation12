@@ -10,7 +10,7 @@
 	id = "slime_scanner"
 	req_tech = list(TECH_MAGNET = 2, TECH_BIO = 2)
 	materials = list(MATERIAL_STEEL = 200, MATERIAL_GLASS = 100, MATERIAL_PLASTIC = 150)
-	build_path = /obj/item/device/slime_scanner
+	build_path = /obj/item/device/scanner/xenobio
 	sort_string = "MACFA"
 
 /datum/design/item/medical/robot_scanner
@@ -25,28 +25,28 @@
 	desc = "A device for analyzing chemicals in blood."
 	id = "mass_spectrometer"
 	req_tech = list(TECH_BIO = 2, TECH_MAGNET = 2)
-	build_path = /obj/item/device/mass_spectrometer
+	build_path = /obj/item/device/scanner/spectrometer
 	sort_string = "MACAA"
 
 /datum/design/item/medical/adv_mass_spectrometer
 	desc = "A device for analyzing chemicals in blood and their quantities."
 	id = "adv_mass_spectrometer"
 	req_tech = list(TECH_BIO = 2, TECH_MAGNET = 4)
-	build_path = /obj/item/device/mass_spectrometer/adv
+	build_path = /obj/item/device/scanner/spectrometer/adv
 	sort_string = "MACAB"
 
 /datum/design/item/medical/reagent_scanner
 	desc = "A device for identifying chemicals."
 	id = "reagent_scanner"
 	req_tech = list(TECH_BIO = 2, TECH_MAGNET = 2)
-	build_path = /obj/item/device/reagent_scanner
+	build_path = /obj/item/device/scanner/reagent
 	sort_string = "MACBA"
 
 /datum/design/item/medical/adv_reagent_scanner
 	desc = "A device for identifying chemicals and their proportions."
 	id = "adv_reagent_scanner"
 	req_tech = list(TECH_BIO = 2, TECH_MAGNET = 4)
-	build_path = /obj/item/device/reagent_scanner/adv
+	build_path = /obj/item/device/scanner/reagent/adv
 	sort_string = "MACBB"
 
 /datum/design/item/medical/nanopaste
@@ -69,7 +69,7 @@
 	desc = "A folded, reusable bag designed to prevent additional damage to an occupant, especially useful if short on time or in \
 	a hostile enviroment."
 	id = "cryobag"
-	req_tech = list(TECH_MATERIAL = 3, TECH_BIO = 4)
-	materials = list(MATERIAL_PLASTIC = 4000, MATERIAL_GLASS = 4000, MATERIAL_SILVER = 1000)
+	req_tech = list(TECH_MATERIAL = 6, TECH_BIO = 6)
+	materials = list(MATERIAL_PLASTIC = 15000, MATERIAL_GLASS = 15000, MATERIAL_SILVER = 5000, MATERIAL_GOLD = 1000)
 	build_path = /obj/item/bodybag/cryobag
 	sort_string = "MAFAA"

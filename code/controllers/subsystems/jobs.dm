@@ -91,6 +91,11 @@ SUBSYSTEM_DEF(jobs)
 		if(LAZYLEN(submap_job_datums))
 			job_lists_by_map_name[arch.descriptor] = list("jobs" = submap_job_datums, "default_to_hidden" = TRUE)
 
+	// Update global map blacklists and whitelists.
+	for(var/mappath in GLOB.all_maps)
+		var/datum/map/M = GLOB.all_maps[mappath]
+		M.setup_job_lists()
+
 	// Update valid job titles.
 	titles_to_datums = list()
 	types_to_datums = list()
@@ -404,11 +409,16 @@ SUBSYSTEM_DEF(jobs)
 					else
 						permitted = 1
 
+				if(permitted && G.allowed_skills)
+					for(var/required in G.allowed_skills)
+						if(!H.skill_check(required,G.allowed_skills[required]))
+							permitted = 0
+
 				if(G.whitelisted && (!(H.species.name in G.whitelisted)))
 					permitted = 0
 
 				if(!permitted)
-					to_chat(H, "<span class='warning'>Your current species, job, branch or whitelist status does not permit you to spawn with [thing]!</span>")
+					to_chat(H, "<span class='warning'>Your current species, job, branch, skills or whitelist status does not permit you to spawn with [thing]!</span>")
 					continue
 
 				if(!G.slot || G.slot == slot_tie || (G.slot in loadout_taken_slots) || !G.spawn_on_mob(H, H.client.prefs.Gear()[G.display_name]))
@@ -461,7 +471,7 @@ SUBSYSTEM_DEF(jobs)
 			else
 				domain = "freemail.net"
 			if(domain)
-				ntnet_global.create_email(H, H.real_name, domain)
+				ntnet_global.create_email(H, H.real_name, domain, rank)
 		// END EMAIL GENERATION
 
 		job.equip(H, H.mind ? H.mind.role_alt_title : "", H.char_branch, H.char_rank)
@@ -505,14 +515,10 @@ SUBSYSTEM_DEF(jobs)
 		H.mind.assigned_role = rank
 		alt_title = H.mind.role_alt_title
 
-		switch(rank)
-			if("Robot")
-				return H.Robotize()
-			if("AI")
-				return H
-			if("Captain")
-				var/sound/announce_sound = (GAME_STATE <= RUNLEVEL_SETUP)? null : sound('sound/misc/boatswain.ogg', volume=20)
-				captain_announcement.Announce("All hands, Captain [H.real_name] on deck!", new_sound=announce_sound)
+	var/mob/other_mob = job.handle_variant_join(H, alt_title)
+	if(other_mob)
+		job.post_equip_rank(other_mob, alt_title || rank)
+		return other_mob
 
 	if(spawn_in_storage)
 		for(var/datum/gear/G in spawn_in_storage)
@@ -529,7 +535,7 @@ SUBSYSTEM_DEF(jobs)
 			W.buckled_mob = H
 			W.add_fingerprint(H)
 
-	to_chat(H, "<B>You are [job.total_positions == 1 ? "the" : "a"] [alt_title ? alt_title : rank].</B>")
+	to_chat(H, "<font size = 3><B>You are [job.total_positions == 1 ? "the" : "a"] [alt_title ? alt_title : rank].</B></font>")
 
 	if(job.supervisors)
 		to_chat(H, "<b>As the [alt_title ? alt_title : rank] you answer directly to [job.supervisors]. Special circumstances may change this.</b>")
@@ -550,7 +556,7 @@ SUBSYSTEM_DEF(jobs)
 	BITSET(H.hud_updateflag, IMPLOYAL_HUD)
 	BITSET(H.hud_updateflag, SPECIALROLE_HUD)
 	
-	job.post_equip_rank(H)
+	job.post_equip_rank(H, alt_title || rank)
 
 	return H
 

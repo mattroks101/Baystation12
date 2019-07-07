@@ -5,6 +5,7 @@
 	suffixes = list("monoliths/monoliths.dmm")
 	cost = 1
 	template_flags = TEMPLATE_FLAG_NO_RUINS
+	ruin_tags = RUIN_ALIEN
 
 /obj/structure/monolith
 	name = "monolith"
@@ -20,7 +21,7 @@
 /obj/structure/monolith/Initialize()
 	. = ..()
 	icon_state = "jaggy[rand(1,4)]"
-	var/material/A = SSmaterials.get_material_by_name(MATERIAL_ALIUMIUM)
+	var/material/A = SSmaterials.get_material_by_name(MATERIAL_ALIENALLOY)
 	if(A)
 		color = A.icon_colour
 	if(GLOB.using_map.use_overmap)

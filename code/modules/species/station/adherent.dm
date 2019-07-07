@@ -7,10 +7,10 @@
 	whose home system and burgeoning stellar empire was scoured to bedrock by a solar flare. \
 	Physically, they are large, floating squidlike machines made of a crystalline composite."
 	hidden_from_codex = FALSE
+	silent_steps = TRUE
 
 	genders =                 list(PLURAL)
 	cyborg_noun =             null
-	silent_steps =            TRUE // Antigravity squids.
 
 	icon_template =           'icons/mob/human_races/species/adherent/template.dmi'
 	icobase =                 'icons/mob/human_races/species/adherent/body.dmi'
@@ -42,7 +42,7 @@
 	heat_level_3 = SYNTH_HEAT_LEVEL_3
 
 	species_flags = SPECIES_FLAG_NO_SCAN | SPECIES_FLAG_NO_PAIN | SPECIES_FLAG_NO_POISON | SPECIES_FLAG_NO_MINOR_CUT
-	spawn_flags =   SPECIES_CAN_JOIN | SPECIES_IS_WHITELISTED | SPECIES_NO_FBP_CONSTRUCTION | SPECIES_NO_FBP_CHARGEN | SPECIES_NO_LACE
+	spawn_flags =   SPECIES_CAN_JOIN | SPECIES_IS_WHITELISTED | SPECIES_NO_FBP_CONSTRUCTION | SPECIES_NO_FBP_CHARGEN
 
 	appearance_flags = HAS_EYE_COLOR | HAS_BASE_SKIN_COLOURS
 	blood_color = "#2de00d"
@@ -50,7 +50,7 @@
 	virus_immune = 1
 	slowdown = -1
 	hud_type = /datum/hud_data/adherent
-	pixel_offset_y = -4
+	pixel_offset_z = -4
 
 	available_cultural_info = list(
 		TAG_CULTURE = list(
@@ -101,7 +101,9 @@
 		"Amethyst"    = "_purple",
 		"Sapphire"    = "_blue",
 		"Ruby"        = "_red",
-		"Topaz"       = "_yellow"
+		"Topaz"       = "_yellow",
+		"Quartz"      = "_white",
+		"Jet"         = "_black"
 	)
 
 /datum/species/adherent/New()
@@ -120,7 +122,7 @@
 	. = FALSE
 	if(H && H.stat == CONSCIOUS)
 		for(var/obj/item/organ/internal/powered/float/float in H.internal_organs)
-			if(istype(float) && float.active && float.is_usable())
+			if(float.active && float.is_usable())
 				. = TRUE
 				break
 

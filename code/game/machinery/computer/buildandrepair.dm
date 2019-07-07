@@ -6,10 +6,22 @@
 	name = "computer frame"
 	icon = 'icons/obj/stock_parts.dmi'
 	icon_state = "0"
-	var/state = 0
-	var/obj/item/weapon/circuitboard/circuit = null
 	atom_flags = ATOM_FLAG_NO_TEMP_CHANGE | ATOM_FLAG_CLIMBABLE
-//	weight = 1.0E8
+	obj_flags = OBJ_FLAG_ROTATABLE
+
+	var/state = 0
+	var/obj/item/weapon/stock_parts/circuitboard/circuit = null
+
+/obj/structure/computerframe/on_update_icon()
+	if((state == 1) && !circuit)
+		icon_state = "0"
+	else
+		icon_state = "[state]"
+
+/obj/structure/computerframe/proc/set_state(new_state)
+	if(state != new_state)
+		state = new_state
+		update_icon()
 
 /obj/structure/computerframe/attackby(obj/item/P as obj, mob/user as mob)
 	switch(state)
@@ -19,7 +31,7 @@
 				if(do_after(user, 20, src))
 					to_chat(user, "<span class='notice'>You wrench the frame into place.</span>")
 					src.anchored = 1
-					src.state = 1
+					set_state(1)
 			if(isWelder(P))
 				var/obj/item/weapon/weldingtool/WT = P
 				if(!WT.remove_fuel(0, user))
@@ -37,36 +49,33 @@
 				if(do_after(user, 20, src))
 					to_chat(user, "<span class='notice'>You unfasten the frame.</span>")
 					src.anchored = 0
-					src.state = 0
-			if(istype(P, /obj/item/weapon/circuitboard) && !circuit)
-				var/obj/item/weapon/circuitboard/B = P
+					set_state(0)
+			if(istype(P, /obj/item/weapon/stock_parts/circuitboard) && !circuit)
+				var/obj/item/weapon/stock_parts/circuitboard/B = P
 				if(B.board_type == "computer")
 					if(!user.unEquip(P, src))
 						return
 					playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
 					to_chat(user, "<span class='notice'>You place the circuit board inside the frame.</span>")
-					src.icon_state = "1"
 					src.circuit = P
+					update_icon()
 				else
 					to_chat(user, "<span class='warning'>This frame does not accept circuit boards of this type!</span>")
 			if(isScrewdriver(P) && circuit)
 				playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, 1)
 				to_chat(user, "<span class='notice'>You screw the circuit board into place.</span>")
-				src.state = 2
-				src.icon_state = "2"
+				set_state(2)
 			if(isCrowbar(P) && circuit)
 				playsound(src.loc, 'sound/items/Crowbar.ogg', 50, 1)
 				to_chat(user, "<span class='notice'>You remove the circuit board.</span>")
-				src.state = 1
-				src.icon_state = "0"
 				circuit.dropInto(loc)
 				src.circuit = null
+				update_icon()
 		if(2)
 			if(isScrewdriver(P) && circuit)
 				playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, 1)
 				to_chat(user, "<span class='notice'>You unfasten the circuit board.</span>")
-				src.state = 1
-				src.icon_state = "1"
+				set_state(1)
 			if(isCoil(P))
 				var/obj/item/stack/cable_coil/C = P
 				if (C.get_amount() < 5)
@@ -77,14 +86,12 @@
 				if(do_after(user, 20, src) && state == 2)
 					if (C.use(5))
 						to_chat(user, "<span class='notice'>You add cables to the frame.</span>")
-						state = 3
-						icon_state = "3"
+						set_state(3)
 		if(3)
 			if(isWirecutter(P))
 				playsound(src.loc, 'sound/items/Wirecutter.ogg', 50, 1)
 				to_chat(user, "<span class='notice'>You remove the cables.</span>")
-				src.state = 2
-				src.icon_state = "2"
+				set_state(2)
 				var/obj/item/stack/cable_coil/A = new /obj/item/stack/cable_coil( src.loc )
 				A.amount = 5
 
@@ -98,14 +105,12 @@
 				if(do_after(user, 20, src) && state == 3)
 					if (G.use(2))
 						to_chat(user, "<span class='notice'>You put in the glass panel.</span>")
-						src.state = 4
-						src.icon_state = "4"
+						set_state(4)
 		if(4)
 			if(isCrowbar(P))
 				playsound(src.loc, 'sound/items/Crowbar.ogg', 50, 1)
 				to_chat(user, "<span class='notice'>You remove the glass panel.</span>")
-				src.state = 3
-				src.icon_state = "3"
+				set_state(3)
 				new /obj/item/stack/material/glass( src.loc, 2 )
 			if(isScrewdriver(P))
 				playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, 1)
@@ -115,15 +120,7 @@
 				B.set_dir(src.dir)
 				qdel(src)
 
-/obj/structure/computerframe/verb/rotate()
-	set category = "Object"
-	set name = "Rotate Computer Frame"
-	set src in oview(1)
-
-	if (!Adjacent(usr) || usr.incapacitated() || src.state != 0)
+/obj/structure/computerframe/rotate(mob/user)
+	if(state != 0)
 		return
-
-	src.set_dir(turn(src.dir, 90))
-
-/obj/structure/computerframe/AltClick()
-	rotate()
+	..()

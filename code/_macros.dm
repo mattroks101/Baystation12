@@ -81,6 +81,8 @@
 
 #define isPlunger(A) istype(A, /obj/item/clothing/mask/plunger) || istype(A, /obj/item/device/plunger/robot)
 
+#define isspecies(A, B) (iscarbon(A) && A:species?.name == B)
+
 #define sequential_id(key) uniqueness_repository.Generate(/datum/uniqueness_generator/id_sequential, key)
 
 #define random_id(key,min_id,max_id) uniqueness_repository.Generate(/datum/uniqueness_generator/id_random, key, min_id, max_id)
@@ -109,9 +111,9 @@
 
 #define CanInteractWith(user, target, state) (target.CanUseTopic(user, state) == STATUS_INTERACTIVE)
 
-#define CanPhysicallyInteract(user) CanInteract(user, GLOB.physical_state)
+#define CanPhysicallyInteract(user) (CanUseTopicPhysical(user) == STATUS_INTERACTIVE)
 
-#define CanPhysicallyInteractWith(user, target) CanInteractWith(user, target, GLOB.physical_state)
+#define CanPhysicallyInteractWith(user, target) (target.CanUseTopicPhysical(user) == STATUS_INTERACTIVE)
 
 #define QDEL_NULL_LIST(x) if(x) { for(var/y in x) { qdel(y) }}; if(x) {x.Cut(); x = null } // Second x check to handle items that LAZYREMOVE on qdel.
 
@@ -167,8 +169,26 @@
 
 #define JOINTEXT(X) jointext(X, null)
 
+#define SPAN_ITALIC(X) "<span class='italic'>[X]</span>"
+
+#define SPAN_BOLD(X) "<span class='bold'>[X]</span>"
+
 #define SPAN_NOTICE(X) "<span class='notice'>[X]</span>"
 
 #define SPAN_WARNING(X) "<span class='warning'>[X]</span>"
 
 #define SPAN_DANGER(X) "<span class='danger'>[X]</span>"
+
+#define SPAN_OCCULT(X) "<span class='cult'>[X]</span>"
+
+#define SPAN_MFAUNA(X) "<span class='mfauna'>[X]</span>"
+
+#define FONT_SMALL(X) "<font size='1'>[X]</font>"
+
+#define FONT_NORMAL(X) "<font size='2'>[X]</font>"
+
+#define FONT_LARGE(X) "<font size='3'>[X]</font>"
+
+#define FONT_HUGE(X) "<font size='4'>[X]</font>"
+
+#define FONT_GIANT(X) "<font size='5'>[X]</font>"

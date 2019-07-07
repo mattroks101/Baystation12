@@ -6,14 +6,13 @@
 	desc = "Has a valve and pump attached to it."
 	use_power = POWER_USE_OFF
 	idle_power_usage = 150		//internal circuitry, friction losses and stuff
-	power_rating = 7500			//7500 W ~ 10 HP
+	power_rating = 30000			// 30000 W ~ 40 HP
 
 	connect_types = CONNECT_TYPE_REGULAR|CONNECT_TYPE_SCRUBBER //connects to regular and scrubber pipes
 
 	level = 1
 
 	var/area/initial_loc
-	var/id_tag = null
 	var/frequency = 1439
 	var/datum/radio_frequency/radio_connection
 
@@ -28,13 +27,15 @@
 	var/radio_filter_in
 
 	var/welded = 0
+	connect_types = CONNECT_TYPE_REGULAR|CONNECT_TYPE_SCRUBBER
+	build_icon_state = "scrubber"
 
 /obj/machinery/atmospherics/unary/vent_scrubber/on
 	use_power = POWER_USE_IDLE
 	icon_state = "map_scrubber_on"
 
-/obj/machinery/atmospherics/unary/vent_scrubber/New()
-	..()
+/obj/machinery/atmospherics/unary/vent_scrubber/Initialize()
+	. = ..()
 	air_contents.volume = ATMOS_DEFAULT_VOLUME_FILTER
 	icon = null
 
@@ -278,7 +279,7 @@
 				"<span class='notice'>\The [user] unfastens \the [src].</span>", \
 				"<span class='notice'>You have unfastened \the [src].</span>", \
 				"You hear a ratchet.")
-			new /obj/item/pipe(loc, make_from=src)
+			new /obj/item/pipe(loc, src)
 			qdel(src)
 		return 1
 

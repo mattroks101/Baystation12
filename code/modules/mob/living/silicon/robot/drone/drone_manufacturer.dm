@@ -33,12 +33,11 @@
 	..()
 
 /obj/machinery/drone_fabricator/power_change()
-	..()
+	. = ..()
 	if (stat & NOPOWER)
 		icon_state = "drone_fab_nopower"
 
 /obj/machinery/drone_fabricator/Process()
-
 	if(GAME_STATE < RUNLEVEL_GAME)
 		return
 

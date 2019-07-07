@@ -56,14 +56,6 @@
 /obj/item/weapon/reagent_containers/syringe/attackby(obj/item/I as obj, mob/user as mob)
 	return
 
-/obj/item/weapon/reagent_containers/syringe/do_surgery(mob/living/carbon/M, mob/living/user)
-	if(user.a_intent == I_HURT)
-		return 0
-	if(user.a_intent != I_HELP) //in case it is ever used as a surgery tool
-		return ..()
-	afterattack(M, user, 1)
-	return 1
-
 /obj/item/weapon/reagent_containers/syringe/afterattack(obj/target, mob/user, proximity)
 	if(!proximity)
 		return
@@ -87,6 +79,7 @@
 
 /obj/item/weapon/reagent_containers/syringe/on_update_icon()
 	overlays.Cut()
+	underlays.Cut()
 
 	if(mode == SYRINGE_BROKEN)
 		icon_state = "broken"
@@ -112,7 +105,7 @@
 		filling.icon_state = "syringe[rounded_vol]"
 
 		filling.color = reagents.get_color()
-		overlays += filling
+		underlays += filling
 
 /obj/item/weapon/reagent_containers/syringe/proc/handleTarget(var/atom/target, var/mob/user)
 	switch(mode)
@@ -278,7 +271,7 @@
 		if((user != target) && H.check_shields(7, src, user, "\the [src]"))
 			return
 
-		if (target != user && H.getarmor(target_zone, "melee") > 5 && prob(50))
+		if (target != user && H.get_blocked_ratio(target_zone, BRUTE) > 0.05 && prob(50))
 			for(var/mob/O in viewers(world.view, user))
 				O.show_message(text("<span class='danger'>[user] tries to stab [target] in \the [hit_area] with [src.name], but the attack is deflected by armor!</span>"), 1)
 			qdel(src)

@@ -105,7 +105,7 @@
 	return O
 
 //human -> robot
-/mob/living/carbon/human/proc/Robotize()
+/mob/living/carbon/human/proc/Robotize(var/supplied_robot_type = /mob/living/silicon/robot)
 	if (HAS_TRANSFORMATION_MOVEMENT_HANDLER(src))
 		return
 	QDEL_NULL_LIST(worn_underwear)
@@ -118,24 +118,19 @@
 	for(var/t in organs)
 		qdel(t)
 
-	var/mob/living/silicon/robot/O = new /mob/living/silicon/robot( loc )
+	var/mob/living/silicon/robot/O = new supplied_robot_type( loc )
 
 	O.gender = gender
 	O.set_invisibility(0)
 
-	if(mind)		//TODO
+	if(mind)
 		mind.transfer_to(O)
 		if(O.mind && O.mind.assigned_role == "Robot")
 			O.mind.original = O
-			if(O.mind.role_alt_title == "Drone")
-				O.mmi = new /obj/item/device/mmi/digital/robot(O)
-			else if(O.mind.role_alt_title == "Cyborg")
-				O.mmi = new /obj/item/device/mmi(O)
-			else
-				O.mmi = new /obj/item/organ/internal/posibrain(O)
-			O.mmi.transfer_identity(src)
-		else if(mind && mind.special_role)
-			O.mind.store_memory("In case you look at this after being borged, the objectives are only here until I find a way to make them not show up for you, as I can't simply delete them without screwing up round-end reporting. --NeoFite")
+			var/mmi_type = SSrobots.get_mmi_type_by_title(O.mind.role_alt_title ? O.mind.role_alt_title : O.mind.assigned_role)
+			if(mmi_type)
+				O.mmi = new mmi_type(O)
+				O.mmi.transfer_identity(src)
 	else
 		O.key = key
 
@@ -165,7 +160,7 @@
 		var/list/babies = list()
 		for(var/i=1,i<=number,i++)
 			var/mob/living/carbon/slime/M = new/mob/living/carbon/slime(loc)
-			M.nutrition = round(nutrition/number)
+			M.set_nutrition(round(nutrition/number))
 			step_away(M,src)
 			babies += M
 		new_slime = pick(babies)
@@ -292,7 +287,7 @@
 		return 1 //It is impossible to pull up the player panel for mice (Fixed! - Nodrak)
 	if(ispath(MP, /mob/living/simple_animal/hostile/bear))
 		return 1 //Bears will auto-attack mobs, even if they're player controlled (Fixed! - Nodrak)
-	if(ispath(MP, /mob/living/simple_animal/parrot))
+	if(ispath(MP, /mob/living/simple_animal/hostile/retaliate/parrot))
 		return 1 //Parrots are no longer unfinished! -Nodrak
 
 	//Not in here? Must be untested!

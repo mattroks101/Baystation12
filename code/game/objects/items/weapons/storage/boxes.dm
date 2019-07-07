@@ -304,7 +304,7 @@
 
 /obj/item/weapon/storage/box/monkeycubes/farwacubes
 	name = "farwa cube box"
-	desc = "Drymate brand farwa cubes, shipped from Ahdomai. Just add water!"
+	desc = "Drymate brand farwa cubes, shipped from Nyx. Just add water!"
 	startswith = list(/obj/item/weapon/reagent_containers/food/snacks/monkeycube/wrapped/farwacube = 5)
 
 /obj/item/weapon/storage/box/monkeycubes/stokcubes
@@ -458,7 +458,7 @@
 	can_hold = list(/obj/item/organ, /obj/item/weapon/reagent_containers/food, /obj/item/weapon/reagent_containers/glass)
 	max_storage_space = DEFAULT_BACKPACK_STORAGE
 	use_to_pickup = 1 // for picking up broken bulbs, not that most people will try
-	temperature = -16 CELCIUS
+	temperature = -16 CELSIUS
 
 /obj/item/weapon/storage/box/freezer/ProcessAtomTemperature()
 	return PROCESS_KILL

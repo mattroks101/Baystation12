@@ -22,7 +22,7 @@
 
 	use_power = POWER_USE_OFF
 	idle_power_usage = 150		//internal circuitry, friction losses and stuff
-	power_rating = 7500			//7500 W ~ 10 HP
+	power_rating = 30000			// 30000 W ~ 40 HP
 
 	connect_types = CONNECT_TYPE_REGULAR|CONNECT_TYPE_SUPPLY|CONNECT_TYPE_SCRUBBER //connects to regular, supply and scrubbers pipes
 
@@ -41,8 +41,8 @@
 	//2: Do not pass input_pressure_min
 	//4: Do not pass output_pressure_max
 
-/obj/machinery/atmospherics/binary/dp_vent_pump/New()
-	..()
+/obj/machinery/atmospherics/binary/dp_vent_pump/Initialize()
+	. = ..()
 	air1.volume = ATMOS_DEFAULT_VOLUME_PUMP
 	air2.volume = ATMOS_DEFAULT_VOLUME_PUMP
 	icon = null
@@ -50,8 +50,8 @@
 /obj/machinery/atmospherics/binary/dp_vent_pump/high_volume
 	name = "Large Dual Port Air Vent"
 
-/obj/machinery/atmospherics/binary/dp_vent_pump/high_volume/New()
-	..()
+/obj/machinery/atmospherics/binary/dp_vent_pump/high_volume/Initialize()
+	. = ..()
 	air1.volume = ATMOS_DEFAULT_VOLUME_PUMP + 800
 	air2.volume = ATMOS_DEFAULT_VOLUME_PUMP + 800
 

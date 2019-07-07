@@ -9,8 +9,9 @@
 	color = "#cf3600"
 	metabolism = REM * 0.25 // 0.05 by default. They last a while and slowly kill you.
 	heating_products = list(/datum/reagent/toxin/denatured)
-	heating_point = 100 CELCIUS
+	heating_point = 100 CELSIUS
 	heating_message = "goes clear."
+	value = 2
 
 	var/target_organ
 	var/strength = 4 // How much damage it deals per unit
@@ -80,7 +81,12 @@
 	taste_description = "absolutely vile"
 	color = "#91d895"
 	target_organ = BP_LIVER
-	strength = 7
+	strength = 5
+
+/datum/reagent/toxin/venom/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
+	if(prob(volume*2))
+		M.confused = max(M.confused, 3)
+	..()
 
 /datum/reagent/toxin/chlorine
 	name = "Chlorine"
@@ -155,6 +161,30 @@
 	..()
 	M.sleeping += 1
 
+/datum/reagent/toxin/taxine
+	name = "Taxine"
+	description = "A potent cardiotoxin found in nearly every part of the common yew."
+	taste_description = "intense bitterness"
+	color = "#6b833b"
+	strength = 16
+	overdose = REAGENTS_OVERDOSE / 3
+	metabolism = REM * 2
+	target_organ = BP_HEART
+	heating_point = null
+	heating_products = null
+
+/datum/reagent/toxin/taxine/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
+	..()
+	M.confused += 1.5
+
+/datum/reagent/toxin/taxine/overdose(var/mob/living/carbon/M, var/alien)
+	..()
+	if(ishuman(M))
+		var/mob/living/carbon/human/H = M
+		if(H.stat != UNCONSCIOUS)
+			H.Weaken(8)
+		M.add_chemical_effect(CE_NOPULSE, 1)
+
 /datum/reagent/toxin/potassium_chloride
 	name = "Potassium Chloride"
 	description = "A delicious salt that stops the heart when injected into cardiac muscle."
@@ -193,7 +223,7 @@
 	..()
 	if(ishuman(M))
 		var/mob/living/carbon/human/H = M
-		if(H.stat != 1)
+		if(H.stat != UNCONSCIOUS)
 			if(H.losebreath >= 10)
 				H.losebreath = max(10, M.losebreath-10)
 			H.adjustOxyLoss(2)
@@ -289,11 +319,12 @@
 	color = "#8e18a9"
 	power = 10
 	meltdose = 4
+	max_damage = 60
 
 /datum/reagent/acid/stomach
 	name = "stomach acid"
 	taste_description = "coppery foulness"
-	power = 1
+	power = 2
 	color = "#d8ff00"
 
 /datum/reagent/lexorin
@@ -303,6 +334,7 @@
 	reagent_state = LIQUID
 	color = "#c8a5dc"
 	overdose = REAGENTS_OVERDOSE
+	value = 2.4
 
 /datum/reagent/lexorin/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -323,6 +355,7 @@
 	taste_mult = 0.9
 	reagent_state = LIQUID
 	color = "#13bc5e"
+	value = 3.1
 
 /datum/reagent/mutagen/affect_touch(var/mob/living/carbon/M, var/alien, var/removed)
 	if(prob(33))
@@ -350,7 +383,7 @@
 				randmutg(M)
 			domutcheck(M, null)
 			M.UpdateAppearance()
-	M.apply_effect(10 * removed, IRRADIATE, blocked = 0)
+	M.apply_damage(10 * removed, IRRADIATE, armor_pen = 100)
 
 /datum/reagent/slimejelly
 	name = "Slime Jelly"
@@ -359,6 +392,7 @@
 	taste_mult = 1.3
 	reagent_state = LIQUID
 	color = "#801e28"
+	value = 1.2
 
 /datum/reagent/slimejelly/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -377,6 +411,7 @@
 	color = "#009ca8"
 	metabolism = REM * 0.5
 	overdose = REAGENTS_OVERDOSE
+	value = 2.5
 
 /datum/reagent/soporific/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -394,10 +429,12 @@
 	else if(M.chem_doses[type] < 5 * threshold)
 		if(prob(50))
 			M.Weaken(2)
+			M.add_chemical_effect(CE_SEDATE, 1)
 		M.drowsyness = max(M.drowsyness, 20)
 	else
 		M.sleeping = max(M.sleeping, 20)
 		M.drowsyness = max(M.drowsyness, 60)
+		M.add_chemical_effect(CE_SEDATE, 1)
 	M.add_chemical_effect(CE_PULSE, -1)
 
 /datum/reagent/chloralhydrate
@@ -408,6 +445,7 @@
 	color = "#000067"
 	metabolism = REM * 0.5
 	overdose = REAGENTS_OVERDOSE * 0.5
+	value = 2.6
 
 /datum/reagent/chloralhydrate/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -423,8 +461,10 @@
 	else if(M.chem_doses[type] < 2 * threshold)
 		M.Weaken(30)
 		M.eye_blurry = max(M.eye_blurry, 10)
+		M.add_chemical_effect(CE_SEDATE, 1)
 	else
 		M.sleeping = max(M.sleeping, 30)
+		M.add_chemical_effect(CE_SEDATE, 1)
 
 	if(M.chem_doses[type] > 1 * threshold)
 		M.adjustToxLoss(removed)
@@ -449,6 +489,7 @@
 	color = "#60a584"
 	metabolism = REM * 0.5
 	overdose = REAGENTS_OVERDOSE
+	value = 2.8
 
 /datum/reagent/space_drugs/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -473,6 +514,7 @@
 	color = "#202040"
 	metabolism = REM * 0.25
 	overdose = REAGENTS_OVERDOSE
+	value = 2.5
 
 /datum/reagent/serotrotium/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -489,9 +531,9 @@
 	color = "#000055"
 	metabolism = REM * 0.5
 	overdose = REAGENTS_OVERDOSE
-	heating_point = 61 CELCIUS
+	heating_point = 61 CELSIUS
 	heating_products = list(/datum/reagent/potassium, /datum/reagent/acetone, /datum/reagent/sugar)
-
+	value = 2
 
 /datum/reagent/cryptobiolin/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -509,6 +551,7 @@
 	reagent_state = LIQUID
 	color = "#c8a5dc"
 	overdose = REAGENTS_OVERDOSE
+	value = 1.8
 
 /datum/reagent/impedrezene/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -529,6 +572,7 @@
 	color = "#b31008"
 	metabolism = REM * 0.25
 	overdose = REAGENTS_OVERDOSE
+	value = 0.6
 
 /datum/reagent/mindbreaker/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -546,6 +590,7 @@
 	color = "#e700e7"
 	overdose = REAGENTS_OVERDOSE
 	metabolism = REM * 0.5
+	value = 0.7
 
 /datum/reagent/psilocybin/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
@@ -662,6 +707,7 @@
 	reagent_state = LIQUID
 	color = "#13bc5e"
 	metabolism = REM * 0.2
+	value = 2
 
 /datum/reagent/slimetoxin/affect_blood(var/mob/living/carbon/human/H, var/alien, var/removed)
 	if(!istype(H))
@@ -728,7 +774,7 @@
 		M.drop_from_inventory(W)
 	var/mob/living/carbon/slime/new_mob = new /mob/living/carbon/slime(M.loc)
 	new_mob.a_intent = "hurt"
-	new_mob.universal_speak = 1
+	new_mob.universal_speak = TRUE
 	if(M.mind)
 		M.mind.transfer_to(new_mob)
 	else
@@ -742,6 +788,7 @@
 	reagent_state = LIQUID
 	color = "#535e66"
 	hidden_from_codex = TRUE
+	value = 9
 
 /datum/reagent/xenomicrobes
 	name = "Xenomicrobes"
@@ -750,7 +797,8 @@
 	reagent_state = LIQUID
 	color = "#535e66"
 	hidden_from_codex = TRUE
-	heating_point = 100 CELCIUS
+	heating_point = 100 CELSIUS
+	value = 5
 
 /datum/reagent/toxin/hair_remover
 	name = "Hair Remover"
@@ -767,7 +815,7 @@
 	if(alien == IS_SKRELL)	//skrell can't have hair unless you hack it in, also to prevent tentacles from falling off
 		return
 	M.species.set_default_hair(M)
-	to_chat(M, "<span class='warning'>Your feel a chill, your skin feels lighter..</span>")
+	to_chat(M, "<span class='warning'>You feel a chill and your skin feels lighter..</span>")
 	remove_self(volume)
 
 /datum/reagent/toxin/zombie
@@ -809,6 +857,20 @@
 	heating_products = null
 	heating_point = null
 
+/datum/reagent/toxin/bromide/affect_touch(var/mob/living/carbon/M, var/alien, var/removed)
+	if(alien != IS_MANTID)
+		. = ..()
+
+/datum/reagent/toxin/bromide/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
+	if(alien == IS_MANTID)
+		M.add_chemical_effect(CE_OXYGENATED, 1)
+	else
+		..()
+
+/datum/reagent/toxin/bromide/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed)
+	if(alien != IS_MANTID)
+		. = ..()
+
 /datum/reagent/toxin/methyl_bromide
 	name = "Methyl Bromide"
 	description = "A fumigant derived from bromide."
@@ -819,13 +881,19 @@
 	heating_products = null
 	heating_point = null
 
+/datum/reagent/toxin/methyl_bromide/affect_touch(var/mob/living/carbon/M, var/alien, var/removed)
+	. = (alien != IS_MANTID && alien != IS_NABBER && ..())
+
+/datum/reagent/toxin/methyl_bromide/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed)
+	. = (alien != IS_MANTID && alien != IS_NABBER && ..())
+
 /datum/reagent/toxin/methyl_bromide/touch_turf(var/turf/simulated/T)
 	if(istype(T))
 		T.assume_gas("methyl_bromide", volume, T20C)
 		remove_self(volume)
 
 /datum/reagent/toxin/methyl_bromide/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
-	. = ..()
+	. = (alien != IS_MANTID && alien != IS_NABBER && ..())
 	if(istype(M))
 		for(var/obj/item/organ/external/E in M.organs)
 			if(LAZYLEN(E.implants))
@@ -843,5 +911,5 @@
 	color = "#140b30"
 	strength = 4
 	heating_products = list(/datum/reagent/acetone, /datum/reagent/carbon, /datum/reagent/ethanol)
-	heating_point = 145 CELCIUS
+	heating_point = 145 CELSIUS
 	heating_message = "separates."

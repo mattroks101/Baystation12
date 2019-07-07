@@ -10,6 +10,7 @@
 	opacity = 1
 	density = 1
 	layer = CLOSED_DOOR_LAYER
+	interact_offline = TRUE
 
 	var/open_layer = OPEN_DOOR_LAYER
 	var/closed_layer = CLOSED_DOOR_LAYER
@@ -27,6 +28,7 @@
 	var/destroy_hits = 10 //How many strong hits it takes to destroy the door
 	var/min_force = 10 //minimum amount of force needed to damage the door with a melee weapon
 	var/hitsound = 'sound/weapons/smash.ogg' //sound door makes when hit with a weapon
+	var/pry_mod = 1 //difficulty scaling for simple animal door prying
 	var/obj/item/stack/material/repairing
 	var/block_air_zones = 1 //If set, air zones cannot merge across the door even when it is opened.
 	var/close_door_at = 0 //When to automatically close the door, if possible
@@ -122,7 +124,7 @@
 		var/mob/M = AM
 		if(world.time - M.last_bumped <= 10) return	//Can bump-open one airlock per second. This is to prevent shock spam.
 		M.last_bumped = world.time
-		if(!M.restrained() && (!issmall(M) || ishuman(M)))
+		if(!M.restrained() && (!issmall(M) || ishuman(M) || issilicon(M)))
 			bumpopen(M)
 		return
 
@@ -208,11 +210,10 @@
 	take_damage(tforce)
 	return
 
-/obj/machinery/door/attack_ai(mob/user as mob)
-	return src.attack_hand(user)
-
-/obj/machinery/door/attack_hand(mob/user as mob)
-	return src.attackby(user, user)
+// This is legacy code that should be revisited, probably by moving the bulk of the logic into here.
+/obj/machinery/door/interface_interact(user)
+	if(CanInteract(user, DefaultTopicState()))
+		return attackby(user, user)
 
 /obj/machinery/door/attack_tk(mob/user as mob)
 	if(requiresID() && !allowed(null))
@@ -458,6 +459,12 @@
 		qdel(fire)
 	return
 
+/obj/machinery/door/proc/toggle(forced = 0)
+	if(density)
+		open(forced)
+	else
+		close(forced)
+
 /obj/machinery/door/proc/requiresID()
 	return 1
 
@@ -550,13 +557,32 @@
 	electronics.autoset = autoset_access
 	return electronics
 
+/obj/machinery/door/proc/access_area_by_dir(direction)
+	var/turf/T = get_turf(get_step(src, direction))
+	if (T && !T.density)
+		return get_area(T)
+
 /obj/machinery/door/proc/inherit_access_from_area()
-	var/area/fore = get_area(get_step(src, dir))
-	var/area/aft = get_area(get_step(src, GLOB.reverse_dir[dir])) || fore
-	if(!fore || (fore == aft))
-		req_access = (aft && aft.secure) ? aft.req_access.Copy() : list()
-		return
-	if(fore.secure || aft.secure)
+	var/area/fore = access_area_by_dir(dir)
+	var/area/aft = access_area_by_dir(GLOB.reverse_dir[dir])
+	fore = fore || aft
+	aft = aft || fore
+	
+	if (!fore && !aft)
+		req_access = list()
+	else if (fore.secure || aft.secure)
 		req_access = req_access_union(fore, aft)
-		return
-	req_access = req_access_diff(fore, aft)
+	else
+		req_access = req_access_diff(fore, aft)
+
+// Public access
+
+/decl/public_access/public_method/open_door
+	name = "open door"
+	desc = "Opens the door if possible."
+	call_proc = /obj/machinery/door/proc/open
+
+/decl/public_access/public_method/toggle_door
+	name = "toggle door"
+	desc = "Toggles whether the door is open or not, if possible."
+	call_proc = /obj/machinery/door/proc/toggle

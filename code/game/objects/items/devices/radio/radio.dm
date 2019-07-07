@@ -248,14 +248,25 @@
 	// If we were to send to a channel we don't have, drop it.
 	return null
 
-/obj/item/device/radio/talk_into(mob/living/M as mob, message, channel, var/verb = "says", var/datum/language/speaking = null)
+/obj/item/device/radio/talk_into(mob/living/M, message, channel, var/verb = "says", var/datum/language/speaking = null)
 	if(!on) return 0 // the device has to be on
 	//  Fix for permacell radios, but kinda eh about actually fixing them.
 	if(!M || !message) return 0
 
 	if(speaking && (speaking.flags & (NONVERBAL|SIGNLANG))) return 0
 
-	if(istype(M)) M.trigger_aiming(TARGET_CAN_RADIO)
+	if (!broadcasting)
+		// Sedation chemical effect should prevent radio use (Chloral and Soporific)
+		var/mob/living/carbon/C = M
+		if ((istype(C)) && (C.chem_effects[CE_SEDATE] || C.incapacitated(INCAPACITATION_DISRUPTED)))
+			to_chat(M, SPAN_WARNING("You're unable to reach \the [src]."))
+			return 0
+		
+		if((istype(C)) && C.radio_interrupt_cooldown > world.time)
+			to_chat(M, SPAN_WARNING("You're disrupted as you reach for \the [src]."))
+			return 0
+
+		if(istype(M)) M.trigger_aiming(TARGET_CAN_RADIO)
 
 	//  Uncommenting this. To the above comment:
 	// 	The permacell radios aren't suppose to be able to transmit, this isn't a bug and this "fix" is just making radio wires useless. -Giacom

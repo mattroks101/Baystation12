@@ -33,11 +33,13 @@ This is /obj/machinery level code to properly manage power usage from the area.
 // This is NOT for when the machine's own status changes; update_use_power for that.
 /obj/machinery/proc/power_change()
 	var/oldstat = stat
-
-	if(powered(power_channel))
-		stat &= ~NOPOWER
-	else
-		stat |= NOPOWER
+	stat |= NOPOWER
+	for(var/thing in power_components)
+		var/obj/item/weapon/stock_parts/power/power = thing
+		if((stat & NOPOWER) && power.can_provide_power(src))
+			stat &= ~NOPOWER
+		else
+			power.not_needed(src)
 
 	. = (stat != oldstat)
 	if(.)
@@ -54,12 +56,27 @@ This is /obj/machinery level code to properly manage power usage from the area.
 
 // This will have this machine have its area eat this much power next tick, and not afterwards. Do not use for continued power draw.
 /obj/machinery/proc/use_power_oneoff(var/amount, var/chan = POWER_CHAN)
-	var/area/A = get_area(src)		// make sure it's in an area
-	if(!A)
-		return
 	if(chan == POWER_CHAN)
 		chan = power_channel
-	A.use_power_oneoff(amount, chan)
+	. = amount
+	for(var/thing in power_components)
+		var/obj/item/weapon/stock_parts/power/power = thing
+		var/used = power.use_power_oneoff(src, ., chan)
+		. -= used
+		if(. <= 0)
+			return
+
+// Same thing, but dry run; doesn't actually do it.
+/obj/machinery/proc/can_use_power_oneoff(var/amount, var/chan = POWER_CHAN)
+	if(chan == POWER_CHAN)
+		chan = power_channel
+	. = amount
+	for(var/thing in power_components)
+		var/obj/item/weapon/stock_parts/power/power = thing
+		var/used = power.can_use_power_oneoff(src, ., chan)
+		. -= used
+		if(. <= 0)
+			return
 
 // Do not do power stuff in New/Initialize until after ..()
 /obj/machinery/Initialize()
@@ -75,16 +92,20 @@ This is /obj/machinery level code to properly manage power usage from the area.
 	. = ..()
 
 /obj/machinery/proc/update_power_on_move(atom/movable/mover, atom/old_loc, atom/new_loc)
+	area_changed(get_area(old_loc), get_area(new_loc))
+
+/obj/machinery/proc/area_changed(area/old_area, area/new_area)
+	if(old_area == new_area)
+		return
 	var/power = get_power_usage()
 	if(!power)
 		return // This is the most likely case anyway.
-	var/area/old_area = get_area(old_loc)
-	var/area/new_area = get_area(new_loc)
-	if(old_area != new_area)
-		if(old_area)
-			old_area.power_use_change(power, 0, power_channel)
-		if(new_area)
-			new_area.power_use_change(0, power, power_channel)
+
+	if(old_area)
+		old_area.power_use_change(power, 0, power_channel)
+	if(new_area)
+		new_area.power_use_change(0, power, power_channel)
+	power_change() // Force check in case the old area was powered and the new one isn't or vice versa.
 
 // The three procs below are the only allowed ways of modifying the corresponding variables.
 /obj/machinery/proc/update_use_power(new_use_power)
@@ -99,11 +120,10 @@ This is /obj/machinery level code to properly manage power usage from the area.
 	REPORT_POWER_CONSUMPTION_CHANGE(old_power, new_power)
 
 /obj/machinery/proc/update_power_channel(new_channel)
+	if(power_channel == new_channel)
+		return
 	if(!power_init_complete)
 		power_channel = new_channel
-		return
-	var/old_channel = power_channel
-	if(old_channel == old_channel)
 		return
 	var/power = get_power_usage()
 	REPORT_POWER_CONSUMPTION_CHANGE(power, 0)

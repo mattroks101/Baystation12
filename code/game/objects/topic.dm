@@ -15,19 +15,15 @@
 	return TOPIC_NOACTION
 
 /obj/CanUseTopic(var/mob/user, var/datum/topic_state/state, var/href_list)
-	if(user.CanUseObjTopic(src))
-		return ..()
-	return STATUS_CLOSE
+	return min(..(), user.CanUseObjTopic(src))
 
-/mob/living/silicon/CanUseObjTopic(var/obj/O)
-	var/id = src.GetIdCard()
-	if(id && O.check_access(id))
-		return TRUE
-	to_chat(src, "<span class='danger'>\icon[src] Access Denied!</span>")
-	return FALSE
+/mob/living/CanUseObjTopic(var/obj/O)
+	. = ..()
+	if(!O.check_access(src))
+		. = min(., STATUS_UPDATE)
 
 /mob/proc/CanUseObjTopic()
-	return TRUE
+	return STATUS_INTERACTIVE
 
 /obj/proc/CouldUseTopic(var/mob/user)
 	user.AddTopicPrint(src)

@@ -191,17 +191,11 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 	icon_state = "newscaster_normal"
 	return
 
-/obj/machinery/newscaster/attack_ai(mob/user as mob)
-	return src.attack_hand(user)
+/obj/machinery/newscaster/interface_interact(mob/user)
+	interact(user)
+	return TRUE
 
-/obj/machinery/newscaster/attack_hand(mob/user as mob)            //########### THE MAIN BEEF IS HERE! And in the proc below this...############
-
-	if(inoperable())
-		return
-
-	if(!user.IsAdvancedToolUser())
-		return 0
-
+/obj/machinery/newscaster/interact(mob/user)            //########### THE MAIN BEEF IS HERE! And in the proc below this...############
 	if(istype(user, /mob/living/carbon/human) || istype(user,/mob/living/silicon) )
 		var/mob/living/human_or_robot_user = user
 		var/dat
@@ -240,7 +234,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 						if(CHANNEL.is_admin_channel)
 							dat+="<B><FONT style='BACKGROUND-COLOR: LightGreen '><A href='?src=\ref[src];show_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A></FONT></B><BR>"
 						else
-							dat+="<B><A href='?src=\ref[src];show_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : ()]<BR></B>"
+							dat+="<B><A href='?src=\ref[src];show_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : null ]<BR></B>"
 				dat+="<BR><HR><A href='?src=\ref[src];refresh=1'>Refresh</A>"
 				dat+="<BR><A href='?src=\ref[src];setScreen=[0]'>Back</A>"
 			if(2)
@@ -339,7 +333,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 					dat+="<I>No feed channels found active...</I><BR>"
 				else
 					for(var/datum/feed_channel/CHANNEL in news_network.network_channels)
-						dat+="<A href='?src=\ref[src];pick_censor_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : ()]<BR>"
+						dat+="<A href='?src=\ref[src];pick_censor_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : null ]<BR>"
 				dat+="<BR><A href='?src=\ref[src];setScreen=[0]'>Cancel</A>"
 			if(11)
 				dat+="<B>[GLOB.using_map.company_name] D-Notice Handler</B><HR>"
@@ -350,7 +344,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 					dat+="<I>No feed channels found active...</I><BR>"
 				else
 					for(var/datum/feed_channel/CHANNEL in news_network.network_channels)
-						dat+="<A href='?src=\ref[src];pick_d_notice=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : ()]<BR>"
+						dat+="<A href='?src=\ref[src];pick_d_notice=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : null ]<BR>"
 
 				dat+="<BR><A href='?src=\ref[src];setScreen=[0]'>Back</A>"
 			if(12)
@@ -722,9 +716,6 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 		else
 			to_chat(user, "<span class='notice'>This does nothing.</span>")
 	queue_icon_update()
-
-/obj/machinery/newscaster/attack_ai(mob/user as mob)
-	return src.attack_hand(user) //or maybe it'll have some special functions? No idea.
 
 /datum/news_photo
 	var/is_synth = 0

@@ -42,23 +42,32 @@
 	name = "wooden floor"
 	icon = 'icons/turf/flooring/wood.dmi'
 	icon_state = "wood"
+	color = WOOD_COLOR_GENERIC
 	initial_flooring = /decl/flooring/wood
 
 /turf/simulated/floor/wood/mahogany
-	icon_state = "mahogany"
+	color = WOOD_COLOR_RICH
 	initial_flooring = /decl/flooring/wood/mahogany
 
 /turf/simulated/floor/wood/maple
-	icon_state = "maple"
+	color = WOOD_COLOR_PALE
 	initial_flooring = /decl/flooring/wood/maple
 
 /turf/simulated/floor/wood/ebony
-	icon_state = "ebony"
+	color = WOOD_COLOR_BLACK
 	initial_flooring = /decl/flooring/wood/ebony
 
 /turf/simulated/floor/wood/walnut
-	icon_state = "walnut"
+	color = WOOD_COLOR_CHOCOLATE
 	initial_flooring = /decl/flooring/wood/walnut
+
+/turf/simulated/floor/wood/bamboo
+	color = WOOD_COLOR_PALE2
+	initial_flooring = /decl/flooring/wood/bamboo
+
+/turf/simulated/floor/wood/yew
+	color = WOOD_COLOR_YELLOW
+	initial_flooring = /decl/flooring/wood/yew
 
 /turf/simulated/floor/grass
 	name = "grass patch"
@@ -81,6 +90,16 @@
 	name = "pale blue carpet"
 	icon_state = "blue2"
 	initial_flooring = /decl/flooring/carpet/blue2
+
+/turf/simulated/floor/carpet/blue3
+	name = "sea blue carpet"
+	icon_state = "blue3"
+	initial_flooring = /decl/flooring/carpet/blue3
+
+/turf/simulated/floor/carpet/magenta
+	name = "magenta carpet"
+	icon_state = "magenta"
+	initial_flooring = /decl/flooring/carpet/magenta
 
 /turf/simulated/floor/carpet/purple
 	name = "purple carpet"
@@ -254,6 +273,31 @@
 	name = "floor"
 	icon_state = "techfloor_grid"
 	initial_flooring = /decl/flooring/tiling/tech/grid
+	
+/turf/simulated/floor/tiled/skrell
+	icon = 'icons/turf/skrellturf.dmi'
+	icon_state = "skrellblack"
+	initial_flooring = /decl/flooring/reinforced/shuttle/skrell
+
+/turf/simulated/floor/tiled/skrell/white
+	icon_state = "skrellwhite"
+	initial_flooring = /decl/flooring/reinforced/shuttle/skrell/white
+
+/turf/simulated/floor/tiled/skrell/red
+	icon_state = "skrellred"
+	initial_flooring = /decl/flooring/reinforced/shuttle/skrell/red
+
+/turf/simulated/floor/tiled/skrell/blue
+	icon_state = "skrellblue"
+	initial_flooring = /decl/flooring/reinforced/shuttle/skrell/blue
+
+/turf/simulated/floor/tiled/skrell/orange
+	icon_state = "skrellorange"
+	initial_flooring = /decl/flooring/reinforced/shuttle/skrell/orange
+
+/turf/simulated/floor/tiled/skrell/green
+	icon_state = "skrellgreen"
+	initial_flooring = /decl/flooring/reinforced/shuttle/skrell/green
 
 /turf/simulated/floor/lino
 	name = "lino"
@@ -339,6 +383,9 @@
 	name = "water"
 	icon_state = "water"
 	turf_flags = TURF_IS_WET
+
+/turf/simulated/floor/beach/water/is_flooded(lying_mob, absolute)
+	. = absolute ? ..() : lying_mob
 
 /turf/simulated/floor/beach/water/update_dirt()
 	return	// Water doesn't become dirty

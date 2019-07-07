@@ -9,6 +9,7 @@
 	idle_power_usage = 5
 	active_power_usage = 100
 	atom_flags = ATOM_FLAG_NO_TEMP_CHANGE | ATOM_FLAG_NO_REACT | ATOM_FLAG_OPEN_CONTAINER
+	construct_state = /decl/machine_construction/default/panel_closed
 	var/operating = 0 // Is it on?
 	var/dirty = 0 // = {0..100} Does it need cleaning?
 	var/broken = 0 // ={0,1,2} How broken is it???
@@ -16,6 +17,7 @@
 	var/global/list/acceptable_items // List of the items you can put in
 	var/global/list/acceptable_reagents // List of the reagents you can put in
 	var/global/max_n_of_items = 0
+	var/list/ingredients = list()
 
 
 // see code/modules/food/recipes_microwave.dm for recipes
@@ -80,6 +82,9 @@
 		else
 			to_chat(user, "<span class='warning'>It's broken!</span>")
 			return 1
+	else if((. = component_attackby(O, user)))
+		dispose()
+		return
 	else if(src.dirty==100) // The microwave is all dirty so can't be used!
 		if(istype(O, /obj/item/weapon/reagent_containers/spray/cleaner) || istype(O, /obj/item/weapon/reagent_containers/glass/rag)) // If they're trying to clean it then let them
 			user.visible_message( \
@@ -99,14 +104,14 @@
 			to_chat(user, "<span class='warning'>It's dirty!</span>")
 			return 1
 	else if(is_type_in_list(O,acceptable_items))
-		if (contents.len >= max_n_of_items)
+		if (LAZYLEN(ingredients) >= max_n_of_items)
 			to_chat(user, "<span class='warning'>This [src] is full of ingredients, you cannot put more.</span>")
 			return 1
 		if(istype(O, /obj/item/stack)) // This is bad, but I can't think of how to change it
 			var/obj/item/stack/S = O
-			if(S.get_amount() > 1)
-				new O.type (src)
-				S.use(1)
+			if(S.use(1))
+				var/stack_item = new O.type (src)
+				LAZYADD(ingredients, stack_item)
 				user.visible_message( \
 					"<span class='notice'>\The [user] has added one of [O] to \the [src].</span>", \
 					"<span class='notice'>You add one of [O] to \the [src].</span>")
@@ -114,6 +119,7 @@
 		else
 			if (!user.unEquip(O, src))
 				return
+			LAZYADD(ingredients, O)
 			user.visible_message( \
 				"<span class='notice'>\The [user] has added \the [O] to \the [src].</span>", \
 				"<span class='notice'>You add \the [O] to \the [src].</span>")
@@ -133,38 +139,52 @@
 		var/obj/item/grab/G = O
 		to_chat(user, "<span class='warning'>This is ridiculous. You can not fit \the [G.affecting] in this [src].</span>")
 		return 1
-	else if(isCrowbar(O))
+	else if(isWrench(O))
 		user.visible_message( \
 			"<span class='notice'>\The [user] begins [src.anchored ? "securing" : "unsecuring"] the microwave.</span>", \
 			"<span class='notice'>You attempt to [src.anchored ? "secure" : "unsecure"] the microwave.</span>"
 			)
 		if (do_after(user,20, src))
+			src.anchored = !src.anchored
 			user.visible_message( \
 			"<span class='notice'>\The [user] [src.anchored ? "secures" : "unsecures"] the microwave.</span>", \
 			"<span class='notice'>You [src.anchored ? "secure" : "unsecure"] the microwave.</span>"
 			)
-			src.anchored = !src.anchored
 		else
 			to_chat(user, "<span class='notice'>You decide not to do that.</span>")
 	else
-
 		to_chat(user, "<span class='warning'>You have no idea what you can cook with this [O].</span>")
-	..()
 	src.updateUsrDialog()
 
-/obj/machinery/microwave/attack_ai(mob/user as mob)
-	if(istype(user, /mob/living/silicon/robot) && Adjacent(user))
-		attack_hand(user)
+/obj/machinery/microwave/components_are_accessible(path)
+	return (broken == 0) && ..()
 
-/obj/machinery/microwave/attack_hand(mob/user as mob)
-	user.set_machine(src)
+/obj/machinery/microwave/cannot_transition_to(state_path, mob/user)
+	if(broken)
+		return SPAN_NOTICE("\The [src] is too broken to do this!")
+	. = ..()
+
+/obj/machinery/microwave/state_transition(decl/machine_construction/new_state)
+	..()
+	updateUsrDialog()
+
+// need physical proximity for our interface.
+/obj/machinery/microwave/DefaultTopicState()
+	return GLOB.physical_state
+
+/obj/machinery/microwave/interface_interact(mob/user)
 	interact(user)
+	return TRUE
 
 /*******************
 *   Microwave Menu
 ********************/
 
+/obj/machinery/microwave/InsertedContents()
+	return ingredients
+
 /obj/machinery/microwave/interact(mob/user as mob) // The microwave Menu
+	user.set_machine(src)
 	var/dat = list()
 	if(src.broken > 0)
 		dat += "<TT>Bzzzzttttt</TT>"
@@ -281,6 +301,7 @@
 			cooked.dropInto(loc)
 			return
 		cooked = recipe.make_food(src)
+		LAZYCLEARLIST(ingredients)
 		stop()
 		if(cooked)
 			cooked.dropInto(loc)
@@ -318,8 +339,11 @@
 	src.update_icon()
 
 /obj/machinery/microwave/proc/dispose()
-	for (var/obj/O in src)
+	if (!LAZYLEN(ingredients) && !reagents.total_volume)
+		return
+	for (var/obj/O in ingredients)
 		O.dropInto(loc)
+	LAZYCLEARLIST(ingredients)
 	if (src.reagents.total_volume)
 		src.dirty++
 	src.reagents.clear_reagents()
@@ -362,18 +386,19 @@
 	var/amount = 0
 
 	// Kill + delete mobs in mob holders
-	for (var/obj/item/weapon/holder/H in contents)
+	for (var/obj/item/weapon/holder/H in ingredients)
 		for (var/mob/living/M in H.contents)
 			M.death()
 			qdel(M)
 
-	for (var/obj/O in contents)
+	for (var/obj/O in ingredients)
 		amount++
 		if (O.reagents)
 			var/reagent_type = O.reagents.get_master_reagent_type()
 			if (reagent_type)
 				amount+=O.reagents.get_reagent_amount(reagent_type)
 		qdel(O)
+	LAZYCLEARLIST(ingredients)
 	src.reagents.clear_reagents()
 	var/obj/item/weapon/reagent_containers/food/snacks/badrecipe/ffuu = new(src)
 	ffuu.reagents.add_reagent(/datum/reagent/carbon, amount)

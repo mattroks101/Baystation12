@@ -3,6 +3,7 @@ GLOBAL_DATUM_INIT(traitors, /datum/antagonist/traitor, new)
 // Inherits most of its vars from the base datum.
 /datum/antagonist/traitor
 	id = MODE_TRAITOR
+	antaghud_indicator = "hud_traitor"
 	blacklisted_jobs = list(/datum/job/ai, /datum/job/submap)
 	protected_jobs = list(/datum/job/officer, /datum/job/warden, /datum/job/detective, /datum/job/captain, /datum/job/lawyer, /datum/job/hos)
 	flags = ANTAG_SUSPICIOUS | ANTAG_RANDSPAWN | ANTAG_VOTABLE
@@ -79,6 +80,7 @@ GLOBAL_DATUM_INIT(traitors, /datum/antagonist/traitor, new)
 		if(istype(traitor_mob, /mob/living/silicon/robot))
 			var/mob/living/silicon/robot/R = traitor_mob
 			R.SetLockdown(0)
+			R.emagged = 1 // Provides a traitor robot with its module's emag item
 		return 1
 
 	if(!..())

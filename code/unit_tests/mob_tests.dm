@@ -311,6 +311,7 @@ datum/unit_test/mob_damage/skrell/fire
 datum/unit_test/mob_damage/skrell/tox
 	name = "MOB: Skrell Toxins Damage Check"
 	damagetype = TOX
+	expected_vulnerability = ARMORED
 
 datum/unit_test/mob_damage/skrell/oxy
 	name = "MOB: Skrell Oxygen Damage Check"
@@ -484,9 +485,10 @@ datum/unit_test/robot_module_icons/start_test()
 	if(!valid_states.len)
 		return 1
 
-	for(var/i=1, i<=robot_modules.len, i++)
-		var/bad_msg = "[ascii_red]--------------- [robot_modules[i]]"
-		if(!(lowertext(robot_modules[i]) in valid_states))
+	for(var/i=1, i<=SSrobots.all_module_names.len, i++)
+		var/modname = lowertext(SSrobots.all_module_names[i])
+		var/bad_msg = "[ascii_red]--------------- [modname]"
+		if(!(modname in valid_states))
 			log_unit_test("[bad_msg] does not contain a valid icon state in [icon_file][ascii_reset]")
 			failed=1
 
@@ -572,4 +574,21 @@ datum/unit_test/species_base_skin/start_test()
 
 	// No failure state, we just rely on the general runtime check to fail the entire build for us
 	pass("Mob nullspace test concluded.")
+	return TRUE
+/datum/unit_test/mob_organ_size
+	name = "MOB: Internal organs fit inside external organs."
+
+/datum/unit_test/mob_organ_size/start_test()
+	var/failed = FALSE
+	for(var/species_name in all_species)
+		var/mob/living/carbon/human/H = new(null, species_name)
+		for(var/obj/item/organ/external/E in H.organs)
+			for(var/obj/item/organ/internal/I in E.internal_organs)
+				if(I.w_class > E.cavity_max_w_class)
+					failed = TRUE
+					log_bad("Internal organ [I] inside external organ [E] on species [species_name] was too large to fit.")
+	if(failed)
+		fail("A mob had an internal organ too large for its external organ.")
+	else
+		pass("All mob organs fit.")
 	return TRUE

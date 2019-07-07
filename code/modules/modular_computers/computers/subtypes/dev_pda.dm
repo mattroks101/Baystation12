@@ -12,6 +12,8 @@
 	stores_pen = TRUE
 	stored_pen = /obj/item/weapon/pen
 	receives_updates = FALSE
+	interact_sounds = list('sound/machines/pda_click.ogg')
+	interact_sound_volume = 20
 
 /obj/item/modular_computer/pda/Initialize()
 	. = ..()
@@ -105,6 +107,10 @@
 /obj/item/modular_computer/pda/cargo
 	icon_state = "pda-sup"
 	icon_state_unpowered = "pda-sup"
+
+/obj/item/modular_computer/pda/mining
+	icon_state = "pda-nt"
+	icon_state_unpowered = "pda-nt"
 
 /obj/item/modular_computer/pda/syndicate
 	icon_state = "pda-syn"

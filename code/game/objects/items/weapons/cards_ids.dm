@@ -108,6 +108,15 @@
 	origin_tech = list(TECH_MAGNET = 2, TECH_ILLEGAL = 2)
 	var/uses = 10
 
+	var/static/list/card_choices = list(
+							/obj/item/weapon/card/emag,
+							/obj/item/weapon/card/union,
+							/obj/item/weapon/card/data,
+							/obj/item/weapon/card/data/full_color,
+							/obj/item/weapon/card/data/disk,
+							/obj/item/weapon/card/id,
+						) //Should be enough of a selection for most purposes
+
 var/const/NO_EMAG_ACT = -50
 /obj/item/weapon/card/emag/resolve_attackby(atom/A, mob/user)
 	var/used_uses = A.emag_act(uses, user, src)
@@ -126,6 +135,26 @@ var/const/NO_EMAG_ACT = -50
 		qdel(src)
 
 	return 1
+
+/obj/item/weapon/card/emag/Initialize()
+	. = ..()
+	if(length(card_choices) && !card_choices[card_choices[1]])
+		card_choices = generate_chameleon_choices(card_choices)
+
+/obj/item/weapon/card/emag/verb/change(picked in card_choices)
+	set name = "Change Cryptographic Sequencer Appearance"
+	set category = "Chameleon Items"
+	set src in usr
+
+	if(!ispath(card_choices[picked]))
+		return
+
+	disguise(card_choices[picked], usr)
+
+/obj/item/weapon/card/emag/examine(mob/user)
+	. = ..()
+	if(. && user.skill_check(SKILL_DEVICES,SKILL_ADEPT))
+		to_chat(user, SPAN_WARNING("This ID card has some form of non-standard modifications."))
 
 /obj/item/weapon/card/id
 	name = "identification card"
@@ -376,6 +405,14 @@ var/const/NO_EMAG_ACT = -50
 	..()
 	access |= get_all_station_access()
 
+/obj/item/weapon/card/id/foundation_civilian
+	name = "operant registration card"
+	desc = "A registration card in a faux-leather case. It marks the named individual as a registered, law-abiding psionic."
+	icon_state = "warrantcard_civ"
+
+/obj/item/weapon/card/id/foundation_civilian/on_update_icon()
+	return
+
 /obj/item/weapon/card/id/foundation
 	name = "\improper Foundation warrant card"
 	desc = "A warrant card in a handsome leather case."
@@ -549,3 +586,16 @@ var/const/NO_EMAG_ACT = -50
 	access = list(access_merchant)
 	color = COLOR_OFF_WHITE
 	detail_color = COLOR_BEIGE
+
+/obj/item/weapon/card/id/ascent
+	name = "alien chip"
+	icon = 'icons/obj/ascent.dmi'
+	icon_state = "access_card"
+	desc = "A slender, complex chip of alien circuitry."
+	access = list(access_ascent)
+
+/obj/item/weapon/card/id/ascent/on_update_icon()
+	return
+
+/obj/item/weapon/card/id/ascent/prevent_tracking()
+	return TRUE 

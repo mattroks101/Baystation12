@@ -8,9 +8,9 @@
 	var/list/hud_list[10]
 	var/embedded_flag	  //To check if we've need to roll for damage on movement while an item is imbedded in us.
 	var/obj/item/weapon/rig/wearing_rig // This is very not good, but it's much much better than calling get_rig() every update_canmove() call.
-
 	var/list/stance_limbs
 	var/list/grasp_limbs
+	var/step_count
 
 /mob/living/carbon/human/New(var/new_loc, var/new_species = null)
 
@@ -69,6 +69,12 @@
 			return stomach.ingested
 	return touching // Kind of a shitty hack, but makes more sense to me than digesting them.
 
+/mob/living/carbon/human/proc/metabolize_ingested_reagents()
+	if(should_have_organ(BP_STOMACH))
+		var/obj/item/organ/internal/stomach/stomach = internal_organs_by_name[BP_STOMACH]
+		if(stomach)
+			stomach.metabolize()
+
 /mob/living/carbon/human/get_fullness()
 	if(!should_have_organ(BP_STOMACH))
 		return ..()
@@ -96,10 +102,6 @@
 				stat("Tank Pressure", internal.air_contents.return_pressure())
 				stat("Distribution Pressure", internal.distribute_pressure)
 
-		var/obj/item/organ/internal/xeno/plasmavessel/P = internal_organs_by_name[BP_PLASMA]
-		if(P)
-			stat(null, "Phoron Stored: [P.stored_plasma]/[P.max_plasma]")
-
 		var/obj/item/organ/internal/cell/potato = internal_organs_by_name[BP_CELL]
 		if(potato && potato.cell)
 			stat("Battery charge:", "[potato.get_charge()]/[potato.cell.maxcharge]")
@@ -125,16 +127,8 @@
 		if (1.0)
 			b_loss = 400
 			f_loss = 100
-			if (!prob(getarmor(null, "bomb")))
-				gib()
-				return
-			else
-				var/atom/target = get_edge_target_turf(src, get_dir(src, get_step_away(src, src)))
-				throw_at(target, 200, 4)
-			//return
-//				var/atom/target = get_edge_target_turf(user, get_dir(src, get_step_away(user, src)))
-				//user.throw_at(target, 200, 4)
-
+			var/atom/target = get_edge_target_turf(src, get_dir(src, get_step_away(src, src)))
+			throw_at(target, 200, 4)
 		if (2.0)
 			b_loss = 60
 			f_loss = 60
@@ -153,29 +147,14 @@
 			if (prob(50))
 				Paralyse(10)
 
-	// factor in armour
-	var/protection = blocked_mult(getarmor(null, "bomb"))
-	b_loss *= protection
-	f_loss *= protection
-
 	// focus most of the blast on one organ
-	var/obj/item/organ/external/take_blast = pick(organs)
-	take_blast.take_external_damage(b_loss * 0.7, f_loss * 0.7, used_weapon = "Explosive blast")
+	apply_damage(0.7 * b_loss, BRUTE, null, DAM_EXPLODE, used_weapon = "Explosive blast")
+	apply_damage(0.7 * f_loss, BURN, null, DAM_EXPLODE, used_weapon = "Explosive blast")
 
 	// distribute the remaining 30% on all limbs equally (including the one already dealt damage)
-	b_loss *= 0.3
-	f_loss *= 0.3
+	apply_damage(0.3 * b_loss, BRUTE, null, DAM_EXPLODE | DAM_DISPERSED, used_weapon = "Explosive blast")
+	apply_damage(0.3 * f_loss, BURN, null, DAM_EXPLODE | DAM_DISPERSED, used_weapon = "Explosive blast")
 
-	var/weapon_message = "Explosive Blast"
-	for(var/obj/item/organ/external/temp in organs)
-		var/loss_val
-		if(temp.organ_tag  == BP_HEAD)
-			loss_val = 0.2
-		else if(temp.organ_tag == BP_CHEST)
-			loss_val = 0.4
-		else
-			loss_val = 0.05
-		temp.take_external_damage(b_loss * loss_val, f_loss * loss_val, used_weapon = weapon_message)
 
 /mob/living/carbon/human/proc/implant_loyalty(mob/living/carbon/human/M, override = FALSE) // Won't override by default.
 	if(!config.use_loyalty_implants && !override) return // Nuh-uh.
@@ -248,6 +227,8 @@
 		dat += "<BR><b>Pockets:</b> <A href='?src=\ref[src];item=pockets'>Empty or Place Item</A>"
 		if(suit.has_sensor == 1)
 			dat += "<BR><A href='?src=\ref[src];item=sensors'>Set sensors</A>"
+		if (suit.has_sensor && user.get_multitool())
+			dat += "<BR><A href='?src=\ref[src];item=lock_sensors'>[suit.has_sensor == SUIT_LOCKED_SENSORS ? "Unl" : "L"]ock sensors</A>"
 	if(handcuffed)
 		dat += "<BR><A href='?src=\ref[src];item=[slot_handcuffed]'>Handcuffed</A>"
 
@@ -436,7 +417,7 @@
 
 			var/datum/computer_file/report/crew_record/R = get_crewmember_record(perpname)
 			if(R)
-				var/setcriminal = input(usr, "Specify a new criminal status for this person.", "Security HUD", R.get_criminalStatus()) in GLOB.security_statuses as null|text
+				var/setcriminal = input(usr, "Specify a new criminal status for this person.", "Security HUD", R.get_criminalStatus()) as null|anything in GLOB.security_statuses
 				if(hasHUD(usr, HUD_SECURITY) && setcriminal)
 					R.set_criminalStatus(setcriminal)
 					modified = 1
@@ -485,7 +466,7 @@
 
 			var/datum/computer_file/report/crew_record/E = get_crewmember_record(perpname)
 			if(E)
-				var/setmedical = input(usr, "Specify a new medical status for this person.", "Medical HUD", E.get_status()) in GLOB.physical_statuses as null|text
+				var/setmedical = input(usr, "Specify a new medical status for this person.", "Medical HUD", E.get_status()) as null|anything in GLOB.physical_statuses
 				if(hasHUD(usr, HUD_MEDICAL) && setmedical)
 					E.set_status(setmedical)
 					modified = 1
@@ -559,8 +540,8 @@
 ///Returns a number between -1 to 2
 /mob/living/carbon/human/eyecheck()
 	var/total_protection = flash_protection
-	if(internal_organs_by_name[BP_EYES]) // Eyes are fucked, not a 'weak point'.
-		var/obj/item/organ/internal/eyes/I = internal_organs_by_name[BP_EYES]
+	if(species.has_organ[species.vision_organ])
+		var/obj/item/organ/internal/eyes/I = internal_organs_by_name[species.vision_organ]
 		if(!I.is_usable())
 			return FLASH_PROTECTION_MAJOR
 		else
@@ -570,9 +551,10 @@
 	return total_protection
 
 /mob/living/carbon/human/flash_eyes(var/intensity = FLASH_PROTECTION_MODERATE, override_blindness_check = FALSE, affect_silicon = FALSE, visual = FALSE, type = /obj/screen/fullscreen/flash)
-	if(internal_organs_by_name[BP_EYES]) // Eyes are fucked, not a 'weak point'.
-		var/obj/item/organ/internal/eyes/I = internal_organs_by_name[BP_EYES]
-		I.additional_flash_effects(intensity)
+	if(species.has_organ[species.vision_organ])
+		var/obj/item/organ/internal/eyes/I = internal_organs_by_name[species.vision_organ]
+		if(!isnull(I))
+			I.additional_flash_effects(intensity)
 	return ..()
 
 //Used by various things that knock people out by applying blunt trauma to the head.
@@ -638,43 +620,77 @@
 		return 0
 	return 1
 
-/mob/living/carbon/human/proc/vomit(var/toxvomit = 0, var/timevomit = 1, var/level = 3)
+/mob/living/proc/empty_stomach()
+	return
+
+/mob/living/carbon/human/empty_stomach()
+
+	Stun(3)
+
+	var/obj/item/organ/internal/stomach/stomach = internal_organs_by_name[BP_STOMACH]
+	var/nothing_to_puke = FALSE
+	if(should_have_organ(BP_STOMACH))
+		if(!istype(stomach) || (stomach.ingested.total_volume <= 5 && stomach.contents.len == 0))
+			nothing_to_puke = TRUE
+	else if(!(locate(/mob) in contents))
+		nothing_to_puke = TRUE
+
+	if(nothing_to_puke)
+		custom_emote(1,"dry heaves.")
+		return
+
+	if(should_have_organ(BP_STOMACH))
+		for(var/a in stomach.contents)
+			var/atom/movable/A = a
+			A.dropInto(get_turf(src))
+			if(species.gluttonous & GLUT_PROJECTILE_VOMIT)
+				A.throw_at(get_edge_target_turf(src,dir),7,7,src)
+	else
+		for(var/mob/M in contents)
+			M.dropInto(get_turf(src))
+			if(species.gluttonous & GLUT_PROJECTILE_VOMIT)
+				M.throw_at(get_edge_target_turf(src,dir),7,7,src)
+
+	visible_message(SPAN_DANGER("\The [src] throws up!"),SPAN_DANGER("You throw up!"))
+	playsound(loc, 'sound/effects/splat.ogg', 50, 1)
+	var/turf/location = loc
+	if(istype(location, /turf/simulated))
+		var/obj/effect/decal/cleanable/vomit/splat = new /obj/effect/decal/cleanable/vomit(location)
+		if(stomach.ingested.total_volume)
+			stomach.ingested.trans_to_obj(splat, min(15, stomach.ingested.total_volume))
+		handle_additional_vomit_reagents(splat)
+		splat.update_icon()
+
+/mob/living/carbon/human/proc/vomit(var/timevomit = 1, var/level = 3, var/deliberate = FALSE)
+
 	set waitfor = 0
-	if(!check_has_mouth() || isSynthetic() || !timevomit || !level)
+
+	if(!check_has_mouth() || isSynthetic() || !timevomit || !level || stat == DEAD || lastpuke)
 		return
-	level = Clamp(level, 1, 3)
+
+	if(deliberate)
+		if(incapacitated())
+			to_chat(src, SPAN_WARNING("You cannot do that right now."))
+			return
+		var/datum/gender/G = gender_datums[gender]
+		visible_message(SPAN_DANGER("\The [src] starts sticking a finger down [G.his] own throat. It looks like [G.he] [G.is] trying to throw up!"))
+		if(!do_after(src, 30))
+			return
+		timevomit = max(timevomit, 5)
+
 	timevomit = Clamp(timevomit, 1, 10)
-	if(stat == DEAD)
-		return
-	if(!lastpuke)
-		lastpuke = 1
-		to_chat(src, "<span class='warning'>You feel nauseous...</span>")
-		if(level > 1)
-			sleep(150 / timevomit)	//15 seconds until second warning
-			to_chat(src, "<span class='warning'>You feel like you are about to throw up!</span>")
-			if(level > 2)
-				sleep(100 / timevomit)	//and you have 10 more for mad dash to the bucket
-				Stun(3)
-				var/obj/item/organ/internal/stomach/stomach = internal_organs_by_name[BP_STOMACH]
-				if(!istype(stomach) || stomach.ingested.total_volume <= 5)
-					custom_emote(1,"dry heaves.")
-				else
-					for(var/a in stomach_contents)
-						var/atom/movable/A = a
-						A.forceMove(get_turf(src))
-						stomach_contents.Remove(a)
-						if(src.species.gluttonous & GLUT_PROJECTILE_VOMIT)
-							A.throw_at(get_edge_target_turf(src,src.dir),7,7,src)
+	level = Clamp(level, 1, 3)
 
-					src.visible_message("<span class='warning'>[src] throws up!</span>","<span class='warning'>You throw up!</span>")
-					playsound(loc, 'sound/effects/splat.ogg', 50, 1)
-
-					var/turf/location = loc
-					if (istype(location, /turf/simulated))
-						location.add_vomit_floor(src, toxvomit, stomach.ingested)
-					nutrition -= 30
-		sleep(350)	//wait 35 seconds before next volley
-		lastpuke = 0
+	lastpuke = TRUE
+	to_chat(src, SPAN_WARNING("You feel nauseous..."))
+	if(level > 1)
+		sleep(150 / timevomit)	//15 seconds until second warning
+		to_chat(src, SPAN_WARNING("You feel like you are about to throw up!"))
+		if(level > 2)
+			sleep(100 / timevomit)	//and you have 10 more for mad dash to the bucket
+			empty_stomach()
+	sleep(350)	//wait 35 seconds before next volley
+	lastpuke = FALSE
 
 /mob/living/carbon/human/proc/morph()
 	set name = "Morph"
@@ -890,7 +906,7 @@
 	for(var/obj/item/organ/external/organ in organs)
 		if(clean_feet || (organ.organ_tag in list(BP_L_HAND,BP_R_HAND)))
 			organ.gunshot_residue = null
-	
+
 	if(clean_feet && !shoes)
 		feet_blood_color = null
 		feet_blood_DNA = null
@@ -914,36 +930,39 @@
 				return 1
 	return 0
 
-/mob/living/carbon/human/proc/handle_embedded_and_stomach_objects()
-	for(var/obj/item/organ/external/organ in src.organs)
-		if(organ.splinted)
-			continue
-		for(var/obj/item/O in organ.implants)
-			if(!istype(O,/obj/item/weapon/implant) && O.w_class > 1 && prob(5)) //Moving with things stuck in you could be bad.
-				jossle_internal_object(organ, O)
-	var/obj/item/organ/external/groin = src.get_organ(BP_GROIN)
-	if(groin && stomach_contents && stomach_contents.len)
-		for(var/obj/item/O in stomach_contents)
-			if(O.edge || O.sharp)
-				if(prob(1))
-					stomach_contents.Remove(O)
-					if(can_feel_pain() && O.can_embed())
-						to_chat(src, "<span class='danger'>You feel something rip out of your stomach!</span>")
-						groin.embed(O)
-				else if(prob(5))
-					jossle_internal_object(groin,O)
+/mob/living/carbon/human/handle_embedded_and_stomach_objects()
 
-/mob/living/carbon/human/proc/jossle_internal_object(var/obj/item/organ/external/organ, var/obj/item/O)
+	if(embedded_flag)
+		for(var/obj/item/organ/external/organ in organs)
+			if(organ.splinted)
+				continue
+			for(var/obj/item/O in organ.implants)
+				if(!istype(O,/obj/item/weapon/implant) && O.w_class > 1 && prob(5)) //Moving with things stuck in you could be bad.
+					jostle_internal_object(organ, O)
+
+	var/obj/item/organ/internal/stomach/stomach = internal_organs_by_name[BP_STOMACH]
+	if(stomach && stomach.contents.len)
+		for(var/obj/item/O in stomach.contents)
+			if((O.edge || O.sharp) && prob(5))
+				var/obj/item/organ/external/parent = get_organ(stomach.parent_organ)
+				if(prob(1) && can_feel_pain() && O.can_embed())
+					to_chat(src, SPAN_DANGER("You feel something rip out of your [stomach.name]!"))
+					O.dropInto(loc)
+					if(parent)
+						parent.embed(O)
+				else
+					jostle_internal_object(parent, O)
+
+/mob/living/carbon/human/proc/jostle_internal_object(var/obj/item/organ/external/organ, var/obj/item/O)
 	// All kinds of embedded objects cause bleeding.
 	if(!organ.can_feel_pain())
-		to_chat(src, "<span class='warning'>You feel [O] moving inside your [organ.name].</span>")
+		to_chat(src, SPAN_DANGER("You feel [O] moving inside your [organ.name]."))
 	else
 		var/msg = pick( \
-			"<span class='warning'>A spike of pain jolts your [organ.name] as you bump [O] inside.</span>", \
-			"<span class='warning'>Your movement jostles [O] in your [organ.name] painfully.</span>", \
-			"<span class='warning'>Your movement jostles [O] in your [organ.name] painfully.</span>")
+			SPAN_DANGER("A spike of pain jolts your [organ.name] as you bump [O] inside."), \
+			SPAN_DANGER("Your movement jostles [O] in your [organ.name] painfully."),       \
+			SPAN_DANGER("Your movement jostles [O] in your [organ.name] painfully."))
 		custom_pain(msg,40,affecting = organ)
-
 	organ.take_external_damage(rand(1,3) + O.w_class, DAM_EDGE, 0)
 
 /mob/living/carbon/human/verb/check_pulse()
@@ -1051,11 +1070,16 @@
 	species.handle_post_spawn(src)
 
 	maxHealth = species.total_health
+	remove_extension(src, /datum/extension/armor)
+	if(species.natural_armour_values)
+		set_extension(src, /datum/extension/armor, /datum/extension/armor, species.natural_armour_values)
 
 	default_pixel_x = initial(pixel_x) + species.pixel_offset_x
 	default_pixel_y = initial(pixel_y) + species.pixel_offset_y
+	default_pixel_z = initial(pixel_z) + species.pixel_offset_z
 	pixel_x = default_pixel_x
 	pixel_y = default_pixel_y
+	pixel_z = default_pixel_z
 
 	if(LAZYLEN(descriptors))
 		descriptors = null
@@ -1063,11 +1087,13 @@
 	if(LAZYLEN(species.descriptors))
 		descriptors = list()
 		for(var/desctype in species.descriptors)
-			var/datum/mob_descriptor.descriptor = species.descriptors[desctype]
+			var/datum/mob_descriptor/descriptor = species.descriptors[desctype]
 			descriptors[desctype] = descriptor.default_value
 
 	if(!(species.appearance_flags & HAS_UNDERWEAR))
 		QDEL_NULL_LIST(worn_underwear)
+
+	available_maneuvers = species.maneuvers.Copy()
 
 	spawn(0)
 		regenerate_icons()
@@ -1083,8 +1109,6 @@
 	if(client)
 		Login()
 
-	if(config && config.use_cortical_stacks && client && client.prefs.has_cortical_stack)
-		create_stack()
 	full_prosthetic = null
 
 	var/update_lang
@@ -1095,6 +1119,14 @@
 		else if(!cultural_info[token] || !(cultural_info[token] in species.available_cultural_info[token]))
 			update_lang = TRUE
 			set_cultural_value(token, species.default_cultural_info[token], defer_language_update = TRUE)
+
+	default_walk_intent = null
+	default_run_intent = null
+	move_intent = null
+	move_intents = species.move_intents.Copy()
+	set_move_intent(decls_repository.get_decl(move_intents[1]))
+	if(!istype(move_intent))
+		set_next_usable_move_intent()
 
 	if(update_lang)
 		languages.Cut()
@@ -1293,7 +1325,7 @@
 	return 0
 
 /mob/living/carbon/human/slip(var/slipped_on, stun_duration=8)
-	if((species.species_flags & SPECIES_FLAG_NO_SLIP) || (shoes && (shoes.item_flags & ITEM_FLAG_NOSLIP)))
+	if((species.check_no_slip(src)) || (shoes && (shoes.item_flags & ITEM_FLAG_NOSLIP)))
 		return 0
 	return !!(..(slipped_on,stun_duration))
 
@@ -1416,50 +1448,41 @@
 	var/bpm = get_pulse_as_number()
 	if(bpm >= PULSE_MAX_BPM)
 		return method ? ">[PULSE_MAX_BPM]" : "extremely weak and fast, patient's artery feels like a thread"
-	
+
 	return "[method ? bpm : bpm + rand(-10, 10)]"
 // output for machines ^	 ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ output for people
 
 /mob/living/carbon/human/proc/pulse()
 	var/obj/item/organ/internal/heart/H = internal_organs_by_name[BP_HEART]
-	if(!H)
-		return PULSE_NONE
-	else
-		return H.pulse
+	return H ? H.pulse : PULSE_NONE
 
-/mob/living/carbon/human/can_devour(atom/movable/victim)
-	if(!src.species.gluttonous)
-		return FALSE
-	var/total = 0
-	for(var/a in stomach_contents + victim)
-		if(ismob(a))
-			var/mob/M = a
-			total += M.mob_size
-		else if(isobj(a))
-			var/obj/item/I = a
-			total += I.get_storage_cost()
-	if(total > src.species.stomach_capacity)
+/mob/living/carbon/human/can_devour(atom/movable/victim, var/silent = FALSE)
+
+	if(!should_have_organ(BP_STOMACH))
+		return ..()
+
+	var/obj/item/organ/internal/stomach/stomach = internal_organs_by_name[BP_STOMACH]
+	if(!stomach || !stomach.is_usable())
+		if(!silent)
+			to_chat(src, SPAN_WARNING("Your stomach is not functional!"))
 		return FALSE
 
-	if(iscarbon(victim) || isanimal(victim))
-		var/mob/living/L = victim
-		if((src.species.gluttonous & GLUT_TINY) && (L.mob_size <= MOB_TINY) && !ishuman(victim)) // Anything MOB_TINY or smaller
-			return DEVOUR_SLOW
-		else if((src.species.gluttonous & GLUT_SMALLER) && (src.mob_size > L.mob_size)) // Anything we're larger than
-			return DEVOUR_SLOW
-		else if(src.species.gluttonous & GLUT_ANYTHING) // Eat anything ever
-			return DEVOUR_FAST
-	else if(istype(victim, /obj/item) && !istype(victim, /obj/item/weapon/holder)) //Don't eat holders. They are special.
-		var/obj/item/I = victim
-		var/cost = I.get_storage_cost()
-		if(cost != ITEM_SIZE_NO_CONTAINER)
-			if((src.species.gluttonous & GLUT_ITEM_TINY) && cost < 4)
-				return DEVOUR_SLOW
-			else if((src.species.gluttonous & GLUT_ITEM_NORMAL) && cost <= 4)
-				return DEVOUR_SLOW
-			else if(src.species.gluttonous & GLUT_ITEM_ANYTHING)
-				return DEVOUR_FAST
-	return ..()
+	if(!stomach.can_eat_atom(victim))
+		if(!silent)
+			to_chat(src, SPAN_WARNING("You are not capable of devouring \the [victim] whole!"))
+		return FALSE
+
+	if(stomach.is_full(victim))
+		if(!silent)
+			to_chat(src, SPAN_WARNING("Your [stomach.name] is full!"))
+		return FALSE
+
+	. = stomach.get_devour_time(victim) || ..()
+
+/mob/living/carbon/human/move_to_stomach(atom/movable/victim)
+	var/obj/item/organ/internal/stomach/stomach = internal_organs_by_name[BP_STOMACH]
+	if(istype(stomach))
+		victim.forceMove(stomach)
 
 /mob/living/carbon/human/should_have_organ(var/organ_check)
 
@@ -1504,8 +1527,9 @@
 	if(src != M)
 		..()
 	else
+		var/datum/gender/T = gender_datums[get_gender()]
 		visible_message( \
-			"<span class='notice'>[src] examines [gender==MALE ? "himself" : "herself"].</span>", \
+			"<span class='notice'>[src] examines [T.self].</span>", \
 			"<span class='notice'>You check yourself for injuries.</span>" \
 			)
 
@@ -1662,3 +1686,20 @@
 		if(!E || !E.is_usable())
 			stance_damage += 2
 	return stance_damage >= 4
+
+/mob/living/carbon/human/get_digestion_product()
+	return species.get_digestion_product(src)
+
+// A damaged stomach can put blood in your vomit.
+/mob/living/carbon/human/handle_additional_vomit_reagents(var/obj/effect/decal/cleanable/vomit/vomit)
+	..()
+	if(should_have_organ(BP_STOMACH))
+		var/obj/item/organ/internal/stomach/stomach = internal_organs_by_name[BP_STOMACH]
+		if(!stomach || stomach.is_broken() || (stomach.is_bruised() && prob(stomach.damage)))
+			if(should_have_organ(BP_HEART))
+				vessel.trans_to_obj(vomit, 5)
+			else
+				reagents.trans_to_obj(vomit, 5)
+
+/mob/living/carbon/human/get_footstep(var/footstep_type)
+	. = species.get_footstep(src, footstep_type) || ..()

@@ -74,7 +74,7 @@ NOTE: there are two lists of areas in the end of this file: centcom and station 
 	power_environ = 0
 	has_gravity = 0
 	area_flags = AREA_FLAG_EXTERNAL | AREA_FLAG_IS_NOT_PERSISTENT
-	ambience = list('sound/ambience/ambispace.ogg','sound/music/title2.ogg','sound/music/space.ogg','sound/music/main.ogg','sound/music/traitor.ogg')
+	ambience = list('sound/ambience/ambispace1.ogg','sound/ambience/ambispace2.ogg','sound/ambience/ambispace3.ogg','sound/ambience/ambispace4.ogg','sound/ambience/ambispace5.ogg')
 	secure = FALSE
 
 area/space/atmosalert()
@@ -173,6 +173,7 @@ area/space/atmosalert()
 /area/shuttle/specops/centcom
 	icon_state = "shuttlered"
 	req_access = list(access_cent_specops)
+	area_flags = AREA_FLAG_RAD_SHIELDED | AREA_FLAG_ION_SHIELDED
 
 /area/shuttle/syndicate_elite/mothership
 	icon_state = "shuttlered"
@@ -186,6 +187,7 @@ area/space/atmosalert()
 	name = "\improper Skipjack"
 	icon_state = "yellow"
 	req_access = list(access_syndicate)
+	area_flags = AREA_FLAG_RAD_SHIELDED | AREA_FLAG_ION_SHIELDED
 
 /area/supply
 	name = "Supply Shuttle"
@@ -240,6 +242,7 @@ area/space/atmosalert()
 	process()
 
 /area/beach/Entered(atom/movable/Obj,atom/OldLoc)
+	. = ..()
 	if(ismob(Obj))
 		var/mob/M = Obj
 		if(M.client)

@@ -113,9 +113,6 @@
 /turf/simulated/floor/tiled,
 /area/unishi/bridge)
 "ay" = (
-/obj/machinery/atmospherics/unary/vent_scrubber/on{
-	dir = 4
-	},
 /obj/effect/submap_landmark/spawnpoint/unishi_crew,
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 4
@@ -123,16 +120,17 @@
 /turf/simulated/floor/tiled,
 /area/unishi/bridge)
 "az" = (
-/obj/machinery/atmospherics/pipe/manifold4w/hidden/scrubbers,
-/obj/machinery/atmospherics/pipe/manifold4w/hidden/supply,
 /obj/effect/submap_landmark/spawnpoint/unishi_crew,
+/obj/machinery/atmospherics/pipe/manifold/hidden/scrubbers{
+	dir = 8
+	},
+/obj/machinery/atmospherics/pipe/manifold/hidden/supply{
+	dir = 4
+	},
 /turf/simulated/floor/tiled,
 /area/unishi/bridge)
 "aA" = (
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
-	dir = 8
-	},
-/obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 8
 	},
 /turf/simulated/floor/tiled,
@@ -185,18 +183,19 @@
 /turf/simulated/floor,
 /area/unishi/bridge)
 "aM" = (
-/obj/machinery/atmospherics/pipe/manifold4w/hidden/scrubbers,
-/obj/machinery/atmospherics/pipe/manifold4w/hidden/supply,
 /obj/structure/cable{
 	icon_state = "2-8"
+	},
+/obj/machinery/atmospherics/pipe/manifold/hidden/scrubbers{
+	dir = 4
+	},
+/obj/machinery/atmospherics/pipe/manifold/hidden/supply{
+	dir = 8
 	},
 /turf/simulated/floor/tiled,
 /area/unishi/bridge)
 "aN" = (
 /obj/machinery/atmospherics/unary/vent_pump/on{
-	dir = 8
-	},
-/obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 8
 	},
 /turf/simulated/floor,
@@ -278,16 +277,19 @@
 /area/unishi/living)
 "aZ" = (
 /obj/structure/closet/crate/freezer/rations,
-/obj/machinery/atmospherics/unary/vent_pump/on{
-	dir = 8
-	},
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 8
+	},
+/obj/machinery/atmospherics/pipe/simple/hidden/supply{
+	dir = 4
 	},
 /turf/simulated/floor/tiled,
 /area/unishi/bridge)
 "ba" = (
 /obj/structure/closet/crate/freezer/rations,
+/obj/machinery/atmospherics/unary/vent_pump/on{
+	dir = 8
+	},
 /turf/simulated/floor/tiled,
 /area/unishi/bridge)
 "bb" = (
@@ -686,11 +688,6 @@
 	pixel_y = -28;
 	req_access = newlist()
 	},
-/obj/machinery/atmospherics/unary/vent_pump/on{
-	dir = 4;
-	layer = 2.4;
-	level = 2
-	},
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 4
 	},
@@ -965,7 +962,7 @@
 "cH" = (
 /obj/structure/table/woodentable,
 /obj/item/weapon/cell/crap,
-/obj/item/weapon/circuitboard/gyrotron_control,
+/obj/item/weapon/stock_parts/circuitboard/gyrotron_control,
 /obj/item/weapon/paper_bin,
 /obj/machinery/light/small{
 	dir = 8
@@ -1860,11 +1857,6 @@
 /area/unishi/living)
 "eP" = (
 /obj/structure/coatrack,
-/obj/machinery/atmospherics/unary/vent_pump/on{
-	dir = 1;
-	layer = 2.4;
-	level = 2
-	},
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 1
 	},
@@ -2017,6 +2009,25 @@
 	},
 /turf/simulated/floor/tiled,
 /area/unishi/living)
+"gj" = (
+/obj/machinery/atmospherics/pipe/simple/hidden/supply,
+/obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
+/obj/machinery/light/small{
+	dir = 8
+	},
+/obj/machinery/atmospherics/unary/vent_pump/on{
+	dir = 4;
+	layer = 2.4;
+	level = 2
+	},
+/turf/simulated/floor/tiled,
+/area/unishi/living)
+"nC" = (
+/obj/effect/landmark{
+	name = "carpspawn"
+	},
+/turf/space,
+/area/space)
 "pd" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
@@ -2045,6 +2056,10 @@
 /obj/random/clothing,
 /turf/simulated/floor/wood,
 /area/unishi/living)
+"ur" = (
+/obj/machinery/hologram/holopad/longrange/remoteship,
+/turf/simulated/floor/tiled,
+/area/unishi/bridge)
 "vn" = (
 /obj/structure/bed/padded,
 /obj/structure/curtain/open/bed,
@@ -2060,6 +2075,13 @@
 /obj/random/clothing,
 /obj/random/hat,
 /turf/simulated/floor/wood,
+/area/unishi/living)
+"AK" = (
+/obj/machinery/atmospherics/pipe/manifold/hidden/scrubbers{
+	dir = 8
+	},
+/obj/machinery/atmospherics/pipe/manifold/hidden/supply,
+/turf/simulated/floor/tiled,
 /area/unishi/living)
 "Um" = (
 /obj/machinery/light/small{
@@ -5384,7 +5406,7 @@ aa
 aa
 aa
 aa
-aa
+nC
 aa
 aa
 aa
@@ -7029,7 +7051,7 @@ dY
 ev
 dY
 em
-pd
+gj
 eO
 dQ
 eT
@@ -7131,7 +7153,7 @@ bf
 bf
 ez
 eE
-eh
+AK
 eP
 bf
 bf
@@ -7148,7 +7170,7 @@ aa
 aa
 aa
 aa
-aa
+nC
 aa
 aa
 aa
@@ -7293,7 +7315,7 @@ aa
 aa
 af
 ak
-aq
+ur
 as
 au
 aq
@@ -8304,7 +8326,7 @@ aa
 aa
 aa
 aa
-aa
+nC
 aa
 aa
 aa
@@ -9354,7 +9376,7 @@ aa
 aa
 aa
 aa
-aa
+nC
 aa
 aa
 aa

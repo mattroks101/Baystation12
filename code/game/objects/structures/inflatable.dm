@@ -39,7 +39,7 @@
 	icon_state = "wall"
 
 	var/undeploy_path = null
-	var/health = 50.0
+	var/health = 10
 
 /obj/structure/inflatable/wall
 	name = "inflatable wall"
@@ -64,7 +64,7 @@
 	..()
 	if(health <= 0)
 		deflate(1)
-	return
+		return PROJECTILE_CONTINUE
 
 /obj/structure/inflatable/ex_act(severity)
 	switch(severity)
@@ -102,7 +102,7 @@
 	return 0
 
 /obj/structure/inflatable/CtrlClick()
-	hand_deflate()
+	return hand_deflate()
 
 /obj/structure/inflatable/proc/deflate(var/violent=0)
 	playsound(loc, 'sound/machines/hiss.ogg', 75, 1)
@@ -126,10 +126,11 @@
 	set src in oview(1)
 
 	if(isobserver(usr) || usr.restrained() || !usr.Adjacent(src))
-		return
+		return FALSE
 
 	verbs -= /obj/structure/inflatable/verb/hand_deflate
 	deflate()
+	return TRUE
 
 /obj/structure/inflatable/attack_generic(var/mob/user, var/damage, var/attack_verb)
 	health -= damage

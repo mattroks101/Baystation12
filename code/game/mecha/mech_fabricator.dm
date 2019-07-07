@@ -1,6 +1,6 @@
 /obj/machinery/mecha_part_fabricator
 	name = "Exosuit Fabricator"
-	desc = "A machine used for construction of robotics and mechas."
+	desc = "A machine used for construction of robotics and mechs."
 	icon = 'icons/obj/robotics.dmi'
 	icon_state = "fab-idle"
 	density = 1
@@ -8,6 +8,8 @@
 	idle_power_usage = 20
 	active_power_usage = 5000
 	req_access = list(access_robotics)
+	base_type = /obj/machinery/mecha_part_fabricator
+	construct_state = /decl/machine_construction/default/panel_closed
 
 	var/speed = 1
 	var/mat_efficiency = 1
@@ -24,28 +26,13 @@
 	var/manufacturer = null
 	var/sync_message = ""
 
-/obj/machinery/mecha_part_fabricator/New()
-	..()
-
-	component_parts = list()
-	component_parts += new /obj/item/weapon/circuitboard/mechfab(src)
-	component_parts += new /obj/item/weapon/stock_parts/matter_bin(src)
-	component_parts += new /obj/item/weapon/stock_parts/matter_bin(src)
-	component_parts += new /obj/item/weapon/stock_parts/manipulator(src)
-	component_parts += new /obj/item/weapon/stock_parts/micro_laser(src)
-	component_parts += new /obj/item/weapon/stock_parts/console_screen(src)
-	RefreshParts()
-
-	files = new /datum/research(src) //Setup the research data holder.
-	return
-
 /obj/machinery/mecha_part_fabricator/Initialize()
+	files = new /datum/research(src) //Setup the research data holder.
 	manufacturer = basic_robolimb.company
 	update_categories()
 	. = ..()
 
 /obj/machinery/mecha_part_fabricator/Process()
-	..()
 	if(stat)
 		return
 	if(busy)
@@ -71,23 +58,17 @@
 	..()
 
 /obj/machinery/mecha_part_fabricator/RefreshParts()
-	res_max_amount = 0
-	for(var/obj/item/weapon/stock_parts/matter_bin/M in component_parts)
-		res_max_amount += M.rating * 100000 // 200k -> 600k
-	var/T = 0
-	for(var/obj/item/weapon/stock_parts/manipulator/M in component_parts)
-		T += M.rating
+	res_max_amount = 100000 * total_component_rating_of_type(/obj/item/weapon/stock_parts/matter_bin)
+
+	var/T = Clamp(total_component_rating_of_type(/obj/item/weapon/stock_parts/manipulator), 0, 4)
 	mat_efficiency = 1 - (T - 1) / 4 // 1 -> 0.5
-	for(var/obj/item/weapon/stock_parts/micro_laser/M in component_parts) // Not resetting T is intended; speed is affected by both
-		T += M.rating
+
+	T += total_component_rating_of_type(/obj/item/weapon/stock_parts/micro_laser)// Not resetting T is intended; speed is affected by both
 	speed = T / 2 // 1 -> 3
 
-/obj/machinery/mecha_part_fabricator/attack_hand(var/mob/user)
-	if(..())
-		return
-	if(!allowed(user))
-		return
+/obj/machinery/mecha_part_fabricator/interface_interact(var/mob/user)
 	ui_interact(user)
+	return TRUE
 
 /obj/machinery/mecha_part_fabricator/ui_interact(var/mob/user, var/ui_key = "main", var/datum/nanoui/ui = null, var/force_open = 1)
 	var/data[0]
@@ -149,17 +130,18 @@
 
 	return 1
 
+/obj/machinery/mecha_part_fabricator/components_are_accessible(path)
+	return !busy && ..()
+
+/obj/machinery/mecha_part_fabricator/cannot_transition_to(state_path)
+	if(busy)
+		return SPAN_NOTICE("\The [src] is busy. Please wait for completion of previous operation.")
+	return ..()
+
 /obj/machinery/mecha_part_fabricator/attackby(var/obj/item/I, var/mob/user)
 	if(busy)
 		to_chat(user, "<span class='notice'>\The [src] is busy. Please wait for completion of previous operation.</span>")
 		return 1
-	if(default_deconstruction_screwdriver(user, I))
-		return
-	if(default_deconstruction_crowbar(user, I))
-		return
-	if(default_part_replacement(user, I))
-		return
-
 	if(!istype(I, /obj/item/stack/material))
 		return ..()
 
@@ -177,7 +159,7 @@
 		return
 
 	if(materials[material] + amnt <= res_max_amount)
-		if(stack && stack.amount >= 1)
+		if(stack && stack.can_use(1))
 			var/count = 0
 			overlays += "fab-load-metal"
 			spawn(10)

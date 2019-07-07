@@ -244,8 +244,8 @@
 			if("ian")				M.change_mob_type( /mob/living/simple_animal/corgi/Ian , null, null, delmob )
 			if("crab")				M.change_mob_type( /mob/living/simple_animal/crab , null, null, delmob )
 			if("coffee")			M.change_mob_type( /mob/living/simple_animal/crab/Coffee , null, null, delmob )
-			if("parrot")			M.change_mob_type( /mob/living/simple_animal/parrot , null, null, delmob )
-			if("polyparrot")		M.change_mob_type( /mob/living/simple_animal/parrot/Poly , null, null, delmob )
+			if("parrot")			M.change_mob_type( /mob/living/simple_animal/hostile/retaliate/parrot , null, null, delmob )
+			if("polyparrot")		M.change_mob_type( /mob/living/simple_animal/hostile/retaliate/parrot/Poly , null, null, delmob )
 			if("constructarmoured")	M.change_mob_type( /mob/living/simple_animal/construct/armoured , null, null, delmob )
 			if("constructbuilder")	M.change_mob_type( /mob/living/simple_animal/construct/builder , null, null, delmob )
 			if("constructwraith")	M.change_mob_type( /mob/living/simple_animal/construct/wraith , null, null, delmob )
@@ -592,7 +592,9 @@
 		jobs += "<tr bgcolor='ffeeaa'><th colspan='10'><a href='?src=\ref[src];jobban3=Syndicate;jobban4=\ref[M]'>Antagonist Positions</a></th></tr><tr align='center'>"
 
 		// Antagonists.
+		#define ANTAG_COLUMNS 5
 		var/list/all_antag_types = GLOB.all_antag_types_
+		var/i = 1
 		for(var/antag_type in all_antag_types)
 			var/datum/antagonist/antag = all_antag_types[antag_type]
 			if(!antag || !antag.id)
@@ -601,8 +603,11 @@
 				jobs += "<td width='20%'><a href='?src=\ref[src];jobban3=[antag.id];jobban4=\ref[M]'><font color=red>[replacetext("[antag.role_text]", " ", "&nbsp")]</font></a></td>"
 			else
 				jobs += "<td width='20%'><a href='?src=\ref[src];jobban3=[antag.id];jobban4=\ref[M]'>[replacetext("[antag.role_text]", " ", "&nbsp")]</a></td>"
-
+			if(i % ANTAG_COLUMNS == 0 && i < length(all_antag_types))
+				jobs += "</tr><tr align='center'>"
+			i++
 		jobs += "</tr></table>"
+		#undef ANTAG_COLUMNS
 
 		var/list/misc_roles = list("Dionaea", "Graffiti")
 		//Other roles  (BLUE, because I have no idea what other color to make this)
@@ -1244,7 +1249,7 @@
 		show_player_panel(M)
 
 	else if(href_list["adminplayerobservejump"])
-		if(!check_rights(R_MENTOR|R_MOD|R_ADMIN))	return
+		if(!check_rights(R_MOD|R_ADMIN))	return
 
 		var/mob/M = locate(href_list["adminplayerobservejump"])
 		var/client/C = usr.client
@@ -1257,7 +1262,7 @@
 		C.jumptomob(M)
 
 	else if(href_list["adminplayerobservefollow"])
-		if(!check_rights(R_MENTOR|R_MOD|R_ADMIN))
+		if(!check_rights(R_MOD|R_ADMIN))
 			return
 
 		var/mob/M = locate(href_list["adminplayerobservefollow"])
@@ -1282,7 +1287,7 @@
 		if(ismob(M))
 			var/take_msg = "<span class='notice'><b>[key_name(usr.client)]</b> is attending to <b>[key_name(M)]'s</b> message.</span>"
 			for(var/client/X in GLOB.admins)
-				if((R_ADMIN|R_MOD|R_MENTOR) & X.holder.rights)
+				if((R_ADMIN|R_MOD) & X.holder.rights)
 					to_chat(X, take_msg)
 			to_chat(M, "<span class='notice'><b>Your message is being attended to by [usr.client]. Thanks for your patience!</b></span>")
 		else
@@ -1359,7 +1364,7 @@
 		to_chat(src.owner, "Name = <b>[M.name]</b>; Real_name = [M.real_name]; Mind_name = [M.mind?"[M.mind.name]":""]; Key = <b>[M.key]</b>;")
 		to_chat(src.owner, "Location = [location_description];")
 		to_chat(src.owner, "[special_role_description]")
-		to_chat(src.owner, "(<a href='?src=\ref[usr];priv_msg=\ref[M]'>PM</a>) (<A HREF='?src=\ref[src];adminplayeropts=\ref[M]'>PP</A>) (<A HREF='?_src_=vars;Vars=\ref[M]'>VV</A>) (<A HREF='?src=\ref[src];subtlemessage=\ref[M]'>SM</A>) ([admin_jump_link(M, src)]) (<A HREF='?src=\ref[src];secretsadmin=check_antagonist'>CA</A>)")
+		to_chat(src.owner, "(<a href='?src=\ref[usr];priv_msg=\ref[M]'>PM</a>) (<A HREF='?src=\ref[src];adminplayeropts=\ref[M]'>PP</A>) (<A HREF='?_src_=vars;Vars=\ref[M]'>VV</A>) ([admin_jump_link(M, src)]) (<A HREF='?src=\ref[src];secretsadmin=check_antagonist'>CA</A>)")
 
 	else if(href_list["adminspawncookie"])
 		if(!check_rights(R_ADMIN|R_FUN))	return
@@ -1537,16 +1542,10 @@
 		usr.client.sendmob(M)
 
 	else if(href_list["narrateto"])
-		if(!check_rights(R_ADMIN))	return
+		if(!check_rights(R_INVESTIGATE))	return
 
 		var/mob/M = locate(href_list["narrateto"])
 		usr.client.cmd_admin_direct_narrate(M)
-
-	else if(href_list["subtlemessage"])
-		if(!check_rights(R_MOD,0) && !check_rights(R_ADMIN))  return
-
-		var/mob/M = locate(href_list["subtlemessage"])
-		usr.client.cmd_admin_subtle_message(M)
 
 	else if(href_list["traitor"])
 		if(!check_rights(R_ADMIN|R_MOD))	return

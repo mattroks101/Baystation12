@@ -5,6 +5,7 @@
 	icon = 'icons/obj/machines/floodlight.dmi'
 	icon_state = "flood00"
 	density = 1
+	obj_flags = OBJ_FLAG_ROTATABLE
 	var/on = 0
 	var/obj/item/weapon/cell/cell = null
 	var/use = 200 // 200W light
@@ -64,19 +65,7 @@
 		visible_message("\The [src] shuts down.")
 		playsound(src.loc, 'sound/effects/flashlight.ogg', 50, 0)
 
-/obj/machinery/floodlight/attack_ai(mob/user as mob)
-	if(istype(user, /mob/living/silicon/robot) && Adjacent(user))
-		return attack_hand(user)
-
-	if(on)
-		turn_off(1)
-	else
-		if(!turn_on(1))
-			to_chat(user, "You try to turn on \the [src] but it does not work.")
-			playsound(src.loc, 'sound/effects/flashlight.ogg', 50, 0)
-
-
-/obj/machinery/floodlight/attack_hand(mob/user as mob)
+/obj/machinery/floodlight/physical_attack_hand(mob/user)
 	if(open && cell)
 		if(ishuman(user))
 			if(!user.get_active_hand())
@@ -92,8 +81,11 @@
 		set_light(0)
 		to_chat(user, "You remove the power cell")
 		update_icon()
-		return
+		return TRUE
 
+/obj/machinery/floodlight/interface_interact(mob/user)
+	if(!CanInteract(user, DefaultTopicState()))
+		return FALSE
 	if(on)
 		turn_off(1)
 	else
@@ -102,7 +94,7 @@
 			playsound(src.loc, 'sound/effects/flashlight.ogg', 50, 0)
 
 	update_icon()
-
+	return TRUE
 
 /obj/machinery/floodlight/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if(isScrewdriver(W))
@@ -135,24 +127,3 @@
 				cell = W
 				to_chat(user, "You insert the power cell.")
 	update_icon()
-
-/obj/machinery/floodlight/verb/rotate()
-	set name = "Rotate Light"
-	set category = "Object"
-	set src in oview(1)
-
-	if(!usr || !Adjacent(usr))
-		return
-
-	if(usr.stat == DEAD)
-		if(!round_is_spooky())
-			to_chat(src, "<span class='warning'>The veil is not thin enough for you to do that.</span>")
-			return
-	else if(usr.incapacitated())
-		return
-
-	src.set_dir(turn(src.dir, 90))
-	return
-
-/obj/machinery/floodlight/AltClick()
-	rotate()

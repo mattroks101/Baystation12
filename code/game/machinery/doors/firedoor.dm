@@ -23,6 +23,7 @@
 	open_layer = BELOW_DOOR_LAYER
 	closed_layer = ABOVE_WINDOW_LAYER
 	movable_flags = MOVABLE_FLAG_Z_INTERACT
+	pry_mod = 0.75
 
 	//These are frequenly used with windows, so make sure zones can pass.
 	//Generally if a firedoor is at a place where there should be a zone boundery then there will be a regular door underneath it.
@@ -53,6 +54,10 @@
 	)
 
 	blend_objects = list(/obj/machinery/door/firedoor, /obj/structure/wall_frame, /turf/unsimulated/wall, /obj/structure/window) // Objects which to blend with
+	
+/obj/machinery/door/firedoor/autoset
+	autoset_access = TRUE	//subtype just to make mapping away sites with custom access usage
+	req_access = list()
 
 /obj/machinery/door/firedoor/Initialize()
 	. = ..()
@@ -267,7 +272,7 @@
 
 /obj/machinery/door/firedoor/deconstruct(mob/user, var/moved = FALSE)
 	if (stat & BROKEN)
-		new /obj/item/weapon/circuitboard/broken(src.loc)
+		new /obj/item/weapon/stock_parts/circuitboard/broken(src.loc)
 	else
 		new/obj/item/weapon/airalarm_electronics(src.loc)
 
@@ -282,8 +287,6 @@
 
 // CHECK PRESSURE
 /obj/machinery/door/firedoor/Process()
-	..()
-
 	if(density && next_process_time <= world.time)
 		next_process_time = world.time + 100		// 10 second delays between process updates
 		var/changed = 0

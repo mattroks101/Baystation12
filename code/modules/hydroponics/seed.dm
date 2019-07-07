@@ -11,6 +11,7 @@
 	var/display_name               // Prettier name.
 	var/roundstart                 // If set, seed will not display variety number.
 	var/mysterious                 // Only used for the random seed packets.
+	var/scanned                    // If it was scanned with a plant analyzer.
 	var/can_self_harvest = 0       // Mostly used for living mobs.
 	var/growth_stages = 0          // Number of stages the plant passes through before it is mature.
 	var/list/traits = list()       // Initialized in New()
@@ -23,6 +24,7 @@
 	var/splat_type = /obj/effect/decal/cleanable/fruit_smudge // Graffiti decal.
 	var/has_mob_product
 	var/force_layer
+	var/const/REQ_CO2_MOLES    = 1.0// Moles of CO2 required for photosynthesis.
 
 /datum/seed/New()
 
@@ -115,10 +117,9 @@
 
 
 	if(!target_limb) target_limb = pick(BP_ALL_LIMBS)
-	var/blocked = target.run_armor_check(target_limb, "melee")
 	var/obj/item/organ/external/affecting = target.get_organ(target_limb)
 
-	if(blocked >= 100 || (target.species && target.species.species_flags & (SPECIES_FLAG_NO_EMBED|SPECIES_FLAG_NO_MINOR_CUT)))
+	if((target.species && target.species.species_flags & (SPECIES_FLAG_NO_EMBED|SPECIES_FLAG_NO_MINOR_CUT)))
 		to_chat(target, "<span class='danger'>\The [fruit]'s thorns scratch against the armour on your [affecting.name]!</span>")
 		return
 
@@ -140,7 +141,7 @@
 		has_edge = prob(get_trait(TRAIT_POTENCY)/5)
 
 	var/damage_flags = DAM_SHARP|(has_edge? DAM_EDGE : 0)
-	target.apply_damage(damage, BRUTE, target_limb, blocked, damage_flags, "Thorns")
+	target.apply_damage(damage, BRUTE, target_limb, damage_flags, used_weapon = "Thorns")
 
 // Adds reagents to a target.
 /datum/seed/proc/do_sting(var/mob/living/carbon/human/target, var/obj/item/fruit)
@@ -164,6 +165,20 @@
 				target.reagents.add_reagent(rid,injecting)
 		else
 			to_chat(target, "<span class='danger'>Sharp spines scrape against your armour!</span>")
+
+/datum/seed/proc/do_photosynthesis(var/turf/current_turf, var/datum/gas_mixture/environment, var/light_supplied)
+	// Photosynthesis - *very* simplified process.
+	// For now, only light-dependent reactions are available (no Calvin cycle).
+	// It's active only for those plants which doesn't consume nor exude gasses.
+	if(!(environment) || !(environment.gas))
+		return
+	if(LAZYLEN(exude_gasses) || LAZYLEN(consume_gasses ))
+		return
+	if(!(light_supplied) || !(get_trait(TRAIT_REQUIRES_WATER)))
+		return
+	if(environment.get_gas("carbon_dioxide") >= REQ_CO2_MOLES)
+		environment.adjust_gas("carbon_dioxide", -REQ_CO2_MOLES, 1)
+		environment.adjust_gas("oxygen", REQ_CO2_MOLES, 1)
 
 //Splatter a turf.
 /datum/seed/proc/splatter(var/turf/T,var/obj/item/thrown)
@@ -313,6 +328,12 @@
 	if(light_supplied)
 		if(abs(light_supplied - get_trait(TRAIT_IDEAL_LIGHT)) > get_trait(TRAIT_LIGHT_TOLERANCE))
 			health_change += rand(1,3) * HYDRO_SPEED_MULTIPLIER
+
+	// Pressure and temperature are needed as much as water and light.
+	// If any of the previous environment checks has failed
+	// the photosynthesis cannot be triggered.
+	if(health_change == 0)
+		do_photosynthesis(current_turf, environment, light_supplied)
 
 	return health_change
 

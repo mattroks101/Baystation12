@@ -79,7 +79,7 @@
 	info = {"
 	<tt><center><b><font color='red'>CONFIDENTIAL: UPPER MANAGEMENT ONLY</font></b>
 	<h3>CORPORATE RESEARCH DIVISION</h3>
-	<img src = torchltd.png>
+	<img src = exologo.png>
 	</center>
 	<b>FROM:</b> Hieronimus Blackstone, Overseer of Torch Cooperation Project<br>
 	<b>TO:</b> Chief Science Officer of SEV Torch branch<br>
@@ -105,7 +105,11 @@
 	desc = "A thick envelope. The SCG crest is stamped in the corner, along with 'TOP SECRET - TORCH UMBRA'."
 
 /obj/item/weapon/folder/envelope/captain/Initialize()
-	. = ..()
+	..()
+	return INITIALIZE_HINT_LATELOAD
+
+/obj/item/weapon/folder/envelope/captain/LateInitialize()
+	..()
 	var/obj/effect/overmap/torch = map_sectors["[z]"]
 	var/memo = {"
 	<tt><center><b><font color='red'>SECRET - CODE WORDS: TORCH</font></b>
@@ -139,7 +143,6 @@
 	<i>This paper has been stamped with the stamp of SCG Expeditionary Command.</i>
 	"}
 	new/obj/item/weapon/paper(src, memo, "Standing Orders")
-
 	new/obj/item/weapon/paper/umbra(src)
 
 /obj/item/weapon/folder/envelope/rep

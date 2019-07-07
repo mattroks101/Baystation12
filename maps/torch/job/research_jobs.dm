@@ -20,10 +20,11 @@
 		/datum/mil_rank/ec/o1
 	)
 
-	access = list(access_tox, access_tox_storage, access_research, access_mining, access_mining_office,
-						access_mining_station, access_xenobiology, access_xenoarch, access_nanotrasen,
+	access = list(access_tox, access_tox_storage, access_maint_tunnels, access_research, access_mining, access_mining_office,
+						access_mining_station, access_xenobiology, access_xenoarch, access_nanotrasen, access_solgov_crew,
 						access_expedition_shuttle, access_guppy, access_hangar, access_petrov, access_petrov_helm, access_guppy_helm,
-						access_petrov_analysis, access_petrov_phoron, access_petrov_toxins, access_petrov_chemistry, access_petrov_maint)
+						access_petrov_analysis, access_petrov_phoron, access_petrov_toxins, access_petrov_chemistry, access_petrov_security,
+						access_petrov_maint)
 	min_skill = list(   SKILL_BUREAUCRACY = SKILL_BASIC,
 	                    SKILL_COMPUTER    = SKILL_BASIC,
 	                    SKILL_FINANCE     = SKILL_BASIC,
@@ -50,8 +51,8 @@
 		"Anomalist",
 		"Researcher",
 		"Xenobiologist",
-		"Xenobotanist",
-		"Psychologist" = /decl/hierarchy/outfit/job/torch/passenger/research/scientist/psych)
+		"Xenobotanist"
+	)
 	min_skill = list(   SKILL_BUREAUCRACY = SKILL_BASIC,
 	                    SKILL_COMPUTER    = SKILL_BASIC,
 	                    SKILL_DEVICES     = SKILL_BASIC,
@@ -114,4 +115,7 @@
 	                    SKILL_DEVICES     = SKILL_MAX,
 	                    SKILL_SCIENCE     = SKILL_MAX)
 
-	access = list(access_research, access_mining_office, access_nanotrasen, access_petrov, access_expedition_shuttle, access_guppy, access_hangar)
+	access = list(access_tox, access_tox_storage, access_research, access_petrov,
+						access_mining_office, access_mining_station, access_xenobiology,
+						access_xenoarch, access_nanotrasen, access_expedition_shuttle, access_guppy, access_hangar,
+						access_petrov_analysis, access_petrov_phoron, access_petrov_toxins, access_petrov_chemistry)

@@ -47,7 +47,11 @@
 //This is called later in the init order by SSshuttle to populate sector objects. Importantly for subtypes, shuttles will be created by then.
 /obj/effect/overmap/proc/populate_sector_objects()
 
+/obj/effect/overmap/proc/get_scan_data(mob/user)
+	return desc
+
 /obj/effect/overmap/proc/get_areas()
+	return get_filtered_areas(list(/proc/area_belongs_to_zlevels = map_z))
 
 /obj/effect/overmap/proc/find_z_levels()
 	map_z = GetConnectedZlevels(z)
@@ -88,12 +92,18 @@
 	. = generic_waypoints.Copy()
 	if(shuttle_name in restricted_waypoints)
 		. += restricted_waypoints[shuttle_name]
+	for(var/obj/effect/overmap/contained in src)
+		. += contained.get_waypoints(shuttle_name)
 
 /obj/effect/overmap/sector
 	name = "generic sector"
 	desc = "Sector with some stuff in it."
 	icon_state = "sector"
 	anchored = 1
+
+// Because of the way these are spawned, they will potentially have their invisibility adjusted by the turfs they are mapped on
+// prior to being moved to the overmap. This blocks that. Use set_invisibility to adjust invisibility as needed instead.
+/obj/effect/overmap/sector/hide()
 
 /obj/effect/overmap/sector/Initialize()
 	. = ..()
@@ -103,9 +113,6 @@
 		for(var/obj/machinery/computer/ship/helm/H in SSmachines.machinery)
 			H.get_known_sectors()
 
-/obj/effect/overmap/sector/get_areas()
-	return get_filtered_areas(list(/proc/area_belongs_to_zlevels = map_z))
-
 /proc/build_overmap()
 	if(!GLOB.using_map.use_overmap)
 		return 1
@@ -113,17 +120,14 @@
 	testing("Building overmap...")
 	world.maxz++
 	GLOB.using_map.overmap_z = world.maxz
-	var/list/turfs = list()
+	var/area/overmap/A = new
 	for (var/square in block(locate(1,1,GLOB.using_map.overmap_z), locate(GLOB.using_map.overmap_size,GLOB.using_map.overmap_size,GLOB.using_map.overmap_z)))
 		var/turf/T = square
 		if(T.x == GLOB.using_map.overmap_size || T.y == GLOB.using_map.overmap_size)
 			T = T.ChangeTurf(/turf/unsimulated/map/edge)
 		else
-			T = T.ChangeTurf(/turf/unsimulated/map/)
-		turfs += T
-
-	var/area/overmap/A = new
-	A.contents.Add(turfs)
+			T = T.ChangeTurf(/turf/unsimulated/map)
+		ChangeArea(T, A)
 
 	GLOB.using_map.sealed_levels |= GLOB.using_map.overmap_z
 

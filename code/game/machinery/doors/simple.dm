@@ -9,6 +9,7 @@
 	var/datum/lock/lock
 	var/initial_lock_value //for mapping purposes. Basically if this value is set, it sets the lock to this value.
 	autoset_access = FALSE // Doesn't even use access
+	pry_mod = 0.1
 
 /obj/machinery/door/unpowered/simple/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
 	TemperatureAct(exposed_temperature)
@@ -244,9 +245,6 @@
 	..(newloc, MATERIAL_WOOD, complexity)
 	glass = 1
 	set_opacity(0)
-
-/obj/machinery/door/unpowered/simple/resin/New(var/newloc,var/material_name,var/complexity)
-	..(newloc, MATERIAL_RESIN, complexity)
 
 /obj/machinery/door/unpowered/simple/cult/New(var/newloc,var/material_name,var/complexity)
 	..(newloc, MATERIAL_CULT, complexity)

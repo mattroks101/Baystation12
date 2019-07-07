@@ -41,6 +41,8 @@
 			return global.SSalarm;
 		if("SSantags")
 			return global.SSantags;
+		if("SSao")
+			return global.SSao;
 		if("SSatoms")
 			return global.SSatoms;
 		if("SScharacter_setup")
@@ -55,6 +57,8 @@
 			return global.SScodex;
 		if("SSculture")
 			return global.SSculture;
+		if("SSdisposals")
+			return global.SSdisposals;
 		if("SSevac")
 			return global.SSevac;
 		if("SSevent")
@@ -103,6 +107,8 @@
 			return global.SSpsi;
 		if("SSradiation")
 			return global.SSradiation;
+		if("SSrobots")
+			return global.SSrobots;
 		if("SSshuttle")
 			return global.SSshuttle;
 		if("SSskybox")
@@ -115,8 +121,6 @@
 			return global.SSsupply;
 		if("SStemperature")
 			return global.SStemperature;
-		if("SStgui")
-			return global.SStgui;
 		if("SSticker")
 			return global.SSticker;
 		if("SStimer")
@@ -129,8 +133,8 @@
 			return global.SSvines;
 		if("SSvote")
 			return global.SSvote;
-		if("SSwireless")
-			return global.SSwireless;
+		if("SSwebhooks")
+			return global.SSwebhooks;
 		if("SSxenoarch")
 			return global.SSxenoarch;
 		if("Tier1Runes")
@@ -175,8 +179,6 @@
 			return global.admin_verbs_fun;
 		if("admin_verbs_hideable")
 			return global.admin_verbs_hideable;
-		if("admin_verbs_mentor")
-			return global.admin_verbs_mentor;
 		if("admin_verbs_mod")
 			return global.admin_verbs_mod;
 		if("admin_verbs_paranoid_debug")
@@ -401,8 +403,6 @@
 			return global.event_last_fired;
 		if("eventchance")
 			return global.eventchance;
-		if("exclude_jobs")
-			return global.exclude_jobs;
 		if("explosion_in_progress")
 			return global.explosion_in_progress;
 		if("explosion_turfs")
@@ -431,8 +431,6 @@
 			return global.floor_light_cache;
 		if("flooring_cache")
 			return global.flooring_cache;
-		if("flooring_types")
-			return global.flooring_types;
 		if("fluidtrack_cache")
 			return global.fluidtrack_cache;
 		if("follow_repository")
@@ -627,8 +625,6 @@
 			return global.next_station_date_change;
 		if("ninjastart")
 			return global.ninjastart;
-		if("not_incapacitated_turf_state")
-			return global.not_incapacitated_turf_state;
 		if("ntnet_card_uid")
 			return global.ntnet_card_uid;
 		if("ntnet_global")
@@ -737,8 +733,6 @@
 			return global.robot_hud_colours;
 		if("robot_inventory")
 			return global.robot_inventory;
-		if("robot_modules")
-			return global.robot_modules;
 		if("round_start_time")
 			return global.round_start_time;
 		if("roundstart_hour")
@@ -819,8 +813,6 @@
 			return global.supply_drop;
 		if("supply_methods_")
 			return global.supply_methods_;
-		if("surgery_steps")
-			return global.surgery_steps;
 		if("swapmaps_byname")
 			return global.swapmaps_byname;
 		if("swapmaps_compiled_maxx")
@@ -855,34 +847,6 @@
 			return global.telecomms_list;
 		if("text_tag_icons")
 			return global.text_tag_icons;
-		if("tg_admin_state")
-			return global.tg_admin_state;
-		if("tg_always_state")
-			return global.tg_always_state;
-		if("tg_conscious_state")
-			return global.tg_conscious_state;
-		if("tg_contained_state")
-			return global.tg_contained_state;
-		if("tg_deep_inventory_state")
-			return global.tg_deep_inventory_state;
-		if("tg_default_state")
-			return global.tg_default_state;
-		if("tg_hands_state")
-			return global.tg_hands_state;
-		if("tg_human_adjacent_state")
-			return global.tg_human_adjacent_state;
-		if("tg_inventory_state")
-			return global.tg_inventory_state;
-		if("tg_not_contained_state")
-			return global.tg_not_contained_state;
-		if("tg_not_incapacitated_state")
-			return global.tg_not_incapacitated_state;
-		if("tg_physical_state")
-			return global.tg_physical_state;
-		if("tg_self_state")
-			return global.tg_self_state;
-		if("tg_z_state")
-			return global.tg_z_state;
 		if("ticket_panels")
 			return global.ticket_panels;
 		if("tickets")
@@ -994,6 +958,8 @@
 			global.SSalarm=newval;
 		if("SSantags")
 			global.SSantags=newval;
+		if("SSao")
+			global.SSao=newval;
 		if("SSatoms")
 			global.SSatoms=newval;
 		if("SScharacter_setup")
@@ -1008,6 +974,8 @@
 			global.SScodex=newval;
 		if("SSculture")
 			global.SSculture=newval;
+		if("SSdisposals")
+			global.SSdisposals=newval;
 		if("SSevac")
 			global.SSevac=newval;
 		if("SSevent")
@@ -1056,6 +1024,8 @@
 			global.SSpsi=newval;
 		if("SSradiation")
 			global.SSradiation=newval;
+		if("SSrobots")
+			global.SSrobots=newval;
 		if("SSshuttle")
 			global.SSshuttle=newval;
 		if("SSskybox")
@@ -1068,8 +1038,6 @@
 			global.SSsupply=newval;
 		if("SStemperature")
 			global.SStemperature=newval;
-		if("SStgui")
-			global.SStgui=newval;
 		if("SSticker")
 			global.SSticker=newval;
 		if("SStimer")
@@ -1082,8 +1050,8 @@
 			global.SSvines=newval;
 		if("SSvote")
 			global.SSvote=newval;
-		if("SSwireless")
-			global.SSwireless=newval;
+		if("SSwebhooks")
+			global.SSwebhooks=newval;
 		if("SSxenoarch")
 			global.SSxenoarch=newval;
 		if("Tier1Runes")
@@ -1128,8 +1096,6 @@
 			global.admin_verbs_fun=newval;
 		if("admin_verbs_hideable")
 			global.admin_verbs_hideable=newval;
-		if("admin_verbs_mentor")
-			global.admin_verbs_mentor=newval;
 		if("admin_verbs_mod")
 			global.admin_verbs_mod=newval;
 		if("admin_verbs_paranoid_debug")
@@ -1354,8 +1320,6 @@
 			global.event_last_fired=newval;
 		if("eventchance")
 			global.eventchance=newval;
-		if("exclude_jobs")
-			global.exclude_jobs=newval;
 		if("explosion_in_progress")
 			global.explosion_in_progress=newval;
 		if("explosion_turfs")
@@ -1384,8 +1348,6 @@
 			global.floor_light_cache=newval;
 		if("flooring_cache")
 			global.flooring_cache=newval;
-		if("flooring_types")
-			global.flooring_types=newval;
 		if("fluidtrack_cache")
 			global.fluidtrack_cache=newval;
 		if("follow_repository")
@@ -1580,8 +1542,6 @@
 			global.next_station_date_change=newval;
 		if("ninjastart")
 			global.ninjastart=newval;
-		if("not_incapacitated_turf_state")
-			global.not_incapacitated_turf_state=newval;
 		if("ntnet_card_uid")
 			global.ntnet_card_uid=newval;
 		if("ntnet_global")
@@ -1690,8 +1650,6 @@
 			global.robot_hud_colours=newval;
 		if("robot_inventory")
 			global.robot_inventory=newval;
-		if("robot_modules")
-			global.robot_modules=newval;
 		if("round_start_time")
 			global.round_start_time=newval;
 		if("roundstart_hour")
@@ -1772,8 +1730,6 @@
 			global.supply_drop=newval;
 		if("supply_methods_")
 			global.supply_methods_=newval;
-		if("surgery_steps")
-			global.surgery_steps=newval;
 		if("swapmaps_byname")
 			global.swapmaps_byname=newval;
 		if("swapmaps_compiled_maxx")
@@ -1808,34 +1764,6 @@
 			global.telecomms_list=newval;
 		if("text_tag_icons")
 			global.text_tag_icons=newval;
-		if("tg_admin_state")
-			global.tg_admin_state=newval;
-		if("tg_always_state")
-			global.tg_always_state=newval;
-		if("tg_conscious_state")
-			global.tg_conscious_state=newval;
-		if("tg_contained_state")
-			global.tg_contained_state=newval;
-		if("tg_deep_inventory_state")
-			global.tg_deep_inventory_state=newval;
-		if("tg_default_state")
-			global.tg_default_state=newval;
-		if("tg_hands_state")
-			global.tg_hands_state=newval;
-		if("tg_human_adjacent_state")
-			global.tg_human_adjacent_state=newval;
-		if("tg_inventory_state")
-			global.tg_inventory_state=newval;
-		if("tg_not_contained_state")
-			global.tg_not_contained_state=newval;
-		if("tg_not_incapacitated_state")
-			global.tg_not_incapacitated_state=newval;
-		if("tg_physical_state")
-			global.tg_physical_state=newval;
-		if("tg_self_state")
-			global.tg_self_state=newval;
-		if("tg_z_state")
-			global.tg_z_state=newval;
 		if("ticket_panels")
 			global.ticket_panels=newval;
 		if("tickets")
@@ -1926,6 +1854,7 @@
 	"SSairflow",
 	"SSalarm",
 	"SSantags",
+	"SSao",
 	"SSatoms",
 	"SScharacter_setup",
 	"SSchemistry",
@@ -1933,6 +1862,7 @@
 	"SScircuit_components",
 	"SScodex",
 	"SSculture",
+	"SSdisposals",
 	"SSevac",
 	"SSevent",
 	"SSfastprocess",
@@ -1957,20 +1887,20 @@
 	"SSprocessing",
 	"SSpsi",
 	"SSradiation",
+	"SSrobots",
 	"SSshuttle",
 	"SSskybox",
 	"SSstatistics",
 	"SSsun",
 	"SSsupply",
 	"SStemperature",
-	"SStgui",
 	"SSticker",
 	"SStimer",
 	"SStrade",
 	"SSturf",
 	"SSvines",
 	"SSvote",
-	"SSwireless",
+	"SSwebhooks",
 	"SSxenoarch",
 	"Tier1Runes",
 	"Tier2Runes",
@@ -1993,7 +1923,6 @@
 	"admin_verbs_default",
 	"admin_verbs_fun",
 	"admin_verbs_hideable",
-	"admin_verbs_mentor",
 	"admin_verbs_mod",
 	"admin_verbs_paranoid_debug",
 	"admin_verbs_permissions",
@@ -2106,7 +2035,6 @@
 	"evacuation_controller",
 	"event_last_fired",
 	"eventchance",
-	"exclude_jobs",
 	"explosion_in_progress",
 	"explosion_turfs",
 	"failed_db_connections",
@@ -2121,7 +2049,6 @@
 	"floor_decals",
 	"floor_light_cache",
 	"flooring_cache",
-	"flooring_types",
 	"fluidtrack_cache",
 	"follow_repository",
 	"forced_ambiance_list",
@@ -2219,7 +2146,6 @@
 	"next_duration_update",
 	"next_station_date_change",
 	"ninjastart",
-	"not_incapacitated_turf_state",
 	"ntnet_card_uid",
 	"ntnet_global",
 	"ntnrc_uid",
@@ -2274,7 +2200,6 @@
 	"robot_custom_icons",
 	"robot_hud_colours",
 	"robot_inventory",
-	"robot_modules",
 	"round_start_time",
 	"roundstart_hour",
 	"rune_list",
@@ -2315,7 +2240,6 @@
 	"string_slot_flags",
 	"supply_drop",
 	"supply_methods_",
-	"surgery_steps",
 	"swapmaps_byname",
 	"swapmaps_compiled_maxx",
 	"swapmaps_compiled_maxy",
@@ -2333,20 +2257,6 @@
 	"tape_roll_applications",
 	"telecomms_list",
 	"text_tag_icons",
-	"tg_admin_state",
-	"tg_always_state",
-	"tg_conscious_state",
-	"tg_contained_state",
-	"tg_deep_inventory_state",
-	"tg_default_state",
-	"tg_hands_state",
-	"tg_human_adjacent_state",
-	"tg_inventory_state",
-	"tg_not_contained_state",
-	"tg_not_incapacitated_state",
-	"tg_physical_state",
-	"tg_self_state",
-	"tg_z_state",
 	"ticket_panels",
 	"tickets",
 	"total_lighting_corners",

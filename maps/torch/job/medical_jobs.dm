@@ -2,11 +2,10 @@
 	title = "Physician"
 	department = "Medical"
 	department_flag = MED
-
 	minimal_player_age = 2
 	ideal_character_age = 45
-	total_positions = 3
-	spawn_positions = 3
+	total_positions = 2
+	spawn_positions = 2
 	supervisors = "the Chief Medical Officer"
 	selection_color = "#013d3b"
 	economic_power = 8
@@ -17,7 +16,7 @@
 	allowed_branches = list(
 		/datum/mil_branch/expeditionary_corps,
 		/datum/mil_branch/fleet = /decl/hierarchy/outfit/job/torch/crew/medical/senior/fleet,
-		/datum/mil_branch/civilian = /decl/hierarchy/outfit/job/torch/crew/medical/contractor
+		/datum/mil_branch/civilian = /decl/hierarchy/outfit/job/torch/crew/medical/contractor/senior
 	)
 	allowed_ranks = list(
 		/datum/mil_rank/ec/o1,
@@ -45,22 +44,22 @@
 							 /datum/computer_file/program/camera_monitor)
 
 /datum/job/doctor
-	title = "Corpsman"
-	total_positions = 4
-	spawn_positions = 4
+	title = "Medical Technician"
+	total_positions = 3
+	spawn_positions = 3
 	supervisors = "Physicians and the Chief Medical Officer"
 	economic_power = 7
 	ideal_character_age = 40
 	minimal_player_age = 0
 	alt_titles = list(
-		"Field Medic" = /decl/hierarchy/outfit/job/torch/crew/medical/doctor/medic,
-		"Medical Technician",
-		"Nursing Assistant")
-	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/doctor/fleet
+		"Nursing Assistant",
+		"Paramedic",
+		"Corpsman")
+	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/doctor
 	allowed_branches = list(
-		/datum/mil_branch/expeditionary_corps = /decl/hierarchy/outfit/job/torch/crew/medical/doctor,
-		/datum/mil_branch/fleet,
-		/datum/mil_branch/civilian = /decl/hierarchy/outfit/job/torch/crew/medical/contractor/paramedic
+		/datum/mil_branch/expeditionary_corps,
+		/datum/mil_branch/fleet = /decl/hierarchy/outfit/job/torch/crew/medical/doctor/fleet,
+		/datum/mil_branch/civilian = /decl/hierarchy/outfit/job/torch/crew/medical/contractor
 	)
 	allowed_ranks = list(
 		/datum/mil_rank/ec/e3,
@@ -114,21 +113,23 @@
 	                    SKILL_CONSTRUCTION 	= SKILL_EXPERT,
 	                    SKILL_ELECTRICAL 	= SKILL_EXPERT)
 	skill_points = 24
-	access = list(access_robotics, access_robotics_engineering, access_tech_storage, access_morgue, access_medical, access_solgov_crew)
+	access = list(access_robotics, access_robotics_engineering, access_morgue, access_medical, access_solgov_crew)
 	minimal_access = list()
 
 /datum/job/biomech/get_description_blurb()
-	return "You are the Biomechanical Engineer. You are responsible for repairing, upgrading and handling all bio-synthetic crew (like FBPs) on board. You are also responsible for placing brains into MMI�s and anything involving augments. You answer to the Chief Medical Officer and the Corporate Liaison."
+	return "You are the Biomechanical Engineer. You are responsible for repairing, upgrading and handling all bio-synthetic crew (like FBPs) on board. You are also responsible for placing brains into MMIs and anything involving augments. You answer to the Chief Medical Officer and the Corporate Liaison."
 
 /datum/job/medical_trainee
-	title = "Corpsman Trainee"
+	title = "Trainee Medical Technician"
 	department = "Medical"
 	department_flag = MED
-	total_positions = 2
-	spawn_positions = 2
-	supervisors = "the Chief Medical Officer and Medical Personnel"
+	total_positions = 1
+	spawn_positions = 1
+	supervisors = "Medical personnel, and the Chief Medical Officer"
 	selection_color = "#013d3b"
 	ideal_character_age = 20
+	alt_titles = list(
+		"Corpsman Trainee")
 
 	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/doctor
 	allowed_branches = list(
@@ -160,7 +161,7 @@
 							 /datum/computer_file/program/camera_monitor)
 
 /datum/job/medical_trainee/get_description_blurb()
-	return "You are a Corpsman Trainee. You are learning how to treat and recover wounded crew from the more experienced medical personnel aboard. You are subordinate to the rest of the medical team."
+	return "You are a Trainee Medical Technician. You are learning how to treat and recover wounded crew from the more experienced medical personnel aboard. You are subordinate to the rest of the medical team."
 
 /datum/job/chemist
 	title = "Chemist"
@@ -194,11 +195,11 @@
 	economic_power = 5
 	minimal_player_age = 0
 	supervisors = "the Chief Medical Officer"
-	alt_titles = list(
-		"Psychiatrist" = /decl/hierarchy/outfit/job/torch/crew/medical/counselor/psychiatrist,
-		"Chaplain" = /decl/hierarchy/outfit/job/torch/crew/medical/counselor/chaplain,
-	)
 	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/counselor
+	alt_titles = list(
+		"Mentalist" = /decl/hierarchy/outfit/job/torch/crew/medical/counselor/mentalist
+	)
+
 	allowed_branches = list(
 		/datum/mil_branch/civilian,
 		/datum/mil_branch/expeditionary_corps = /decl/hierarchy/outfit/job/torch/crew/medical/counselor/ec,
@@ -208,13 +209,28 @@
 		/datum/mil_rank/fleet/o2,
 		/datum/mil_rank/fleet/o1,
 		/datum/mil_rank/ec/o1)
-	min_skill = list(   SKILL_BUREAUCRACY = SKILL_BASIC,
-	                    SKILL_MEDICAL     = SKILL_BASIC)
-
-	max_skill = list(   SKILL_MEDICAL     = SKILL_MAX)
-
-	access = list(access_medical, access_morgue, access_chapel_office, access_crematorium, access_psychiatrist, access_solgov_crew)
+	min_skill = list(
+		SKILL_BUREAUCRACY = SKILL_BASIC,
+		SKILL_MEDICAL     = SKILL_BASIC
+	)
+	max_skill = list(
+		SKILL_MEDICAL     = SKILL_MAX
+	)
+	access = list(access_medical, access_psychiatrist, access_solgov_crew, access_medical_equip)
 	minimal_access = list()
+	software_on_spawn = list(
+		/datum/computer_file/program/suit_sensors,
+		/datum/computer_file/program/camera_monitor
+	)
+	give_psionic_implant_on_join = FALSE
 
-	software_on_spawn = list(/datum/computer_file/program/suit_sensors,
-							 /datum/computer_file/program/camera_monitor)
+/datum/job/psychiatrist/equip(var/mob/living/carbon/human/H)
+	if(H.mind.role_alt_title == "Counselor")
+		psi_faculties = list("[PSI_REDACTION]" = PSI_RANK_OPERANT)
+	if(H.mind.role_alt_title == "Mentalist")
+		psi_faculties = list("[PSI_COERCION]" = PSI_RANK_OPERANT)
+	return ..()
+
+
+/datum/job/psychiatrist/get_description_blurb()
+	return "You are the Counselor. You are psionically awakened, part of a tiny minority, and you are the first and only exposure most of the crew will have to the mentally gifted. Your main responsibility is the mental health and wellbeing of the crew. You are subordinate to the Chief Medical Officer."

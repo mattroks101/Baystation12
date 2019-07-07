@@ -73,7 +73,7 @@
 			message = "RFID card is not present in the device. Operation aborted."
 			return
 
-		var/access = text2num(href_list["PRG_execute"])
+		var/access = href_list["PRG_execute"]
 		var/obj/item/weapon/card/id/id_card = RFID.stored_card
 		if(access in id_card.access)
 			return 1
@@ -95,7 +95,7 @@
 
 /datum/computer_file/program/access_decrypter/proc/get_speed()
 	var/skill_speed_modifier = 1 + (operator_skill - SKILL_ADEPT)/(SKILL_MAX - SKILL_MIN)
-	return computer.processor_unit.max_idle_programs * skill_speed_modifier
+	return computer.processor_unit.processing_power * skill_speed_modifier
 
 /datum/nano_module/program/access_decrypter
 	name = "NTNet Access Decrypter"
@@ -127,7 +127,7 @@
 	else if(program.computer.card_slot && program.computer.card_slot.stored_card)
 		var/obj/item/weapon/card/id/id_card = program.computer.card_slot.stored_card
 		var/list/regions = list()
-		for(var/i = 1; i <= 7; i++)
+		for(var/i = ACCESS_REGION_MIN; i <= ACCESS_REGION_MAX; i++)
 			var/list/accesses = list()
 			for(var/access in get_region_accesses(i))
 				if (get_access_desc(access))

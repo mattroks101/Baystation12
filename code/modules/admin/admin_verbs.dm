@@ -10,7 +10,7 @@ var/list/admin_verbs_default = list(
 	/client/proc/watched_variables,
 	/client/proc/debug_global_variables,//as above but for global variables,
 //	/client/proc/check_antagonists,		//shows all antags,
-	/client/proc/cmd_mentor_check_new_players
+	/client/proc/cmd_check_new_players
 //	/client/proc/deadchat				//toggles deadchat on/off,
 	)
 var/list/admin_verbs_admin = list(
@@ -30,7 +30,6 @@ var/list/admin_verbs_admin = list(
 	/datum/admins/proc/view_atk_log,	//shows the server combat-log, doesn't do anything presently,
 	/client/proc/cmd_admin_pm_context,	//right-click adminPM interface,
 	/client/proc/cmd_admin_pm_panel,	//admin-pm list,
-	/client/proc/cmd_admin_subtle_message,	//send an message to somebody as a 'voice in their head',
 	/client/proc/cmd_admin_delete,		//delete an instance/object/mob/etc,
 	/client/proc/cmd_admin_check_contents,	//displays the contents of an instance,
 	/datum/admins/proc/access_news_network,	//allows access of newscasters,
@@ -118,7 +117,6 @@ var/list/admin_verbs_fun = list(
 	/client/proc/everyone_random,
 	/client/proc/cinematic,
 	/datum/admins/proc/toggle_aliens,
-	/datum/admins/proc/toggle_alien_eggs,
 	/datum/admins/proc/toggle_space_ninja,
 	/client/proc/cmd_admin_add_freeform_ai_law,
 	/client/proc/cmd_admin_add_random_ai_law,
@@ -160,7 +158,6 @@ var/list/admin_verbs_server = list(
 	/datum/admins/proc/adspawn,
 	/datum/admins/proc/adjump,
 	/datum/admins/proc/toggle_aliens,
-	/datum/admins/proc/toggle_alien_eggs,
 	/datum/admins/proc/toggle_space_ninja,
 	/client/proc/toggle_random_events,
 	/client/proc/check_customitem_activity,
@@ -182,7 +179,6 @@ var/list/admin_verbs_debug = list(
 	/client/proc/cmd_debug_tog_aliens,
 	/client/proc/air_report,
 	/client/proc/reload_admins,
-	/client/proc/reload_mentors,
 	/client/proc/restart_controller,
 	/client/proc/print_random_map,
 	/client/proc/create_random_map,
@@ -242,7 +238,6 @@ var/list/admin_verbs_hideable = list(
 	/client/proc/toggle_view_range,
 	/datum/admins/proc/view_txt_log,
 	/datum/admins/proc/view_atk_log,
-	/client/proc/cmd_admin_subtle_message,
 	/client/proc/cmd_admin_check_contents,
 	/datum/admins/proc/access_news_network,
 	/client/proc/admin_call_shuttle,
@@ -261,7 +256,6 @@ var/list/admin_verbs_hideable = list(
 	/client/proc/drop_bomb,
 	/client/proc/cinematic,
 	/datum/admins/proc/toggle_aliens,
-	/datum/admins/proc/toggle_alien_eggs,
 	/datum/admins/proc/toggle_space_ninja,
 	/client/proc/cmd_admin_add_freeform_ai_law,
 	/client/proc/cmd_admin_add_random_ai_law,
@@ -313,22 +307,11 @@ var/list/admin_verbs_mod = list(
 	/datum/admins/proc/show_skills,
 	/datum/admins/proc/show_player_panel,
 	/client/proc/check_antagonists,
-	/client/proc/cmd_admin_subtle_message, // send an message to somebody as a 'voice in their head',
+	/client/proc/cmd_admin_direct_narrate,
 	/client/proc/aooc,
 	/datum/admins/proc/sendFax,
 	/datum/admins/proc/paralyze_mob,
 	/datum/admins/proc/view_persistent_data
-)
-
-var/list/admin_verbs_mentor = list(
-	/client/proc/cmd_admin_pm_context,
-	/client/proc/cmd_admin_pm_panel,
-	/datum/admins/proc/PlayerNotes,
-	/client/proc/admin_ghost,
-	/client/proc/cmd_mod_say,
-	/datum/admins/proc/show_player_info,
-//	/client/proc/dsay,
-	/client/proc/cmd_admin_subtle_message
 )
 
 /client/proc/add_admin_verbs()
@@ -350,7 +333,6 @@ var/list/admin_verbs_mentor = list(
 		if(holder.rights & R_SOUNDS)		verbs += admin_verbs_sounds
 		if(holder.rights & R_SPAWN)			verbs += admin_verbs_spawn
 		if(holder.rights & R_MOD)			verbs += admin_verbs_mod
-		if(holder.rights & R_MENTOR)		verbs += admin_verbs_mentor
 
 /client/proc/remove_admin_verbs()
 	verbs.Remove(
@@ -411,16 +393,8 @@ var/list/admin_verbs_mentor = list(
 	set name = "Aghost"
 	if(!holder)	return
 	if(isghost(mob))
-		//re-enter
 		var/mob/observer/ghost/ghost = mob
-		if(!is_mentor(usr.client))
-			ghost.can_reenter_corpse = 1
-		if(ghost.can_reenter_corpse)
-			ghost.reenter_corpse()
-		else
-			to_chat(ghost, "<font color='red'>Error:  Aghost:  Can't reenter corpse, mentors that use adminHUD while aghosting are not permitted to enter their corpse again</font>")
-			return
-
+		ghost.reenter_corpse()
 		SSstatistics.add_field_details("admin_verb","P") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 	else if(istype(mob,/mob/new_player))
@@ -524,7 +498,7 @@ var/list/admin_verbs_mentor = list(
 		prefs.ooccolor = input(src, "Please select your OOC colour.", "OOC colour") as color
 	else if(response == "Reset to default")
 		prefs.ooccolor = initial(prefs.ooccolor)
-	prefs.save_preferences()
+	SScharacter_setup.queue_preferences_save(prefs)
 
 	SSstatistics.add_field_details("admin_verb","OC") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 	return

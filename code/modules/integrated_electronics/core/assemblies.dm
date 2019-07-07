@@ -104,6 +104,7 @@
 	STOP_PROCESSING(SScircuit, src)
 	for(var/circ in assembly_components)
 		remove_component(circ)
+		qdel(circ)
 	return ..()
 
 /obj/item/device/electronic_assembly/Process()
@@ -199,11 +200,11 @@
 
 		if(length(assembly_components) > components_per_page)
 			HTML += "<br>\["
-			for(var/i = 0 to round(length(assembly_components)/components_per_page))
-				if(i == interact_page)
-					HTML += " [i+1]"
+			for(var/i = 1 to ceil(length(assembly_components)/components_per_page))
+				if((i-1) == interact_page)
+					HTML += " [i]"
 				else
-					HTML += " <a href='?src=\ref[src];select_page=[i]'>[i+1]</a>"
+					HTML += " <a href='?src=\ref[src];select_page=[i-1]'>[i]</a>"
 			HTML += " \]"
 
 	HTML += "</body></html>"
@@ -388,6 +389,9 @@
 		user.put_in_hands(IC)
 	add_allowed_scanner(user.ckey)
 
+	// Make sure we're not on an invalid page
+	interact_page = Clamp(interact_page, 0, ceil(length(assembly_components)/components_per_page)-1)
+
 	return TRUE
 
 // Actually removes the component, doesn't perform any checks.
@@ -458,6 +462,17 @@
 		detail_color = D.detail_color
 		update_icon()
 	else if(istype(I, /obj/item/weapon/screwdriver))
+		var/hatch_locked = FALSE
+		for(var/obj/item/integrated_circuit/manipulation/hatchlock/H in assembly_components)
+			// If there's more than one hatch lock, only one needs to be enabled for the assembly to be locked
+			if(H.lock_enabled)
+				hatch_locked = TRUE
+				break
+
+		if(hatch_locked)
+			to_chat(user, "<span class='notice'>The screws are covered by a locking mechanism!</span>")
+			return FALSE
+
 		playsound(src, 'sound/items/Screwdriver.ogg', 25)
 		opened = !opened
 		to_chat(user, "<span class='notice'>You [opened ? "open" : "close"] the maintenance hatch of [src].</span>")

@@ -11,9 +11,9 @@
 /decl/closet_appearance/secure_closet/torch/science/cso
 	extra_decals = list(
 		"stripe_vertical_left_full" =  COLOR_PURPLE_GRAY,
-		"stripe_vertical_mid_full" =   COLOR_GOLD,
+		"stripe_vertical_mid_full" =   COLOR_CLOSET_GOLD,
 		"stripe_vertical_right_full" = COLOR_PURPLE_GRAY,
-		"research" = COLOR_GOLD
+		"research" = COLOR_CLOSET_GOLD
 	)
 
 /obj/structure/closet/secure_closet/RD_torch
@@ -32,6 +32,7 @@
 		/obj/item/weapon/tank/emergency/oxygen/engi,
 		/obj/item/clothing/mask/gas,
 		/obj/item/device/flash,
+		/obj/item/weapon/gun/energy/confuseray,
 		/obj/item/device/megaphone,
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
@@ -65,7 +66,7 @@
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
 		/obj/item/device/camera,
-		/obj/item/device/analyzer,
+		/obj/item/device/scanner/gas,
 		/obj/item/taperoll/research,
 		/obj/item/clothing/gloves/latex,
 		/obj/item/clothing/glasses/science,
@@ -95,7 +96,7 @@
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
 		/obj/item/device/camera,
-		/obj/item/device/analyzer,
+		/obj/item/device/scanner/gas,
 		/obj/item/taperoll/research,
 		/obj/item/clothing/gloves/latex,
 		/obj/item/clothing/glasses/science,
@@ -159,13 +160,13 @@
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
 		/obj/item/device/camera,
-		/obj/item/device/analyzer,
+		/obj/item/device/scanner/gas,
 		/obj/item/taperoll/research,
 		/obj/item/clothing/gloves/latex,
 		/obj/item/clothing/glasses/science,
 		/obj/item/weapon/storage/belt/general,
-		/obj/item/device/slime_scanner,
-		/obj/item/device/analyzer/plant_analyzer,
+		/obj/item/device/scanner/xenobio,
+		/obj/item/device/scanner/plant,
 		new /datum/atom_creator/weighted(list(/obj/item/weapon/storage/backpack/, /obj/item/weapon/storage/backpack/satchel/grey)),
 		new /datum/atom_creator/simple(/obj/item/weapon/storage/backpack/messenger/, 50)
 	)

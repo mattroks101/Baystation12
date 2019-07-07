@@ -17,7 +17,7 @@
 	allowed_roles = list(/datum/job/merchant)
 
 /datum/gear/suit/medical_poncho
-	allowed_roles = list(/datum/job/senior_doctor, /datum/job/doctor, /datum/job/psychiatrist, /datum/job/biomech, /datum/job/roboticist, /datum/job/merchant)
+	allowed_roles = list(/datum/job/senior_doctor, /datum/job/doctor, /datum/job/psychiatrist, /datum/job/biomech, /datum/job/roboticist, /datum/job/merchant, /datum/job/chemist)
 	allowed_branches = CIVILIAN_BRANCHES
 
 /datum/gear/suit/engineering_poncho
@@ -108,3 +108,9 @@
 	armors["green plate carrier"] = /obj/item/clothing/suit/armor/pcarrier/green
 	armors["tan plate carrier"] = /obj/item/clothing/suit/armor/pcarrier/tan
 	gear_tweaks += new/datum/gear_tweak/path(armors)
+
+/datum/gear/suit/ocie
+	display_name = "Agent's jacket"
+	path = /obj/item/clothing/suit/storage/toggle/agent_jacket
+	allowed_roles = list(/datum/job/detective)
+	allowed_branches = list(/datum/mil_branch/solgov)

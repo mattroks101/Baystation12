@@ -52,7 +52,7 @@
 
 	var/burst = 1
 	var/can_autofire = FALSE
-	var/fire_delay = 6 	//delay after shooting before the gun can be used again
+	var/fire_delay = 6 	//delay after shooting before the gun can be used again. Cannot be less than [burst_delay+1]
 	var/burst_delay = 2	//delay between shots, if firing in bursts
 	var/move_delay = 1
 	var/fire_sound = 'sound/weapons/gunshot/gunshot.ogg'
@@ -227,7 +227,7 @@
 		if(pointblank)
 			process_point_blank(projectile, user, target)
 
-		if(process_projectile(projectile, user, target, user.zone_sel.selecting, clickparams))
+		if(process_projectile(projectile, user, target, user.zone_sel?.selecting, clickparams))
 			handle_post_fire(user, target, pointblank, reflex)
 			update_icon()
 
@@ -239,9 +239,10 @@
 			pointblank = 0
 
 	//update timing
-	user.setClickCooldown(DEFAULT_QUICK_COOLDOWN)
+	var/delay = max(burst_delay+1, fire_delay)
+	user.setClickCooldown(min(delay, DEFAULT_QUICK_COOLDOWN))
 	user.SetMoveCooldown(move_delay)
-	next_fire_time = world.time + fire_delay
+	next_fire_time = world.time + delay
 
 //obtains the next projectile to fire
 /obj/item/weapon/gun/proc/consume_next_projectile()
@@ -436,7 +437,7 @@
 		in_chamber.on_hit(M)
 		if (in_chamber.damage_type != PAIN)
 			log_and_message_admins("[key_name(user)] commited suicide using \a [src]")
-			user.apply_damage(in_chamber.damage*2.5, in_chamber.damage_type, BP_HEAD, 0, in_chamber.damage_flags(), used_weapon = "Point blank shot in the mouth with \a [in_chamber]")
+			user.apply_damage(in_chamber.damage*2.5, in_chamber.damage_type, BP_HEAD, in_chamber.damage_flags(), used_weapon = "Point blank shot in the mouth with \a [in_chamber]")
 			user.death()
 		else
 			to_chat(user, "<span class = 'notice'>Ow...</span>")
@@ -534,8 +535,8 @@
 /obj/item/weapon/gun/CtrlClick(var/mob/user)
 	if(loc == user)
 		toggle_safety(user)
-	else
-		..()
+		return TRUE
+	. = ..()
 
 /obj/item/weapon/gun/proc/safety()
 	return has_safety && safety_state

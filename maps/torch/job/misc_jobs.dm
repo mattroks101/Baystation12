@@ -33,6 +33,7 @@ Civilian
 		"Historian",
 		"Botanist",
 		"Investor" = /decl/hierarchy/outfit/job/torch/passenger/passenger/investor,
+		"Psychologist" = /decl/hierarchy/outfit/job/torch/passenger/passenger/psychologist,
 		"Naturalist",
 		"Ecologist",
 		"Entertainer",
@@ -74,6 +75,7 @@ Civilian
 
 	max_skill = list(   SKILL_PILOT       = SKILL_MAX)
 	skill_points = 24
+	required_language = null
 
 /datum/job/stowaway
 	title = "Stowaway"
@@ -98,3 +100,12 @@ Civilian
 	)
 	latejoin_at_spawnpoints = 1
 	announced = FALSE
+	required_language = null
+	is_semi_antagonist = TRUE
+	var/list/soft_antag_species = list(SPECIES_VOX, SPECIES_VOX_ARMALIS)
+
+/datum/job/stowaway/post_equip_rank(mob/person, alt_title)
+	var/mob/living/carbon/human/H = person
+	is_semi_antagonist = (istype(H) && (H.species.name in soft_antag_species))
+	..()
+	is_semi_antagonist = initial(is_semi_antagonist)

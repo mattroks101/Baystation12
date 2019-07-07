@@ -11,15 +11,12 @@
 
 	preview_icon = 'icons/mob/human_races/species/ipc/preview.dmi'
 
-	unarmed_types = list(/datum/unarmed_attack/punch)
+	unarmed_types = list(/datum/unarmed_attack/punch, /datum/unarmed_attack/kick, /datum/unarmed_attack/stomp)
 	rarity_value = 2
 	strength = STR_HIGH
 
 	min_age = 1
 	max_age = 90
-
-	brute_mod = 1 // Because of the introduction of FBPs, IPCs are rebalanced back to 1.
-	burn_mod = 1  //
 
 	warning_low_pressure = 50
 	hazard_low_pressure = -1
@@ -36,7 +33,7 @@
 	passive_temp_gain = 5  // This should cause IPCs to stabilize at ~80 C in a 20 C environment.
 
 	species_flags = SPECIES_FLAG_NO_SCAN | SPECIES_FLAG_NO_PAIN | SPECIES_FLAG_NO_POISON
-	spawn_flags = SPECIES_CAN_JOIN | SPECIES_IS_WHITELISTED | SPECIES_NO_FBP_CONSTRUCTION | SPECIES_NO_LACE
+	spawn_flags = SPECIES_CAN_JOIN | SPECIES_IS_WHITELISTED | SPECIES_NO_FBP_CONSTRUCTION
 	appearance_flags = HAS_UNDERWEAR | HAS_EYE_COLOR //IPCs can wear undies too :(
 
 	blood_color = "#1f181f"
@@ -45,10 +42,8 @@
 
 	has_organ = list(
 		BP_POSIBRAIN = /obj/item/organ/internal/posibrain,
-		BP_OPTICS = /obj/item/organ/internal/eyes/optics
+		BP_EYES = /obj/item/organ/internal/eyes/robot
 		)
-
-	vision_organ = BP_OPTICS
 
 	heat_discomfort_level = 373.15
 	heat_discomfort_strings = list(

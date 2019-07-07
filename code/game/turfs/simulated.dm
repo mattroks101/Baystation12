@@ -60,7 +60,7 @@
 	tracks.AddTracks(bloodDNA,comingdir,goingdir,bloodcolor)
 
 /turf/simulated/proc/update_dirt()
-	dirt = min(dirt+1, 101)
+	dirt = min(dirt+0.5, 101)
 	var/obj/effect/decal/cleanable/dirt/dirtoverlay = locate(/obj/effect/decal/cleanable/dirt, src)
 	if (dirt > 50)
 		if (!dirtoverlay)
@@ -72,6 +72,7 @@
 	. = ..()
 
 /turf/simulated/Entered(atom/A, atom/OL)
+	. = ..()
 	if (istype(A,/mob/living))
 		var/mob/living/M = A
 
@@ -106,7 +107,7 @@
 				bloodDNA = null
 
 		if(M.lying)
-			return ..()
+			return
 
 		if(src.wet)
 
@@ -134,8 +135,6 @@
 				M.inertia_dir = 0
 		else
 			M.inertia_dir = 0
-
-	..()
 
 //returns 1 if made bloody, returns 0 otherwise
 /turf/simulated/add_blood(mob/living/carbon/human/M as mob)

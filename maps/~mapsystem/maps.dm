@@ -170,6 +170,7 @@ var/const/MAP_HAS_RANK = 2		//Rank system, also togglable
 			RELIGION_BUDDHISM,
 			RELIGION_ISLAM,
 			RELIGION_CHRISTIANITY,
+			RELIGION_BAHAI_FAITH,
 			RELIGION_AGNOSTICISM,
 			RELIGION_DEISM,
 			RELIGION_ATHEISM,
@@ -196,9 +197,7 @@ var/const/MAP_HAS_RANK = 2		//Rank system, also togglable
 	)
 
 	// List of /datum/department types to instantiate at roundstart.
-	var/list/departments = list(
-		/datum/department/medbay
-	)
+	var/list/departments
 
 /datum/map/New()
 	if(!map_levels)
@@ -209,18 +208,23 @@ var/const/MAP_HAS_RANK = 2		//Rank system, also togglable
 			var/datum/job/job = jtype
 			if(initial(job.available_by_default))
 				allowed_jobs += jtype
-	if(!planet_size)
+	if(!LAZYLEN(planet_size))
 		planet_size = list(world.maxx, world.maxy)
 
-/datum/map/proc/setup_map()
+/datum/map/proc/get_lobby_track(var/exclude)
 	var/lobby_track_type
 	if(lobby_tracks.len)
-		lobby_track_type = pick(lobby_tracks)
+		lobby_track_type = pick(lobby_tracks - exclude)
 	else
-		lobby_track_type = pick(subtypesof(/music_track))
+		lobby_track_type = pick(subtypesof(/music_track) - exclude)
+	return decls_repository.get_decl(lobby_track_type)
 
-	lobby_track = decls_repository.get_decl(lobby_track_type)
+/datum/map/proc/setup_map()
+	lobby_track = get_lobby_track()
 	world.update_status()
+
+/datum/map/proc/setup_job_lists()
+	return
 
 /datum/map/proc/send_welcome()
 	return
@@ -309,20 +313,26 @@ var/const/MAP_HAS_RANK = 2		//Rank system, also togglable
 		weighted_mundaneevent_locations[D] = D.viable_mundane_events.len
 
 	if(!station_account)
-		station_account = create_account("[station_name()] Primary Account", starting_money)
+		station_account = create_account("[station_name()] Primary Account", "[station_name()]", starting_money, ACCOUNT_TYPE_DEPARTMENT)
 
 	for(var/job in allowed_jobs)
-		var/datum/job/J = decls_repository.get_decl(job)
-		if(J.department)
-			station_departments |= J.department
-	for(var/department in station_departments)
-		department_accounts[department] = create_account("[department] Account", department_money)
+		var/datum/job/J = job
+		var/dept = initial(J.department)
+		if(dept)
+			station_departments |= dept
 
-	department_accounts["Vendor"] = create_account("Vendor Account", 0)
+	for(var/department in station_departments)
+		department_accounts[department] = create_account("[department] Account", "[department]", department_money, ACCOUNT_TYPE_DEPARTMENT)
+
+	department_accounts["Vendor"] = create_account("Vendor Account", "Vendor", 0, ACCOUNT_TYPE_DEPARTMENT)
 	vendor_account = department_accounts["Vendor"]
 
 /datum/map/proc/map_info(var/client/victim)
-	return
+	to_chat(victim, "<h2>Current map information</h2>")
+	to_chat(victim, get_map_info())
+
+/datum/map/proc/get_map_info()
+	return "No map information available"
 
 /datum/map/proc/bolt_saferooms()
 	return // overriden by torch

@@ -1,6 +1,6 @@
 /obj/machinery/autolathe
 	name = "autolathe"
-	desc = "It produces items using metal and glass."
+	desc = "It produces items using metal, glass, plastic, and aluminium. It has a built in shredder that can recycle most items, although any materials it cannot use will be wasted."
 	icon_state = "autolathe"
 	density = 1
 	anchored = 1
@@ -8,6 +8,8 @@
 	active_power_usage = 2000
 	clicksound = "keyboard"
 	clickvol = 30
+	base_type = /obj/machinery/autolathe
+	construct_state = /decl/machine_construction/default/panel_closed
 
 	var/list/machine_recipes
 	var/list/stored_material =  list(MATERIAL_STEEL = 0, MATERIAL_ALUMINIUM = 0, MATERIAL_GLASS = 0, MATERIAL_PLASTIC = 0)
@@ -22,42 +24,15 @@
 	var/mat_efficiency = 1
 	var/build_time = 50
 
-	var/datum/wires/autolathe/wires = null
-
-
-/obj/machinery/autolathe/New()
-
-	..()
-	wires = new(src)
-	//Create parts for lathe.
-	component_parts = list()
-	component_parts += new /obj/item/weapon/circuitboard/autolathe(src)
-	component_parts += new /obj/item/weapon/stock_parts/matter_bin(src)
-	component_parts += new /obj/item/weapon/stock_parts/matter_bin(src)
-	component_parts += new /obj/item/weapon/stock_parts/matter_bin(src)
-	component_parts += new /obj/item/weapon/stock_parts/manipulator(src)
-	component_parts += new /obj/item/weapon/stock_parts/console_screen(src)
-	RefreshParts()
-
-/obj/machinery/autolathe/Destroy()
-	qdel(wires)
-	wires = null
-	return ..()
+	wires = /datum/wires/autolathe
 
 /obj/machinery/autolathe/proc/update_recipe_list()
 	if(!machine_recipes)
 		machine_recipes = autolathe_recipes
 
-/obj/machinery/autolathe/interact(mob/user as mob)
-
+/obj/machinery/autolathe/interact(mob/user)
+	user.set_machine(src)
 	update_recipe_list()
-
-	if(..() || (disabled && !panel_open))
-		to_chat(user, "<span class='danger'>\The [src] is disabled!</span>")
-		return
-
-	if(shocked)
-		shock(user, 50)
 
 	var/dat = "<center><h1>Autolathe Control Panel</h1><hr/>"
 
@@ -113,31 +88,30 @@
 			dat += "<tr><td width = 180>[R.hidden ? "<font color = 'red'>*</font>" : ""]<b>[can_make ? "<a href='?src=\ref[src];make=[index];multiplier=1'>" : ""][R.name][can_make ? "</a>" : ""]</b>[R.hidden ? "<font color = 'red'>*</font>" : ""][multiplier_string]</td><td align = right>[material_string]</tr>"
 
 		dat += "</table><hr>"
-	//Hacking.
-	if(panel_open)
-		dat += "<h2>Maintenance Panel</h2>"
-		dat += wires.GetInteractWindow(user)
-
-		dat += "<hr>"
 
 	var/datum/browser/popup = new(user, "autolathenew", "Autholathe", 450, 600)
 	popup.set_content(dat)
 	popup.open()
 
-/obj/machinery/autolathe/attackby(var/obj/item/O as obj, var/mob/user as mob)
+/obj/machinery/autolathe/state_transition(var/decl/machine_construction/default/new_state)
+	. = ..()
+	if(istype(new_state))
+		updateUsrDialog()
 
+/obj/machinery/autolathe/components_are_accessible(path)
+	return !busy && ..()
+
+/obj/machinery/autolathe/cannot_transition_to(state_path)
+	if(busy)
+		return SPAN_NOTICE("You must wait for \the [src] to finish first.")
+	return ..()
+
+/obj/machinery/autolathe/attackby(var/obj/item/O as obj, var/mob/user as mob)
 	if(busy)
 		to_chat(user, "<span class='notice'>\The [src] is busy. Please wait for completion of previous operation.</span>")
 		return
-
-	if(default_deconstruction_screwdriver(user, O))
-		updateUsrDialog()
-		return
-	if(default_deconstruction_crowbar(user, O))
-		return
-	if(default_part_replacement(user, O))
-		return
-
+	if(component_attackby(O, user))
+		return TRUE
 	if(stat)
 		return
 
@@ -207,9 +181,17 @@
 
 	updateUsrDialog()
 
-/obj/machinery/autolathe/attack_hand(mob/user as mob)
-	user.set_machine(src)
+/obj/machinery/autolathe/physical_attack_hand(mob/user)
+	if(shocked)
+		shock(user, 50)
+		return TRUE
+
+/obj/machinery/autolathe/interface_interact(mob/user)
+	if(disabled && !panel_open)
+		to_chat(user, "<span class='danger'>\The [src] is disabled!</span>")
+		return TRUE
 	interact(user)
+	return TRUE
 
 /obj/machinery/autolathe/CanUseTopic(user, href_list)
 	if(busy)
@@ -226,7 +208,7 @@
 		show_category = choice
 		. = TOPIC_REFRESH
 
-	else if(href_list["make"] && machine_recipes)
+	else if(!busy && href_list["make"] && machine_recipes)
 		. = TOPIC_REFRESH
 		var/index = text2num(href_list["make"])
 		var/multiplier = text2num(href_list["multiplier"])
@@ -235,10 +217,11 @@
 		if(index > 0 && index <= machine_recipes.len)
 			making = machine_recipes[index]
 
-		//Exploit detection, not sure if necessary after rewrite.
-		if(!making || multiplier < 0 || multiplier > 100)
-			log_and_message_admins("tried to exploit an autolathe to duplicate an item!", user)
+		if(!making)
 			return TOPIC_HANDLED
+		if(!making.is_stack && multiplier != 1)
+			return TOPIC_HANDLED
+		multiplier = sanitize_integer(multiplier, 1, 100, 1)
 
 		busy = 1
 		update_use_power(POWER_USE_ACTIVE)
@@ -247,6 +230,7 @@
 		for(var/material in making.resources)
 			if(!isnull(stored_material[material]))
 				if(stored_material[material] < round(making.resources[material] * mat_efficiency) * multiplier)
+					busy = 0
 					return TOPIC_REFRESH
 
 		//Consume materials.
@@ -281,19 +265,15 @@
 //Updates overall lathe storage size.
 /obj/machinery/autolathe/RefreshParts()
 	..()
-	var/mb_rating = 0
-	var/man_rating = 0
-	for(var/obj/item/weapon/stock_parts/matter_bin/MB in component_parts)
-		mb_rating += MB.rating
-	for(var/obj/item/weapon/stock_parts/manipulator/M in component_parts)
-		man_rating += M.rating
+	var/mb_rating = Clamp(total_component_rating_of_type(/obj/item/weapon/stock_parts/matter_bin), 0, 10)
+	var/man_rating = Clamp(total_component_rating_of_type(/obj/item/weapon/stock_parts/manipulator), 0.5, 3.5)
 
 	storage_capacity[MATERIAL_STEEL] = mb_rating  * 25000
 	storage_capacity[MATERIAL_ALUMINIUM] = mb_rating  * 25000
 	storage_capacity[MATERIAL_GLASS] = mb_rating  * 12500
 	storage_capacity[MATERIAL_PLASTIC] = mb_rating  * 12500
 	build_time = 50 / man_rating
-	mat_efficiency = 1.1 - man_rating * 0.1// Normally, price is 1.25 the amount of material, so this shouldn't go higher than 0.8. Maximum rating of parts is 3
+	mat_efficiency = 1.1 - man_rating * 0.1// Normally, price is 1.25 the amount of material.
 
 /obj/machinery/autolathe/dismantle()
 

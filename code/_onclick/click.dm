@@ -72,7 +72,9 @@
 	if(stat || paralysis || stunned || weakened)
 		return
 
-	face_atom(A) // change direction to face what you clicked on
+	// Do not allow player facing change in fixed chairs
+	if(!istype(buckled) || buckled.buckle_movable)
+		face_atom(A) // change direction to face what you clicked on
 
 	if(!canClick()) // in the year 2000...
 		return
@@ -196,12 +198,18 @@
 	animals lunging, etc.
 */
 /mob/proc/RangedAttack(var/atom/A, var/params)
-	if(!mutations.len) return
+	if(!mutations.len) 
+		return FALSE
+
 	if((MUTATION_LASER in mutations) && a_intent == I_HURT)
 		LaserEyes(A) // moved into a proc below
-	else if(MUTATION_TK in mutations)
+		return TRUE
+
+	if(MUTATION_TK in mutations)
 		setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
 		A.attack_tk(src)
+		return TRUE
+
 /*
 	Restrained ClickOn
 
@@ -243,14 +251,16 @@
 	For most objects, pull
 */
 /mob/proc/CtrlClickOn(var/atom/A)
-	A.CtrlClick(src)
-	return
+	return A.CtrlClick(src)
+	
 /atom/proc/CtrlClick(var/mob/user)
-	return
+	return FALSE
 
 /atom/movable/CtrlClick(var/mob/user)
 	if(Adjacent(user))
 		user.start_pulling(src)
+		return TRUE
+	. = ..()
 
 /*
 	Alt click
@@ -322,10 +332,10 @@
 /mob/living/carbon/human/LaserEyes()
 	if(nutrition>0)
 		..()
-		nutrition = max(nutrition - rand(1,5),0)
+		adjust_nutrition(-(rand(1,5)))
 		handle_regular_hud_updates()
 	else
-		to_chat(src, "<span class='warning'>You're out of energy!  You need food!</span>")
+		to_chat(src, SPAN_WARNING("You're out of energy! You need food!"))
 
 // Simple helper to face what you clicked on, in case it should be needed in more than one place
 /mob/proc/face_atom(var/atom/A)
