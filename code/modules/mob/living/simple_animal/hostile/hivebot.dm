@@ -5,8 +5,8 @@
 	icon_state = "basic"
 	icon_living = "basic"
 	icon_dead = "basic"
-	health = 15
-	maxHealth = 15
+	health = 55
+	maxHealth = 55
 	melee_damage_lower = 2
 	melee_damage_upper = 3
 	melee_damage_flags = DAM_SHARP|DAM_EDGE
@@ -19,8 +19,14 @@
 	minbodytemp = 0
 	speed = 4
 	natural_armor = list(melee = 20)
-
 	bleed_colour = SYNTH_BLOOD_COLOUR
+
+	meat_type =     null
+	meat_amount =   0
+	bone_material = null
+	bone_amount =   0
+	skin_material = null
+	skin_amount =   0
 
 /mob/living/simple_animal/hostile/hivebot/range
 	desc = "A junky looking robot with four spiky legs. It's equipped with some kind of small-bore gun."
@@ -31,8 +37,9 @@
 	rapid = 1
 
 /mob/living/simple_animal/hostile/hivebot/strong
-	desc = "A junky looking robot with four spiky legs - this one has thicker armour plating."
-	health = 80
+	desc = "A junky looking robot with four spiky legs - this one has thick armour plating."
+	health = 120
+	maxHealth = 120
 	ranged = 1
 	can_escape = 1
 	natural_armor = list(melee = 30)
@@ -59,6 +66,7 @@ Teleporter beacon, and its subtypes
 	status_flags = 0
 	anchored = 1
 	stop_automated_movement = 1
+
 	var/bot_type = /mob/living/simple_animal/hostile/hivebot
 	var/bot_amt = 10
 	var/spawn_delay = 100
@@ -114,7 +122,7 @@ Special projectiles
 	distance_falloff = 1.3
 
 /obj/item/projectile/beam/megabot
-	damage = 35
+	damage = 45
 	distance_falloff = 0.5
 
 /*
@@ -131,24 +139,23 @@ The megabot
 	icon_state = "megabot"
 	icon_living = "megabot"
 	icon_dead = "megabot_dead"
-	health = 325
-	maxHealth = 325
-	melee_damage_lower = 12
-	melee_damage_upper = 17
+	health = 440
+	maxHealth = 440
+	melee_damage_lower = 15
+	melee_damage_upper = 19
 	melee_damage_flags = DAM_SHARP|DAM_EDGE
 	attacktext = "sawed"
 	speed = 0
-	natural_armor = list(melee = 40, bullet = 20)
+	natural_armor = list(melee = 50, bullet = 20)
 	can_escape = TRUE
 	armor_type = /datum/extension/armor/toggle
+	ability_cooldown = 3 MINUTES
 
 	pixel_x = -32
 	default_pixel_x = -32
 
 	var/attack_mode = ATTACK_MODE_MELEE
 	var/num_shots
-	var/last_cycled
-	var/cycle_cooldown = 4 MINUTES
 	var/deactivated
 
 /mob/living/simple_animal/hostile/hivebot/mega/Initialize()
@@ -160,7 +167,7 @@ The megabot
 	if(!.)
 		return
 	
-	if(last_cycled < world.time)
+	if(time_last_used_ability < world.time)
 		switch_mode(ATTACK_MODE_ROCKET)
 
 /mob/living/simple_animal/hostile/hivebot/mega/emp_act(severity)
@@ -204,7 +211,7 @@ The megabot
 			ranged = TRUE
 			projectilesound = 'sound/weapons/Laser.ogg'
 			projectiletype = /obj/item/projectile/beam/megabot
-			num_shots = 8
+			num_shots = 12
 			fire_desc = "fires a laser"
 			visible_message(SPAN_MFAUNA("\The [src]'s laser cannon whines!"))
 		if(ATTACK_MODE_ROCKET)
@@ -212,8 +219,8 @@ The megabot
 			ranged = TRUE
 			projectilesound = 'sound/effects/Explosion1.ogg'
 			projectiletype = /obj/item/projectile/bullet/gyro/megabot
-			num_shots = 2
-			last_cycled = world.time + cycle_cooldown
+			num_shots = 4
+			cooldown_ability(ability_cooldown)
 			fire_desc = "launches a microrocket"
 			visible_message(SPAN_MFAUNA("\The [src]'s missile pod rumbles!"))
 
@@ -227,7 +234,7 @@ The megabot
 	var/datum/extension/armor/toggle/armor = get_extension(src, /datum/extension/armor)
 	if(armor)
 		armor.toggle(FALSE)
-	addtimer(CALLBACK(src, .proc/reactivate), 6 SECONDS)
+	addtimer(CALLBACK(src, .proc/reactivate), 4 SECONDS)
 
 /mob/living/simple_animal/hostile/hivebot/mega/proc/reactivate()
 	stop_automation = FALSE

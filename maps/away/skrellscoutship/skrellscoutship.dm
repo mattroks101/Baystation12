@@ -1,3 +1,5 @@
+#define WEBHOOK_SUBMAP_LOADED_SKRELL "webhook_submap_skrell"
+
 #include "skrellscoutship_areas.dm"
 #include "skrellscoutship_shuttles.dm"
 
@@ -32,6 +34,9 @@
 /obj/effect/submap_landmark/spawnpoint/skrellscoutship/leader
 	name = "Qrri-Vuxix"
 
+/decl/webhook/submap_loaded/skrell
+	id = WEBHOOK_SUBMAP_LOADED_SKRELL
+
 /decl/submap_archetype/skrellscoutship
 	descriptor = "Skrellian Scout Ship"
 	map = "Xilvuxix"
@@ -39,7 +44,8 @@
 		/datum/job/submap/skrellscoutship_crew,
 		/datum/job/submap/skrellscoutship_crew/leader
 	)
-	
+	call_webhook = WEBHOOK_SUBMAP_LOADED_SKRELL
+
 //Access + Loadout	
 
 /var/const/access_skrellscoutship = "ACCESS_SKRELLSCOUT"
@@ -175,6 +181,15 @@
 /obj/machinery/power/apc/skrell
 	req_access = list(access_skrellscoutship)
 
+/obj/machinery/alarm/skrell
+	req_access = list(access_skrellscoutship)
+	target_temperature = T0C+65
+
+/obj/machinery/alarm/skrell/Initialize()
+	. = ..()
+	TLV["pressure"] =		list(ONE_ATMOSPHERE*0.80,ONE_ATMOSPHERE*0.90,ONE_ATMOSPHERE*1.30,ONE_ATMOSPHERE*1.40) /* kpa */
+	TLV["temperature"] =	list(T0C-26, T0C, T0C+80, T0C+90) // K
+
 /obj/machinery/power/smes/buildable/preset/skrell
 	uncreated_component_parts = list(
 		/obj/item/weapon/stock_parts/smes_coil/super_io = 2,
@@ -187,3 +202,5 @@
 
 /obj/machinery/vending/medical/skrell
 	req_access = list(access_skrellscoutship)
+
+#undef WEBHOOK_SUBMAP_LOADED_SKRELL

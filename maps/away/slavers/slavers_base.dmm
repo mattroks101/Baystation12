@@ -3006,11 +3006,13 @@
 /turf/simulated/floor/airless/ceiling,
 /area/slavers_base/maint)
 "hz" = (
-/obj/machinery/vending/engineering,
+/obj/machinery/vending/engineering{
+	req_access = list()
+	},
 /turf/simulated/floor/airless/ceiling,
 /area/slavers_base/powatm)
 "hA" = (
-/obj/item/weapon/computer_hardware/card_slot,
+/obj/item/weapon/stock_parts/computer/card_slot,
 /turf/simulated/floor/airless/ceiling,
 /area/slavers_base/powatm)
 "hB" = (
@@ -4323,10 +4325,6 @@
 /obj/effect/shuttle_landmark/nav_slavers_base/nav6,
 /turf/space,
 /area/space)
-"kZ" = (
-/obj/effect/landmark/random_gen/asteroid,
-/turf/space,
-/area/space)
 "lb" = (
 /obj/structure/hygiene/sink{
 	pixel_y = -20
@@ -4548,7 +4546,7 @@ aa
 aa
 aa
 aa
-kZ
+aa
 "}
 (2,1,1) = {"
 aa

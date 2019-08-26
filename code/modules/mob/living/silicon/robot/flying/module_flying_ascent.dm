@@ -15,10 +15,14 @@
 		/obj/item/clustertool,
 		/obj/item/clustertool, 
 		/obj/item/clustertool,
+		/obj/item/weapon/soap,
+		/obj/item/weapon/mop/advanced,
+		/obj/item/device/plunger/robot,
 		/obj/item/weapon/weldingtool/electric/mantid,
 		/obj/item/weapon/extinguisher,
 		/obj/item/device/t_scanner,
 		/obj/item/device/scanner/gas,
+		/obj/item/device/scanner/health,
 		/obj/item/device/geiger,
 		/obj/item/weapon/gripper,
 		/obj/item/weapon/gripper/no_use/loader,
@@ -27,8 +31,25 @@
 		/obj/item/weapon/surgicaldrill,
 		/obj/item/weapon/hemostat,
 		/obj/item/weapon/bonesetter,
-		/obj/item/weapon/circular_saw
+		/obj/item/weapon/circular_saw,
+		/obj/item/stack/material/cyborg/steel,
+		/obj/item/stack/material/cyborg/aluminium,
+		/obj/item/stack/material/rods/cyborg,
+		/obj/item/stack/tile/floor/cyborg,
+		/obj/item/stack/material/cyborg/glass,
+		/obj/item/stack/material/cyborg/glass/reinforced,
+		/obj/item/stack/cable_coil/cyborg,
+		/obj/item/stack/material/cyborg/plasteel,
+		/obj/item/stack/nanopaste
 	)
+	synths = list(
+		/datum/matter_synth/metal = 	30000,
+		/datum/matter_synth/glass = 	20000,
+		/datum/matter_synth/plasteel = 	10000,
+		/datum/matter_synth/nanite =    10000,
+		/datum/matter_synth/wire
+	)
+
 	languages = list(
 		LANGUAGE_MANTID_VOCAL     = TRUE,
 		LANGUAGE_MANTID_NONVOCAL  = TRUE,
@@ -36,6 +57,43 @@
 		LANGUAGE_SKRELLIAN        = TRUE,
 		LANGUAGE_NABBER           = TRUE
 	)
+
+// Copypasted from repair bot - todo generalize this step.
+/obj/item/weapon/robot_module/flying/ascent/finalize_synths()
+	. = ..()
+	var/datum/matter_synth/metal/metal =       locate() in synths
+	var/datum/matter_synth/glass/glass =       locate() in synths
+	var/datum/matter_synth/plasteel/plasteel = locate() in synths
+	var/datum/matter_synth/wire/wire =         locate() in synths
+	var/datum/matter_synth/nanite/nanite =     locate() in synths
+
+	for(var/thing in list(
+		 /obj/item/stack/material/cyborg/steel,
+		 /obj/item/stack/material/cyborg/aluminium,
+		 /obj/item/stack/material/rods/cyborg,
+		 /obj/item/stack/tile/floor/cyborg,
+		 /obj/item/stack/material/cyborg/glass/reinforced
+		))
+		var/obj/item/stack/stack = locate(thing) in equipment
+		LAZYDISTINCTADD(stack.synths, metal)
+
+	for(var/thing in list(
+		 /obj/item/stack/material/cyborg/glass/reinforced,
+		 /obj/item/stack/material/cyborg/glass
+		))
+		var/obj/item/stack/stack = locate(thing) in equipment
+		LAZYDISTINCTADD(stack.synths, glass)
+
+	var/obj/item/stack/cable_coil/cyborg/C = locate() in equipment
+	C.synths = list(wire)
+
+	var/obj/item/stack/material/cyborg/plasteel/PL = locate() in equipment
+	PL.synths = list(plasteel)
+
+	var/obj/item/stack/nanopaste/N = locate() in equipment
+	N.synths = list(nanite)
+
+	. = ..()
 
 /obj/item/weapon/robot_module/flying/ascent/Initialize()
 	for(var/decl/hierarchy/skill/skill in GLOB.skills)
@@ -50,3 +108,9 @@
 	if(resin.get_amount() < resin.get_max_amount())
 		resin.add(1)
 	..()
+
+/obj/item/weapon/robot_module/flying/ascent/finalize_equipment()
+	. = ..()
+	var/obj/item/stack/nanopaste/N = locate() in equipment
+	N.uses_charge = 1
+	N.charge_costs = list(1000)

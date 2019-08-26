@@ -109,9 +109,9 @@
 	assisted_langs = list(LANGUAGE_NABBER)
 	health_hud_intensity = 1.75
 	meat_type = /obj/item/weapon/reagent_containers/food/snacks/fish/octopus
+	bone_material = MATERIAL_BONE_CARTILAGE
 	genders = list(PLURAL)
 	hidden_from_codex = FALSE
-
 	min_age = 19
 	max_age = 90
 
@@ -146,6 +146,9 @@
 	heat_level_1 = 420 //Default 360 - Higher is better
 	heat_level_2 = 480 //Default 400
 	heat_level_3 = 1100 //Default 1000
+
+	cold_discomfort_level = 292 //Higher than perhaps it should be, to avoid big speed reduction at normal room temp
+	heat_discomfort_level = 368
 
 	reagent_tag = IS_SKRELL
 

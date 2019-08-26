@@ -4,11 +4,15 @@
 	icon_state = "chair_preview"
 	color = "#666666"
 	base_icon = "chair"
-	buckle_pixel_shift = "x=0;y=0;z=0"
 	buckle_dir = 0
 	buckle_lying = 0 //force people to sit up in chairs when buckled
 	obj_flags = OBJ_FLAG_ROTATABLE
 	var/propelled = 0 // Check for fire-extinguisher-driven chairs
+
+/obj/structure/bed/chair/do_simple_ranged_interaction(var/mob/user)
+	if(!buckled_mob && user)
+		rotate(user)
+	return TRUE
 
 /obj/structure/bed/chair/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	..()
@@ -26,13 +30,6 @@
 		SK.forceMove(E)
 		SK.master = E
 		qdel(src)
-
-/obj/structure/bed/chair/attack_tk(mob/user)
-	if(buckled_mob)
-		..()
-	else
-		rotate(user)
-	return
 
 /obj/structure/bed/chair/post_buckle_mob()
 	update_icon()
@@ -101,7 +98,7 @@
 	..(newloc, newmaterial, MATERIAL_CARPET)
 
 /obj/structure/bed/chair/padded/brown/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
-	..(newloc, newmaterial, MATERIAL_LEATHER)
+	..(newloc, newmaterial, MATERIAL_LEATHER_GENERIC)
 
 /obj/structure/bed/chair/padded/teal/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
 	..(newloc, newmaterial, "teal")
@@ -135,7 +132,7 @@
 	base_icon = "comfychair"
 
 /obj/structure/bed/chair/comfy/brown/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
-	..(newloc, newmaterial, MATERIAL_LEATHER)
+	..(newloc, newmaterial, MATERIAL_LEATHER_GENERIC)
 
 /obj/structure/bed/chair/comfy/red/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
 	..(newloc, newmaterial, MATERIAL_CARPET)
@@ -188,7 +185,7 @@
 	base_icon = "armchair"
 
 /obj/structure/bed/chair/armchair/brown/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
-	..(newloc, newmaterial, MATERIAL_LEATHER)
+	..(newloc, newmaterial, MATERIAL_LEATHER_GENERIC)
 
 /obj/structure/bed/chair/armchair/red/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
 	..(newloc, newmaterial, MATERIAL_CARPET)
@@ -274,7 +271,7 @@
 	base_icon = "comfyofficechair"
 
 /obj/structure/bed/chair/office/comfy/brown/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
-	..(newloc, newmaterial, MATERIAL_LEATHER)
+	..(newloc, newmaterial, MATERIAL_LEATHER_GENERIC)
 
 /obj/structure/bed/chair/office/comfy/red/New(newloc, newmaterial = DEFAULT_FURNITURE_MATERIAL)
 	..(newloc, newmaterial, MATERIAL_CARPET)

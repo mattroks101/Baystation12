@@ -205,8 +205,8 @@
 	. = ..()
 	airtank = new()
 	airtank.temperature = T0C
-	airtank.adjust_gas("oxygen", MOLES_O2STANDARD, 0)
-	airtank.adjust_gas("nitrogen", MOLES_N2STANDARD)
+	airtank.adjust_gas(GAS_OXYGEN, MOLES_O2STANDARD, 0)
+	airtank.adjust_gas(GAS_NITROGEN, MOLES_N2STANDARD)
 
 /obj/machinery/cryopod/lifepod/return_air()
 	return airtank
@@ -426,7 +426,7 @@
 		if(target != user)
 			if(alert(target,"Would you like to enter long-term storage?",,"Yes","No") != "Yes")
 				return
-	if(!user.incapacitated() && user.Adjacent(src) && user.Adjacent(target))
+	if(!user.incapacitated() && !user.anchored && user.Adjacent(src) && user.Adjacent(target))
 		visible_message("[user] starts putting [target] into \the [src].", 3)
 		if(!do_after(user, 20, src)|| QDELETED(target))
 			return
@@ -475,7 +475,7 @@
 	icon_state = base_icon_state
 
 	//Eject any items that aren't meant to be in the pod.
-	var/list/items = src.contents
+	var/list/items = contents - component_parts
 	if(occupant) items -= occupant
 	if(announce) items -= announce
 

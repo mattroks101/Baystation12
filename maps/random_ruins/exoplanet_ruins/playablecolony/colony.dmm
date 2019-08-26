@@ -2497,7 +2497,6 @@
 /turf/simulated/floor/tiled/techfloor,
 /area/map_template/colony/engineering)
 "eS" = (
-/obj/structure/table/steel_reinforced,
 /obj/machinery/reagentgrinder,
 /obj/item/stack/material/phoron/ten,
 /obj/effect/floor_decal/corner/paleblue{
@@ -5856,7 +5855,7 @@
 	dir = 8
 	},
 /obj/structure/table/steel_reinforced,
-/obj/machinery/reagentgrinder,
+/obj/machinery/reagentgrinder/juicer,
 /obj/item/weapon/reagent_containers/glass/beaker/large,
 /turf/simulated/floor/tiled/techfloor,
 /area/map_template/colony/hydroponics)
@@ -7006,11 +7005,7 @@
 /turf/simulated/floor/exoplanet/concrete,
 /area/template_noop)
 "me" = (
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/map_template/colony/engineering)
 "mf" = (

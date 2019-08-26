@@ -68,8 +68,7 @@
 	charge = 0
 	should_be_mapped = 1
 	base_type = /obj/machinery/power/smes/buildable
-	uncreated_component_parts = null
-	maximum_component_parts = list(/obj/item/weapon/stock_parts/smes_coil = 6, /obj/item/weapon/stock_parts = 12)
+	maximum_component_parts = list(/obj/item/weapon/stock_parts/smes_coil = 6, /obj/item/weapon/stock_parts = 15)
 	interact_offline = TRUE
 
 /obj/machinery/power/smes/buildable/malf_upgrade(var/mob/living/silicon/ai/user)
@@ -254,7 +253,7 @@
 					// Not sure if this is necessary, but just in case the SMES *somehow* survived..
 					qdel(src)
 
-/obj/machinery/power/smes/buildable/proc/check_total_system_failure(user)
+/obj/machinery/power/smes/buildable/proc/check_total_system_failure(var/mob/user)
 	// Probability of failure if safety circuit is disabled (in %)
 	var/failure_probability = capacity ? round((charge / capacity) * 100) : 0
 
@@ -262,7 +261,7 @@
 	if (failure_probability < 5)
 		failure_probability = 0
 
-	if (failure_probability && prob(failure_probability))
+	if (failure_probability && prob(failure_probability * (1.5 - (user.get_skill_value(SKILL_ELECTRICAL) - SKILL_MIN)/(SKILL_MAX - SKILL_MIN))))// 0.5 - 1.5, step of 0.25
 		total_system_failure(failure_probability, user)
 		return TRUE
 

@@ -15,6 +15,9 @@
 				emote("custom", AUDIBLE_MESSAGE, "[pick("grunts", "babbles", "gibbers", "jabbers", "burbles")] aimlessly.")
 				return
 
+	if(has_chem_effect(CE_VOICELOSS, 1))
+		whispering = TRUE
+
 	message = sanitize(message)
 	var/obj/item/organ/internal/voicebox/vox = locate() in internal_organs
 	var/snowflake_speak = (speaking && (speaking.flags & (NONVERBAL|SIGNLANG))) || (vox && vox.is_usable() && vox.assists_languages[speaking])
@@ -108,7 +111,14 @@
 			voice_sub = rig.speech.voice_holder.voice
 
 	if(!voice_sub)
-		for(var/obj/item/gear in list(wear_mask,wear_suit,head))
+
+		var/list/check_gear = list(wear_mask, head)
+		if(wearing_rig)
+			var/datum/extension/armor/rig/armor_datum = get_extension(wearing_rig, /datum/extension/armor)
+			if(istype(armor_datum) && armor_datum.sealed && wearing_rig.helmet == head)
+				check_gear |= wearing_rig
+
+		for(var/obj/item/gear in check_gear)
 			if(!gear)
 				continue
 			var/obj/item/voice_changer/changer = locate() in gear

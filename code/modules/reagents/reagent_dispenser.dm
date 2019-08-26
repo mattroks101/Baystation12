@@ -88,7 +88,7 @@
 	possible_transfer_amounts = "10;25;50;100"
 	initial_capacity = 50000
 	initial_reagent_types = list(/datum/reagent/water = 1)
-	atom_flags = ATOM_FLAG_CLIMBABLE
+	atom_flags = ATOM_FLAG_NO_TEMP_CHANGE | ATOM_FLAG_CLIMBABLE
 
 /obj/structure/reagent_dispensers/watertank/proc/drain_water()
 	if(reagents.total_volume <= 0)
@@ -272,11 +272,16 @@
 	anchored = 1
 	initial_capacity = 500
 	initial_reagent_types = list(/datum/reagent/water = 1)
+	var/cups = 12
 
 /obj/structure/reagent_dispensers/water_cooler/attack_hand(var/mob/user)
-	user.visible_message("\The [user] grabs a paper cup from \the [src].", "You grab a paper cup from \the [src]'s cup compartment.")
-	var/obj/item/weapon/reagent_containers/food/drinks/sillycup/C =  new(loc)
-	user.put_in_active_hand(C)
+	if(cups > 0)
+		visible_message("\The [user] grabs a paper cup from \the [src].", "You grab a paper cup from \the [src]'s cup compartment.")
+		var/obj/item/weapon/reagent_containers/food/drinks/sillycup/C =  new(loc)
+		user.put_in_active_hand(C)
+		cups--
+	else
+		to_chat(user, "The [src]'s cup dispenser is empty.")
 
 /obj/structure/reagent_dispensers/water_cooler/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if (istype(W,/obj/item/weapon/wrench))

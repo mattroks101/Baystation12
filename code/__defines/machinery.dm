@@ -31,6 +31,9 @@ var/global/defer_powernet_rebuild = 0      // True if net rebuild will be called
 #define NOSCREEN 0x20 // No UI shown via direct interaction
 #define NOINPUT  0x40 // No input taken from direct interaction
 
+#define MACHINE_BROKEN_GENERIC  0x1 // Standard legacy brokenness, used on a case-by-case basis
+#define MACHINE_BROKEN_NO_PARTS 0x2 // Missing required parts
+
 // Used by firelocks
 #define FIREDOOR_OPEN 1
 #define FIREDOOR_CLOSED 2
@@ -149,3 +152,9 @@ var/list/restricted_camera_networks = list(NETWORK_ERT, NETWORK_MERCENARY, NETWO
 #define MCS_CHANGE   0 // Success
 #define MCS_CONTINUE 1 // Failed to change, silently
 #define MCS_BLOCK    2 // Failed to change, but action was performed
+
+#define FABRICATOR_EXTRA_COST_FACTOR 1.25
+#define FAB_HACKED   1
+#define FAB_DISABLED 2
+#define FAB_SHOCKED  4
+#define FAB_BUSY     8

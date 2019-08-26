@@ -12,6 +12,8 @@
 	idle_power_usage = 40
 	active_power_usage = 300
 	construct_state = /decl/machine_construction/default/panel_closed
+	uncreated_component_parts = null
+	stat_immune = 0
 
 	var/stored_matter = 0
 	var/max_stored_matter = 0
@@ -118,7 +120,8 @@
 		BP_L_FOOT   = list(/obj/item/organ/external/foot,       40),
 		BP_R_FOOT   = list(/obj/item/organ/external/foot/right, 40),
 		BP_L_HAND   = list(/obj/item/organ/external/hand,       40),
-		BP_R_HAND   = list(/obj/item/organ/external/hand/right, 40)
+		BP_R_HAND   = list(/obj/item/organ/external/hand/right, 40),
+		BP_CELL		= list(/obj/item/organ/internal/cell, 25)
 		)
 
 	var/matter_amount_per_sheet = 10

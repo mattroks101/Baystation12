@@ -52,6 +52,10 @@
 	stop_automated_movement = 1
 	universal_speak = TRUE
 
+	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat/chicken
+	meat_amount = 2
+	skin_material = MATERIAL_SKIN_FEATHERS
+
 	var/parrot_state = PARROT_WANDER //Hunt for a perch when created
 	var/parrot_sleep_max = 25 //The time the parrot sits while perched before looking around. Mosly a way to avoid the parrot's AI in life() being run every single tick.
 	var/parrot_sleep_dur = 25 //Same as above, this is the var that physically counts down
@@ -73,7 +77,7 @@
 	//Parrots will generally sit on their pertch unless something catches their eye.
 	//These vars store their preffered perch and if they dont have one, what they can use as a perch
 	var/obj/parrot_perch = null
-	var/obj/desired_perches = list(/obj/structure/computerframe, 		/obj/structure/displaycase, \
+	var/obj/desired_perches = list(/obj/machinery/constructable_frame/computerframe, 		/obj/structure/displaycase, \
 									/obj/structure/filingcabinet,		/obj/machinery/teleport, \
 									/obj/machinery/computer,			/obj/machinery/telecomms, \
 									/obj/machinery/nuclearbomb,			/obj/machinery/particle_accelerator, \
@@ -778,5 +782,4 @@
 	return success
 
 /mob/living/simple_animal/hostile/retaliate/parrot/proc/can_pick_up(obj/item/I)
-	if(I.w_class <= parrot_isize && !I.anchored)
-		return TRUE
+	. = (Adjacent(I) && I.w_class <= parrot_isize && !I.anchored)

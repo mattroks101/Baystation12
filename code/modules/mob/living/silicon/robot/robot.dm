@@ -170,7 +170,7 @@
 	if(ispath(module))
 		new module(src)
 	if(lawupdate)
-		var/new_ai = select_active_ai_with_fewest_borgs((get_turf(src))?.z)
+		var/new_ai = select_active_ai_with_fewest_borgs(get_z(src))
 		if(new_ai)
 			lawupdate = 1
 			connect_to_ai(new_ai)
@@ -493,7 +493,7 @@
 	if(opened) // Are they trying to insert something?
 		for(var/V in components)
 			var/datum/robot_component/C = components[V]
-			if(!C.installed && istype(W, C.external_type))
+			if(!C.installed && C.accepts_component(W))
 				if(!user.unEquip(W))
 					return
 				C.installed = 1
@@ -929,7 +929,7 @@
 /mob/living/silicon/robot/proc/ResetSecurityCodes()
 	set category = "Silicon Commands"
 	set name = "Reset Identity Codes"
-	set desc = "Scrambles your security and identification codes and resets your current buffers.  Unlocks you and but permenantly severs you from your AI and the robotics console and will deactivate your camera system."
+	set desc = "Scrambles your security and identification codes and resets your current buffers. Unlocks you and but permanently severs you from your AI and the robotics console and will deactivate your camera system."
 
 	var/mob/living/silicon/robot/R = src
 

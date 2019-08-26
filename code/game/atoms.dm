@@ -89,6 +89,13 @@
 		return 0
 	return -1
 
+//Return flags that may be added as part of a mobs sight
+/atom/proc/additional_sight_flags()
+	return 0
+
+/atom/proc/additional_see_invisible()
+	return 0
+
 /atom/proc/on_reagent_change()
 	return
 
@@ -295,11 +302,9 @@ its easier to just keep the beam vertical.
 	qdel(src)
 	. = TRUE
 
-/atom/proc/hitby(atom/movable/AM as mob|obj)
+/atom/proc/hitby(var/atom/movable/AM)
 	if (density)
 		AM.throwing = 0
-	return
-
 
 //returns 1 if made bloody, returns 0 otherwise
 /atom/proc/add_blood(mob/living/carbon/human/M as mob)
@@ -562,10 +567,3 @@ its easier to just keep the beam vertical.
 
 /atom/proc/get_cell()
 	return
-
-// Straight copy of the Translate(x,y) proc except it uses w and z instead for compatible use with spin-view procs
-/atom/proc/TranslateWZ(var/w_input = 0, var/z_input)
-	if(isnull(z_input))
-		z_input = w_input
-	pixel_w += w_input
-	pixel_z += z_input

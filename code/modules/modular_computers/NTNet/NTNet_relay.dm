@@ -9,6 +9,8 @@
 	anchored = 1
 	density = 1
 	construct_state = /decl/machine_construction/default/panel_closed
+	uncreated_component_parts = null
+	stat_immune = 0
 	var/datum/ntnet/NTNet = null // This is mostly for backwards reference and to allow varedit modifications from ingame.
 	var/enabled = 1				// Set to 0 if the relay was turned off
 	var/dos_failure = 0			// Set to 1 if the relay failed due to (D)DoS attack
@@ -62,6 +64,7 @@
 	data["dos_capacity"] = dos_capacity
 	data["dos_overload"] = dos_overload
 	data["dos_crashed"] = dos_failure
+	data["portable_drive"] = !!get_component_of_type(/obj/item/weapon/stock_parts/computer/hard_drive/portable)
 
 	ui = SSnano.try_update_ui(user, src, ui_key, ui, data, force_open)
 	if (!ui)
@@ -92,6 +95,8 @@
 		ntnet_global.banned_nids.Cut()
 		ntnet_global.add_log("Manual override: Network blacklist cleared.")
 		return 1
+	else if(href_list["eject_drive"] && uninstall_component(/obj/item/weapon/stock_parts/computer/hard_drive/portable))
+		visible_message("\icon[src] [src] beeps and ejects its portable disk.")
 
 /obj/machinery/ntnet_relay/New()
 	uid = gl_uid
@@ -111,3 +116,12 @@
 		D.target = null
 		D.error = "Connection to quantum relay severed"
 	..()
+
+/obj/machinery/ntnet_relay/attackby(obj/item/P, mob/user)
+	if (!istype(P,/obj/item/weapon/stock_parts/computer/hard_drive/portable))
+		return
+	else if (get_component_of_type(/obj/item/weapon/stock_parts/computer/hard_drive/portable))
+		to_chat(user, "This relay's portable drive slot is already occupied.")
+	else if(user.unEquip(P,src))
+		install_component(P)
+		to_chat(user, "You install \the [P] into \the [src]")

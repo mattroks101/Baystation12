@@ -37,10 +37,13 @@
 /obj/item/weapon/cell/on_update_icon()
 
 	var/new_overlay_state = null
-	if(percent() >= 95)
-		new_overlay_state = "cell-o2"
-	else if(charge >= 0.05)
-		new_overlay_state = "cell-o1"
+	switch(percent())
+		if(95 to 100)
+			new_overlay_state = "cell-o2"
+		if(25 to 95)
+			new_overlay_state = "cell-o1"
+		if(0.05 to 25)
+			new_overlay_state = "cell-o0"
 
 	if(new_overlay_state != overlay_state)
 		overlay_state = new_overlay_state
@@ -180,7 +183,7 @@
 /obj/item/weapon/cell/high/empty
 	charge = 0
 
-/obj/item/weapon/cell/mecha
+/obj/item/weapon/cell/exosuit
 	name = "exosuit power cell"
 	desc = "A special power cell designed for heavy-duty use in industrial exosuits."
 	origin_tech = list(TECH_POWER = 3)
@@ -251,7 +254,7 @@
 	icon = 'icons/obj/ascent.dmi'
 	icon_state = "plant"
 	maxcharge = 1500
-	w_class = ITEM_SIZE_LARGE
+	w_class = ITEM_SIZE_NORMAL
 	var/recharge_amount = 12
 
 /obj/item/weapon/cell/mantid/Initialize()

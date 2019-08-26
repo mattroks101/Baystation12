@@ -23,7 +23,7 @@
 	if(!scrubbing_gas)
 		scrubbing_gas = list()
 		for(var/g in gas_data.gases)
-			if(g != "oxygen" && g != "nitrogen")
+			if(g != GAS_OXYGEN && g != GAS_NITROGEN)
 				scrubbing_gas += g
 
 
@@ -134,6 +134,17 @@
 		update_icon()
 
 
+//Broken scrubber Used in hanger atmoshperic storage
+/obj/machinery/portable_atmospherics/powered/scrubber/broken
+	construct_state = /decl/machine_construction/default/panel_open
+	panel_open = 1
+
+/obj/machinery/portable_atmospherics/powered/scrubber/broken/Initialize()
+	. = ..()
+	var/part = uninstall_component(/obj/item/weapon/stock_parts/power/battery/buildable/stock)
+	if(part)
+		qdel(part)
+
 //Huge scrubber
 /obj/machinery/portable_atmospherics/powered/scrubber/huge
 	name = "Huge Air Scrubber"
@@ -144,7 +155,7 @@
 	base_type = /obj/machinery/portable_atmospherics/powered/scrubber/huge
 
 	uncreated_component_parts = list(/obj/item/weapon/stock_parts/power/apc)
-	maximum_component_parts = list(/obj/item/weapon/stock_parts = 12)
+	maximum_component_parts = list(/obj/item/weapon/stock_parts = 15)
 	idle_power_usage = 500		//internal circuitry, friction losses and stuff
 	power_rating = 100000 //100 kW ~ 135 HP
 

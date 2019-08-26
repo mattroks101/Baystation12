@@ -74,8 +74,6 @@
 		return 1
 	if(usr.stat || usr.paralysis || usr.stunned || usr.weakened)
 		return 1
-	if (istype(usr.loc,/obj/mecha)) // stops inventory actions in a mech
-		return 1
 	if(master)
 		var/obj/item/I = usr.get_active_hand()
 		if(I)
@@ -198,8 +196,6 @@
 			usr.hud_used.hidden_inventory_update()
 
 		if("equip")
-			if (istype(usr.loc,/obj/mecha)) // stops inventory actions in a mech
-				return 1
 			if(ishuman(usr))
 				var/mob/living/carbon/human/H = usr
 				H.quick_equip()
@@ -231,7 +227,7 @@
 						else
 							var/list/nicename = null
 							var/list/tankcheck = null
-							var/breathes = "oxygen"    //default, we'll check later
+							var/breathes = GAS_OXYGEN    //default, we'll check later
 							var/list/contents = list()
 							var/from = "on"
 
@@ -258,7 +254,7 @@
 									if (!isnull(t.manipulated_by) && t.manipulated_by != C.real_name && findtext(t.desc,breathes))
 										contents.Add(t.air_contents.total_moles)	//Someone messed with the tank and put unknown gasses
 										continue					//in it, so we're going to believe the tank is what it says it is
-									if(t.air_contents.gas[breathes] && !t.air_contents.gas["phoron"])
+									if(t.air_contents.gas[breathes] && !t.air_contents.gas[GAS_PHORON])
 										contents.Add(t.air_contents.gas[breathes])
 									else
 										contents.Add(0)
@@ -351,8 +347,6 @@
 	if(!usr.canClick())
 		return 1
 	if(usr.incapacitated())
-		return 1
-	if (istype(usr.loc,/obj/mecha)) // stops inventory actions in a mech
 		return 1
 	switch(name)
 		if("r_hand")

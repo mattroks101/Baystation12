@@ -1,7 +1,3 @@
-#ifndef T_BOARD
-#error T_BOARD macro is not defined but we need it!
-#endif
-
 /obj/item/weapon/stock_parts/circuitboard/message_monitor
 	name = T_BOARD("message monitor console")
 	build_path = /obj/machinery/computer/message_monitor
@@ -63,10 +59,6 @@
 	name = T_BOARD("prisoner management console")
 	build_path = /obj/machinery/computer/prisoner
 
-/obj/item/weapon/stock_parts/circuitboard/mecha_control
-	name = T_BOARD("exosuit control console")
-	build_path = /obj/machinery/computer/mecha
-
 /obj/item/weapon/stock_parts/circuitboard/rdservercontrol
 	name = T_BOARD("R&D server control console")
 	build_path = /obj/machinery/computer/rdservercontrol
@@ -110,21 +102,6 @@
 /obj/item/weapon/stock_parts/circuitboard/sensors
 	name = T_BOARD("sensors console")
 	build_path = /obj/machinery/computer/ship/sensors
-
-/obj/item/weapon/stock_parts/circuitboard/mining_shuttle
-	name = T_BOARD("mining shuttle console")
-	build_path = /obj/machinery/computer/shuttle_control/mining
-	origin_tech = list(TECH_DATA = 2)
-
-/obj/item/weapon/stock_parts/circuitboard/engineering_shuttle
-	name = T_BOARD("engineering shuttle console")
-	build_path = /obj/machinery/computer/shuttle_control/engineering
-	origin_tech = list(TECH_DATA = 2)
-
-/obj/item/weapon/stock_parts/circuitboard/research_shuttle
-	name = T_BOARD("research shuttle console")
-	build_path = /obj/machinery/computer/shuttle_control/research
-	origin_tech = list(TECH_DATA = 2)
 
 /obj/item/weapon/stock_parts/circuitboard/area_atmos
 	name = T_BOARD("area air control console")

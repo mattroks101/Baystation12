@@ -6,6 +6,7 @@
 	icon_state = "portgen0"
 	density = 1
 	anchored = 0
+	interact_offline = TRUE
 
 	var/active = 0
 	var/power_gen = 5000
@@ -121,6 +122,8 @@
 	power_gen = 20000			//Watts output per power_output level
 	working_sound = 'sound/machines/engine.ogg'
 	construct_state = /decl/machine_construction/default/panel_closed
+	uncreated_component_parts = null
+	stat_immune = 0
 	var/max_power_output = 5	//The maximum power setting without emagging.
 	var/max_safe_output = 4		// For UI use, maximal output that won't cause overheat.
 	var/time_per_sheet = 96		//fuel efficiency - how long 1 sheet lasts at power level 1
@@ -162,7 +165,7 @@
 /obj/machinery/power/port_gen/pacman/proc/process_exhaust()
 	var/datum/gas_mixture/environment = loc.return_air()
 	if(environment)
-		environment.adjust_gas("carbon_monoxide", 0.05*power_output)
+		environment.adjust_gas(GAS_CO, 0.05*power_output)
 
 /obj/machinery/power/port_gen/pacman/HasFuel()
 	var/needed_sheets = power_output / time_per_sheet
@@ -257,7 +260,7 @@
 	var/phoron = (sheets+sheet_left)*20
 	var/datum/gas_mixture/environment = loc.return_air()
 	if (environment)
-		environment.adjust_gas_temp("phoron", phoron/10, operating_temperature + T0C)
+		environment.adjust_gas_temp(GAS_PHORON, phoron/10, operating_temperature + T0C)
 
 	sheets = 0
 	sheet_left = 0
@@ -409,7 +412,7 @@
 	sheet_path = /obj/item/stack/material/uranium
 	sheet_name = "Uranium Sheets"
 	time_per_sheet = 576 //same power output, but a 50 sheet stack will last 2 hours at max safe power
-	var/rad_power = 2
+	var/rad_power = 4
 
 //nuclear energy is green energy!
 /obj/machinery/power/port_gen/pacman/super/process_exhaust()
@@ -439,7 +442,7 @@
 /obj/machinery/power/port_gen/pacman/super/explode()
 	//a nice burst of radiation
 	var/rads = rad_power*25 + (sheets + sheet_left)*1.5
-	SSradiation.radiate(src, (max(20, rads)))
+	SSradiation.radiate(src, (max(40, rads)))
 
 	explosion(src.loc, rad_power+1, rad_power+1, rad_power*2, 3)
 	qdel(src)
@@ -454,7 +457,7 @@
 	temperature_gain = 80	//how much the temperature increases per power output level, in degrees per level
 	max_temperature = 450
 	time_per_sheet = 400
-	rad_power = 6
+	rad_power = 12
 	atom_flags = ATOM_FLAG_OPEN_CONTAINER
 	anchored = 1
 
@@ -468,7 +471,7 @@
 
 /obj/machinery/power/port_gen/pacman/super/potato/UseFuel()
 	if(reagents.has_reagent("vodka"))
-		rad_power = 2
+		rad_power = 4
 		temperature_gain = 60
 		reagents.remove_any(1)
 		if(prob(2))

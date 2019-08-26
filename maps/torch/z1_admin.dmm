@@ -49,7 +49,7 @@
 /area/rescue_base/base)
 "aaj" = (
 /obj/structure/table/steel_reinforced,
-/obj/item/weapon/material/knife/combat,
+/obj/item/clothing/shoes/magboots/rig/combat,
 /turf/unsimulated/floor{
 	icon_state = "dark"
 	},
@@ -2746,11 +2746,7 @@
 /turf/simulated/floor/holofloor/tiled/dark,
 /area/holodeck/source_boxingcourt)
 "agE" = (
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /turf/unsimulated/floor{
 	icon_state = "vault";
 	dir = 1
@@ -4192,9 +4188,6 @@
 /area/rescue_base/base)
 "aka" = (
 /obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/tool/sleeper,
-/obj/item/mecha_parts/mecha_equipment/tool/sleeper,
-/obj/item/mecha_parts/mecha_equipment/tool/syringe_gun,
 /turf/unsimulated/floor{
 	icon_state = "vault";
 	dir = 1
@@ -4202,11 +4195,6 @@
 /area/rescue_base/base)
 "akb" = (
 /obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/teleporter,
-/obj/item/mecha_parts/mecha_tracking,
-/obj/item/mecha_parts/mecha_tracking,
-/obj/item/mecha_parts/mecha_tracking,
-/obj/item/mecha_parts/mecha_tracking,
 /obj/item/device/radio/intercom/specops{
 	dir = 2;
 	pixel_y = 22
@@ -4328,7 +4316,6 @@
 /area/rescue_base/base)
 "akp" = (
 /obj/machinery/mech_recharger,
-/obj/mecha/medical/odysseus/loaded,
 /turf/space,
 /area/rescue_base/base)
 "akq" = (
@@ -4376,11 +4363,6 @@
 	icon_state = "vault";
 	dir = 1
 	},
-/area/rescue_base/base)
-"akw" = (
-/obj/machinery/mech_recharger,
-/obj/mecha/working/ripley/firefighter,
-/turf/space,
 /area/rescue_base/base)
 "akx" = (
 /obj/structure/flora/tree/pine,
@@ -4651,11 +4633,6 @@
 	dir = 1
 	},
 /area/rescue_base/base)
-"akK" = (
-/obj/machinery/mech_recharger,
-/obj/mecha/working/hoverpod,
-/turf/space,
-/area/rescue_base/base)
 "akL" = (
 /obj/item/device/radio/intercom/specops{
 	dir = 2;
@@ -4663,15 +4640,6 @@
 	},
 /turf/unsimulated/floor{
 	icon_state = "dark"
-	},
-/area/rescue_base/base)
-"akM" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/armor_booster/anticcw_armor_booster,
-/obj/item/mecha_parts/mecha_equipment/armor_booster/antiproj_armor_booster,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
 	},
 /area/rescue_base/base)
 "akN" = (
@@ -4720,11 +4688,6 @@
 	dir = 8
 	},
 /area/rescue_base/base)
-"akR" = (
-/obj/mecha/combat/gygax/dark,
-/obj/machinery/mech_recharger,
-/turf/space,
-/area/rescue_base/base)
 "akS" = (
 /obj/structure/flora/tree/dead,
 /turf/unsimulated/floor{
@@ -4739,66 +4702,6 @@
 	},
 /turf/unsimulated/floor{
 	icon_state = "asteroidfloor"
-	},
-/area/rescue_base/base)
-"akU" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/tool/hydraulic_clamp,
-/obj/item/mecha_parts/mecha_equipment/tool/hydraulic_clamp,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/rescue_base/base)
-"akV" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/rescue_base/base)
-"akW" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/tool/drill/diamonddrill,
-/obj/item/mecha_parts/mecha_equipment/tool/cable_layer,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/rescue_base/base)
-"akX" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/tool/extinguisher,
-/obj/item/mecha_parts/mecha_equipment/tool/rcd,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/rescue_base/base)
-"akY" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/tool/passenger,
-/obj/item/mecha_parts/mecha_equipment/tool/passenger,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/rescue_base/base)
-"akZ" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/weapon/energy/ion,
-/obj/item/mecha_parts/mecha_equipment/weapon/energy/taser,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
 	},
 /area/rescue_base/base)
 "ala" = (
@@ -7030,7 +6933,7 @@
 	icon_state = "churchaltar";
 	name = "wooden altar"
 	},
-/obj/item/weapon/material/sword/katana/vibro,
+/obj/item/weapon/material/sword/katana,
 /turf/unsimulated/floor{
 	dir = 8;
 	icon_state = "wood"
@@ -7303,11 +7206,7 @@
 	},
 /area/wizard_station)
 "art" = (
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /obj/effect/floor_decal/industrial/outline/grey,
 /turf/unsimulated/floor{
 	icon_state = "dark"
@@ -8668,11 +8567,7 @@
 /turf/simulated/floor/shuttle/red,
 /area/shuttle/administration/centcom)
 "ave" = (
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /turf/simulated/floor/shuttle/red,
 /area/shuttle/administration/centcom)
 "avf" = (
@@ -9423,7 +9318,6 @@
 	},
 /area/syndicate_mothership)
 "awW" = (
-/obj/mecha/combat/gygax/dark,
 /obj/machinery/camera/network/ert{
 	c_tag = "Assault Armor North"
 	},
@@ -9520,10 +9414,6 @@
 /area/centcom/specops)
 "axj" = (
 /obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/weapon/energy/ion,
-/obj/item/mecha_parts/mecha_equipment/weapon/energy/taser,
-/obj/item/mecha_parts/mecha_equipment/armor_booster/anticcw_armor_booster,
-/obj/item/mecha_parts/mecha_equipment/armor_booster/antiproj_armor_booster,
 /turf/unsimulated/floor{
 	icon_state = "vault";
 	dir = 1
@@ -9760,7 +9650,6 @@
 	},
 /area/syndicate_mothership)
 "axQ" = (
-/obj/mecha/medical/odysseus/loaded,
 /obj/machinery/mech_recharger,
 /turf/unsimulated/floor{
 	icon_state = "plating";
@@ -9768,9 +9657,6 @@
 	},
 /area/centcom/specops)
 "axR" = (
-/obj/item/mecha_parts/mecha_equipment/tool/sleeper,
-/obj/item/mecha_parts/mecha_equipment/tool/sleeper,
-/obj/item/mecha_parts/mecha_equipment/tool/syringe_gun,
 /obj/structure/table/steel_reinforced,
 /turf/unsimulated/floor{
 	icon_state = "vault";
@@ -10075,18 +9961,6 @@
 	icon_state = "lino"
 	},
 /area/syndicate_mothership)
-"ayn" = (
-/obj/item/mecha_parts/mecha_equipment/teleporter,
-/obj/item/mecha_parts/mecha_tracking,
-/obj/item/mecha_parts/mecha_tracking,
-/obj/item/mecha_parts/mecha_tracking,
-/obj/item/mecha_parts/mecha_tracking,
-/obj/structure/table/steel_reinforced,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/centcom/specops)
 "ayo" = (
 /obj/machinery/vending/engineering,
 /turf/unsimulated/floor{
@@ -10285,17 +10159,7 @@
 	dir = 8
 	},
 /area/syndicate_mothership)
-"ayM" = (
-/obj/mecha/working/ripley/firefighter,
-/obj/machinery/mech_recharger,
-/turf/unsimulated/floor{
-	icon_state = "plating";
-	name = "plating"
-	},
-/area/centcom/specops)
 "ayN" = (
-/obj/item/mecha_parts/mecha_equipment/tool/extinguisher,
-/obj/item/mecha_parts/mecha_equipment/tool/rcd,
 /obj/item/weapon/pickaxe/diamonddrill,
 /obj/structure/table/steel_reinforced,
 /turf/unsimulated/floor{
@@ -10472,7 +10336,7 @@
 /turf/simulated/floor/shuttle/darkred,
 /area/syndicate_station/start)
 "aze" = (
-/obj/structure/computerframe,
+/obj/machinery/constructable_frame/computerframe,
 /turf/simulated/floor/shuttle/darkred,
 /area/syndicate_station/start)
 "azf" = (
@@ -10548,15 +10412,6 @@
 	dir = 1
 	},
 /area/syndicate_mothership)
-"azn" = (
-/obj/item/mecha_parts/mecha_equipment/tool/drill/diamonddrill,
-/obj/item/mecha_parts/mecha_equipment/tool/cable_layer,
-/obj/structure/table/steel_reinforced,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/centcom/specops)
 "azo" = (
 /obj/structure/table/rack,
 /obj/item/weapon/rig/military/equipped,
@@ -10773,29 +10628,6 @@
 	dir = 8
 	},
 /area/syndicate_mothership)
-"azO" = (
-/obj/mecha/working/hoverpod,
-/obj/machinery/mech_recharger,
-/turf/unsimulated/floor{
-	icon_state = "plating";
-	name = "plating"
-	},
-/area/centcom/specops)
-"azP" = (
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/tesla_energy_relay,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/obj/item/mecha_parts/mecha_equipment/repair_droid,
-/obj/structure/table/steel_reinforced,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/centcom/specops)
 "azQ" = (
 /obj/structure/table/rack,
 /obj/item/rig_module/mounted/taser,
@@ -11173,7 +11005,7 @@
 	pixel_y = 4
 	},
 /obj/structure/table/reinforced,
-/obj/item/clothing/ears/earmuffs/headphones,
+/obj/item/clothing/ears/headphones,
 /obj/item/device/radio/intercom/syndicate{
 	dir = 8;
 	pixel_x = 22
@@ -11403,17 +11235,6 @@
 	dir = 8
 	},
 /area/syndicate_mothership)
-"aAY" = (
-/obj/structure/table/reinforced,
-/obj/item/mecha_parts/mecha_equipment/tool/hydraulic_clamp,
-/obj/item/mecha_parts/mecha_equipment/tool/hydraulic_clamp,
-/obj/item/mecha_parts/mecha_equipment/tool/passenger,
-/obj/item/mecha_parts/mecha_equipment/tool/passenger,
-/turf/unsimulated/floor{
-	icon_state = "vault";
-	dir = 1
-	},
-/area/centcom/specops)
 "aAZ" = (
 /obj/machinery/door/airlock/centcom{
 	name = "Medical Special Operations";
@@ -11425,11 +11246,7 @@
 	},
 /area/centcom/specops)
 "aBa" = (
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /turf/unsimulated/floor{
 	icon_state = "vault";
 	dir = 1
@@ -12337,11 +12154,7 @@
 	},
 /area/syndicate_mothership)
 "aCO" = (
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /turf/unsimulated/floor{
 	icon_state = "vault";
 	dir = 8
@@ -12886,7 +12699,7 @@
 	pixel_y = 0
 	},
 /obj/structure/table/glass,
-/obj/item/weapon/material/knife/combat,
+/obj/item/clothing/shoes/magboots/rig/combat,
 /obj/item/weapon/melee/telebaton,
 /turf/simulated/floor/shuttle/darkred,
 /area/syndicate_station/start)
@@ -14037,7 +13850,7 @@
 /turf/simulated/wall/r_titanium,
 /area/syndicate_station/start)
 "aGL" = (
-/obj/structure/computerframe,
+/obj/machinery/constructable_frame/computerframe,
 /turf/simulated/floor/plating,
 /area/syndicate_station/start)
 "aGM" = (
@@ -14386,7 +14199,7 @@
 	dir = 5
 	},
 /obj/item/clothing/under/suit_jacket,
-/obj/item/clothing/accessory/wcoat/black,
+/obj/item/clothing/shoes/sandal/xeno/caligae/black,
 /obj/item/clothing/head/that{
 	pixel_x = 4;
 	pixel_y = 6
@@ -15285,12 +15098,6 @@
 /area/syndicate_mothership/elite_squad)
 "aJU" = (
 /obj/machinery/mech_recharger,
-/turf/unsimulated/floor{
-	icon_state = "dark"
-	},
-/area/syndicate_mothership/elite_squad)
-"aJV" = (
-/obj/mecha/combat/marauder/mauler,
 /turf/unsimulated/floor{
 	icon_state = "dark"
 	},
@@ -16403,15 +16210,6 @@
 	icon_state = "dark"
 	},
 /area/syndicate_mothership/raider_base)
-"aMw" = (
-/obj/mecha/working/ripley/mining{
-	internals_req_access = list("ACCESS_SYNDICATE")
-	},
-/turf/unsimulated/floor{
-	icon_state = "plating";
-	name = "plating"
-	},
-/area/syndicate_mothership/raider_base)
 "aMx" = (
 /turf/unsimulated/floor{
 	icon_state = "white"
@@ -17454,7 +17252,7 @@
 /obj/effect/floor_decal/corner/blue{
 	dir = 9
 	},
-/obj/structure/computerframe,
+/obj/machinery/constructable_frame/computerframe,
 /turf/simulated/floor/tiled,
 /area/merchant_station)
 "aPc" = (
@@ -17572,11 +17370,7 @@
 /area/syndicate_mothership/raider_base)
 "aPu" = (
 /obj/effect/decal/cleanable/cobweb,
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /turf/unsimulated/floor{
 	icon_state = "plating";
 	name = "plating"
@@ -19759,7 +19553,7 @@
 /turf/simulated/floor/shuttle/red,
 /area/skipjack_station/start)
 "aUJ" = (
-/obj/structure/computerframe,
+/obj/machinery/constructable_frame/computerframe,
 /turf/simulated/floor/shuttle/red,
 /area/skipjack_station/start)
 "aUK" = (
@@ -19796,11 +19590,7 @@
 /turf/space,
 /area/merchant_station)
 "aUP" = (
-/obj/machinery/autolathe{
-	desc = "Your typical Autolathe. It appears to have much more options than your regular one, however...";
-	hacked = 1;
-	name = "Unlocked Autolathe"
-	},
+/obj/machinery/fabricator/hacked,
 /turf/simulated/floor/tiled,
 /area/merchant_station)
 "aUQ" = (
@@ -19823,7 +19613,7 @@
 	icon_state = "0-2"
 	},
 /obj/random/powercell,
-/obj/item/weapon/computer_hardware/hard_drive/portable/merchant,
+/obj/item/weapon/stock_parts/computer/hard_drive/portable/merchant,
 /obj/machinery/power/apc{
 	dir = 1;
 	name = "north bump";
@@ -19973,7 +19763,7 @@
 /turf/simulated/floor/shuttle/red,
 /area/skipjack_station/start)
 "aVg" = (
-/obj/structure/computerframe,
+/obj/machinery/constructable_frame/computerframe,
 /obj/machinery/light/small{
 	icon_state = "bulb1";
 	dir = 4
@@ -26376,9 +26166,9 @@ axi
 avY
 axQ
 axi
-ayM
+axQ
 axi
-azO
+axQ
 aAl
 avY
 avY
@@ -26981,13 +26771,13 @@ awY
 axj
 avY
 axR
-ayn
+axR
 ayN
-azn
-azP
+axR
+axR
 awY
 awY
-aAY
+axj
 avY
 aab
 aab
@@ -30356,7 +30146,7 @@ aaL
 aaL
 aaL
 aaL
-akU
+aka
 aae
 adB
 alH
@@ -30558,7 +30348,7 @@ aaL
 aaL
 aaL
 aaL
-akV
+aka
 aae
 adC
 alH
@@ -30760,7 +30550,7 @@ aaL
 aaL
 aaL
 aaL
-akW
+aka
 aae
 adA
 alI
@@ -30962,7 +30752,7 @@ aaL
 aaL
 aaL
 aaL
-akX
+aka
 aae
 adA
 adB
@@ -31161,10 +30951,10 @@ aad
 aae
 akc
 akp
-akw
-akK
+akp
+akp
 aaL
-akY
+aka
 aae
 adB
 adC
@@ -31768,9 +31558,9 @@ aad
 aad
 aad
 aae
-akM
-akR
-akZ
+aka
+akp
+aka
 aae
 aad
 aad
@@ -59555,7 +59345,7 @@ aLH
 aLM
 aLM
 aLM
-aMw
+aMi
 aMv
 aMv
 aLN
@@ -62774,13 +62564,13 @@ aab
 aab
 aab
 aIP
-aJV
 aJT
-aJV
 aJT
-aJV
 aJT
-aJV
+aJT
+aJT
+aJT
+aJT
 aIP
 ajF
 aLH

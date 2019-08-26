@@ -157,7 +157,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 /obj/machinery/computer/rdconsole/CanUseTopic(var/mob/user, var/datum/topic_state/state, var/href_list)
 	if(href_list && href_list["menu"])
 		var/temp_screen = text2num(href_list["menu"])
-		if(!(temp_screen <= 1.1) || (3 <= temp_screen && 4.9 >= temp_screen) || allowed(user))
+		if(!((temp_screen <= 1.1) || (3 <= temp_screen && 4.9 >= temp_screen) || allowed(user)))
 			to_chat(user, "Unauthorized Access.")
 			return STATUS_CLOSE
 	return ..()
@@ -457,7 +457,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 			qdel(M)
 		if(istype(I,/obj/item/stack/material))//Only deconsturcts one sheet at a time instead of the entire stack
 			var/obj/item/stack/material/S = I
-			if(S.use(1))
+			if(S.use(1) && S.amount)
 				linked_destroy.loaded_item = S
 			else
 				qdel(S)
