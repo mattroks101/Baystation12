@@ -5,9 +5,8 @@
 	icon_state = "catwalk"
 	density = 0
 	anchored = 1.0
-	plane = ABOVE_TURF_PLANE
 	layer = CATWALK_LAYER
-	footstep_type = FOOTSTEP_CATWALK
+	footstep_type = /decl/footsteps/catwalk
 	var/hatch_open = FALSE
 	var/obj/item/stack/tile/mono/plated_tile
 
@@ -131,7 +130,7 @@
 	density = 1
 	anchored = 1.0
 	var/activated = FALSE
-	layer = ABOVE_TURF_PLANE
+	layer = CATWALK_LAYER
 	var/plating_type = /decl/flooring/tiling/mono
 
 /obj/effect/catwalk_plated/Initialize(mapload)

@@ -89,7 +89,7 @@
 // Convoluted setup so defines can be supplied by Bay12 main server compile script.
 // Should still work fine for people jamming the icons into their repo.
 #ifndef CUSTOM_ITEM_CONFIG
-#define CUSTOM_ITEM_CONFIG "config/custom_items.txt"
+#define CUSTOM_ITEM_CONFIG "config/custom_items/"
 #endif
 #ifndef CUSTOM_ITEM_SYNTH_CONFIG
 #define CUSTOM_ITEM_SYNTH_CONFIG "config/custom_sprites.txt"
@@ -242,6 +242,11 @@
 #define EMAIL_DOCUMENTS "document.server@internal-services.net"
 #define EMAIL_SYSADMIN  "admin@internal-services.net"
 #define EMAIL_BROADCAST "broadcast@internal-services.net"
+
+//Stats for department goals etc
+#define STAT_XENOPLANTS_SCANNED  "xenoplants_scanned"
+#define STAT_XENOFAUNA_SCANNED  "xenofauna_scanned"
+#define STAT_FLAGS_PLANTED  "planet_flags"
 
 //Number of slots a modular computer has which can be tweaked via gear tweaks.
 #define TWEAKABLE_COMPUTER_PART_SLOTS 7

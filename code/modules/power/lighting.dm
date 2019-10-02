@@ -22,7 +22,6 @@
 	icon = 'icons/obj/lighting.dmi'
 	icon_state = "tube-construct-stage1"
 	anchored = 1
-	plane = ABOVE_HUMAN_PLANE
 	layer = ABOVE_HUMAN_LAYER
 
 	var/stage = 1
@@ -119,7 +118,6 @@
 	icon = 'icons/obj/lighting.dmi'
 	icon_state = "bulb-construct-stage1"
 	anchored = 1
-	plane = ABOVE_HUMAN_PLANE
 	layer = ABOVE_HUMAN_LAYER
 	stage = 1
 	fixture_type = /obj/machinery/light/small
@@ -139,7 +137,6 @@
 	icon_state = "tube_map"
 	desc = "A lighting fixture."
 	anchored = 1
-	plane = ABOVE_HUMAN_PLANE
 	layer = ABOVE_HUMAN_LAYER  					// They were appearing under mobs which is a little weird - Ostaf
 	use_power = POWER_USE_ACTIVE
 	idle_power_usage = 2
@@ -279,6 +276,9 @@
 		update_icon(0)
 
 /obj/machinery/light/proc/set_emergency_lighting(var/enable)
+	if(!lightbulb)
+		return
+
 	if(enable)
 		if(LIGHTMODE_EMERGENCY in lightbulb.lighting_modes)
 			set_mode(LIGHTMODE_EMERGENCY)
@@ -423,9 +423,7 @@
 		var/mob/living/carbon/human/H = user
 
 		if(istype(H))
-			if(H.getSpeciesOrSynthTemp(HEAT_LEVEL_1) > LIGHT_BULB_TEMPERATURE)
-				prot = 1
-			else if(H.gloves)
+			if(H.gloves)
 				var/obj/item/clothing/gloves/G = H.gloves
 				if(G.max_heat_protection_temperature)
 					if(G.max_heat_protection_temperature > LIGHT_BULB_TEMPERATURE)
@@ -437,9 +435,14 @@
 			to_chat(user, "You remove the [get_fitting_name()]")
 		else if(istype(user) && user.psi && !user.psi.suppressed && user.psi.get_rank(PSI_PSYCHOKINESIS) >= PSI_RANK_OPERANT)
 			to_chat(user, "You telekinetically remove the [get_fitting_name()].")
+		else if(user.a_intent != I_HELP)
+			var/obj/item/organ/external/hand = H.organs_by_name[user.hand ? BP_L_HAND : BP_R_HAND]
+			if(hand && hand.is_usable() && !hand.can_feel_pain())
+				user.apply_damage(3, BURN, user.hand ? BP_L_HAND : BP_R_HAND, used_weapon = src)
+				user.visible_message(SPAN_WARNING("\The [user]'s [hand] burns and sizzles as \he touches the hot [get_fitting_name()]."), SPAN_WARNING("Your [hand] burns and sizzles as you remove the hot [get_fitting_name()]."))
 		else
 			to_chat(user, "You try to remove the [get_fitting_name()], but it's too hot and you don't want to burn your hand.")
-			return TRUE				// if burned, don't remove the light
+			return TRUE
 	else
 		to_chat(user, "You remove the [get_fitting_name()].")
 
@@ -468,7 +471,7 @@
 	update_icon()
 
 /obj/machinery/light/proc/fix()
-	if(get_status() == LIGHT_OK)
+	if(get_status() == LIGHT_OK || !lightbulb)
 		return
 	lightbulb.status = LIGHT_OK
 	on = 1

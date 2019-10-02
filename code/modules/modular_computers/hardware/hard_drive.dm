@@ -90,6 +90,7 @@
 
 	if(F in stored_files)
 		stored_files -= F
+		F.holder = null
 		recalculate_size()
 		return 1
 	else
@@ -157,8 +158,6 @@
 	return null
 
 /obj/item/weapon/stock_parts/computer/hard_drive/Destroy()
-	if(holder2 && (holder2.hard_drive == src))
-		holder2.hard_drive = null
 	stored_files = null
 	return ..()
 

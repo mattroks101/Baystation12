@@ -72,7 +72,6 @@
 
 	icon_state = "apc0"
 	icon = 'icons/obj/apc.dmi'
-	plane = ABOVE_HUMAN_PLANE
 	anchored = 1
 	use_power = POWER_USE_IDLE // Has custom handling here.
 	power_channel = LOCAL      // Do not manipulate this; you don't want to power the APC off itself.
@@ -128,6 +127,7 @@
 	var/global/list/status_overlays_equipment
 	var/global/list/status_overlays_lighting
 	var/global/list/status_overlays_environ
+	var/autoname = 1
 
 /obj/machinery/power/apc/updateDialog()
 	if (stat & (BROKEN|MAINT))
@@ -161,16 +161,14 @@
 	if (building)
 		set_dir(ndir)
 
-	pixel_x = (src.dir & 3)? 0 : (src.dir == 4 ? 22 : -22)
-	pixel_y = (src.dir & 3)? (src.dir ==1 ? 22 : -22) : 0
-
 	if(areastring)
 		area = get_area_name(areastring)
 	else
 		var/area/A = get_area(src)
 		//if area isn't specified use current
 		area = A
-	SetName("\improper [area.name] APC")
+	if(autoname)
+		SetName("\improper [area.name] APC")
 	area.apc = src
 
 	. = ..()
@@ -672,6 +670,9 @@
 				else
 					to_chat(user, "<span class='warning'>You fail to [ locked ? "unlock" : "lock"] the APC interface.</span>")
 				return 1
+
+/obj/machinery/power/apc/CanUseTopicPhysical(var/mob/user)
+	return GLOB.physical_state.can_use_topic(nano_host(), user)
 
 /obj/machinery/power/apc/physical_attack_hand(mob/user)
 	//Human mob special interaction goes here.

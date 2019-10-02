@@ -3,6 +3,7 @@
 	desc = "A protoype lightweight, fast firing submachine gun."
 	icon = 'icons/obj/guns/prototype_smg.dmi'
 	icon_state = "prototype"
+	item_state = "saber"
 	w_class = ITEM_SIZE_NORMAL
 	bulk = -1
 	load_method = MAGAZINE
@@ -37,7 +38,7 @@
 	icon = 'icons/obj/guns/machine_pistol.dmi'
 	icon_state = "mpistolen"
 	safety_icon = "safety"
-	item_state = "wt550"
+	item_state = "mpistolen"
 	caliber = CALIBER_PISTOL
 	origin_tech = list(TECH_COMBAT = 5, TECH_MATERIAL = 2, TECH_ESOTERIC = 3)
 	ammo_type = /obj/item/ammo_casing/pistol
@@ -143,7 +144,7 @@
 	name = "submachine gun"
 	desc = "The WT-550 Saber is a cheap self-defense weapon, mass-produced by Ward-Takahashi for paramilitary and private use."
 	icon = 'icons/obj/guns/sec_smg.dmi'
-	icon_state = "wt550"
+	icon_state = "smg"
 	item_state = "wt550"
 	safety_icon = "safety"
 	w_class = ITEM_SIZE_NORMAL
@@ -167,9 +168,11 @@
 /obj/item/weapon/gun/projectile/automatic/sec_smg/on_update_icon()
 	..()
 	if(ammo_magazine)
-		icon_state = "wt550-[round(ammo_magazine.stored_ammo.len,4)]"
+		overlays += image(icon, "mag-[round(ammo_magazine.stored_ammo.len,4)]")
+	if(ammo_magazine && LAZYLEN(ammo_magazine.stored_ammo))
+		overlays += image(icon, "ammo-ok")
 	else
-		icon_state = "wt550"
+		overlays += image(icon, "ammo-bad")
 
 /obj/item/weapon/gun/projectile/automatic/bullpup_rifle
 	name = "bullpup assault rifle"

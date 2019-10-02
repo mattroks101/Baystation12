@@ -82,9 +82,10 @@
 	var/list/natural_armour_values            // Armour values used if naked.
 	var/brute_mod =      1                    // Physical damage multiplier.
 	var/burn_mod =       1                    // Burn damage multiplier.
-	var/oxy_mod =        1                    // Oxyloss modifier
 	var/toxins_mod =     1                    // Toxloss modifier
 	var/radiation_mod =  1                    // Radiation modifier
+
+	var/oxy_mod =        1                    // Oxyloss modifier
 	var/flash_mod =      1                    // Stun from blindness modifier.
 	var/metabolism_mod = 1                    // Reagent metabolism modifier
 	var/stun_mod =       1                    // Stun period modifier.
@@ -250,6 +251,12 @@
 	var/list/additional_available_cultural_info = list()
 	var/max_players
 
+	// Order matters, higher pain level should be higher up
+	var/list/pain_emotes_with_pain_level = list(
+		list(/decl/emote/audible/scream, /decl/emote/audible/whimper, /decl/emote/audible/moan, /decl/emote/audible/cry) = 70,
+		list(/decl/emote/audible/grunt, /decl/emote/audible/groan, /decl/emote/audible/moan) = 40,
+		list(/decl/emote/audible/grunt, /decl/emote/audible/groan) = 10,
+	)
 /*
 These are all the things that can be adjusted for equipping stuff and
 each one can be in the NORTH, SOUTH, EAST, and WEST direction. Specify
@@ -664,7 +671,9 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		LAZYSET(hair_styles, type, L)
 		for(var/hairstyle in GLOB.hair_styles_list)
 			var/datum/sprite_accessory/S = GLOB.hair_styles_list[hairstyle]
-			if(!(get_bodytype() in S.species_allowed))
+			if(S.species_allowed && !(get_bodytype() in S.species_allowed))
+				continue
+			if(S.subspecies_allowed && !(name in S.subspecies_allowed))
 				continue
 			ADD_SORTED(L, hairstyle, /proc/cmp_text_asc)
 			L[hairstyle] = S
@@ -687,7 +696,9 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 				continue
 			if(gender == FEMALE && S.gender == MALE)
 				continue
-			if(!(get_bodytype() in S.species_allowed))
+			if(S.species_allowed && !(get_bodytype() in S.species_allowed))
+				continue
+			if(S.subspecies_allowed && !(name in S.subspecies_allowed))
 				continue
 			ADD_SORTED(facial_hair_style_by_gender, facialhairstyle, /proc/cmp_text_asc)
 			facial_hair_style_by_gender[facialhairstyle] = S
@@ -786,3 +797,13 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 	if(can_overcome_gravity(H))
 		return TRUE
 	return (species_flags & SPECIES_FLAG_NO_SLIP)
+
+/datum/species/proc/get_pain_emote(var/mob/living/carbon/human/H, var/pain_power)
+	if(!(species_flags & SPECIES_FLAG_NO_PAIN))
+		return
+	for(var/pain_emotes in pain_emotes_with_pain_level)
+		var/pain_level = pain_emotes_with_pain_level[pain_emotes]
+		if(pain_level >= pain_power)
+			// This assumes that if a pain-level has been defined it also has a list of emotes to go with it
+			var/decl/emote/E = decls_repository.get_decl(pick(pain_emotes))
+			return E.key

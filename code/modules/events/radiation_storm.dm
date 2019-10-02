@@ -6,12 +6,19 @@
 	startWhen				= 2
 	announceWhen			= 1
 	endWhen					= revokeAccess
+	has_skybox_image = TRUE
 	var/postStartTicks 		= 0
+
+/datum/event/radiation_storm/get_skybox_image()
+	var/image/res = overlay_image('icons/skybox/radbox.dmi', "beam", null, RESET_COLOR)
+	res.alpha = rand(40,80)
+	return res
 
 /datum/event/radiation_storm/announce()
 	command_announcement.Announce("High levels of radiation detected in proximity of the [location_name()]. Please evacuate into one of the shielded maintenance tunnels.", "[location_name()] Sensor Array", new_sound = GLOB.using_map.radiation_detected_sound, zlevels = affecting_z)
 
 /datum/event/radiation_storm/start()
+	..()
 	GLOB.using_map.make_maint_all_access(1)
 
 /datum/event/radiation_storm/tick()
@@ -31,7 +38,7 @@
 
 /datum/event/radiation_storm/proc/radiate()
 	var/radiation_level = rand(15, 35)
-	for(var/z in GLOB.using_map.station_levels)
+	for(var/z in affecting_z)
 		SSradiation.z_radiate(locate(1, 1, z), radiation_level, 1)
 
 	for(var/mob/living/carbon/C in GLOB.living_mob_list_)
