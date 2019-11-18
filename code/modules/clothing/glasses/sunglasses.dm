@@ -4,7 +4,7 @@
 	icon_state = "sun"
 	item_state = "sunglasses"
 	darkness_view = -1
-	flash_protection = FLASH_PROTECTION_SOME
+	flash_protection = FLASH_PROTECTION_MINOR
 
 /obj/item/clothing/glasses/sunglasses/prescription
 	name = "prescription sunglasses"
@@ -23,6 +23,7 @@
 	icon_state = "sunhud"
 	hud = /obj/item/clothing/glasses/hud/security
 	electric = TRUE
+	flash_protection = FLASH_PROTECTION_MODERATE
 
 /obj/item/clothing/glasses/sunglasses/sechud/goggles //now just a more "military" set of HUDglasses for the Torch
 	name = "HUD goggles"

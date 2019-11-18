@@ -104,8 +104,9 @@ Subtypes
 	var/obj/item/weapon/stock_parts/computer/ch = terminal.computer.find_hardware_by_name(text)
 	if(!ch)
 		return "hwinfo: No such hardware found."
-	ch.diagnostics(user)
-	return "Running diagnostic protocols..."	
+	. = list("Running diagnostic protocols...")
+	. += ch.diagnostics()
+	return
 
 // Sysadmin
 /datum/terminal_command/relays
@@ -159,7 +160,7 @@ Subtypes
 	var/datum/extension/interactive/ntos/comp = ntnet_global.get_os_by_nid(nid)
 	if(!comp || !comp.host_status() || !comp.get_ntnet_status())
 		return
-	return "... Estimating location: [get_area(comp)]"
+	return "... Estimating location: [get_area(comp.get_physical_host())]"
 
 /datum/terminal_command/ping
 	name = "ping"

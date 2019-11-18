@@ -4,6 +4,7 @@
 	icon_state = "xenobio"
 	item_state = "analyzer"
 	scan_sound = 'sound/effects/scanbeep.ogg'
+	printout_color = "#f3e6ff"
 	origin_tech = list(TECH_MAGNET = 1, TECH_BIO = 1)
 
 	var/list/valid_targets = list(
@@ -53,7 +54,7 @@
 		. += "Known toxins:\t[list_gases(A.max_gas)]"
 		. += "Temperature comfort zone:\t[A.minbodytemp] K to [A.maxbodytemp] K"
 		var/area/map = locate(/area/overmap)
-		for(var/obj/effect/overmap/sector/exoplanet/P in map)
+		for(var/obj/effect/overmap/visitable/sector/exoplanet/P in map)
 			if((A in P.animals) || is_type_in_list(A, P.repopulate_types))
 				var/list/discovered = SSstatistics.get_field(STAT_XENOFAUNA_SCANNED)
 				if(!discovered)

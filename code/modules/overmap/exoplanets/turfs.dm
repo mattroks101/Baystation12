@@ -13,7 +13,7 @@
 
 /turf/simulated/floor/exoplanet/New()
 	if(GLOB.using_map.use_overmap)
-		var/obj/effect/overmap/sector/exoplanet/E = map_sectors["[z]"]
+		var/obj/effect/overmap/visitable/sector/exoplanet/E = map_sectors["[z]"]
 		if(istype(E))
 			if(E.atmosphere)
 				initial_gas = E.atmosphere.gas.Copy()
@@ -114,7 +114,7 @@
 
 /turf/simulated/planet_edge/Initialize()
 	. = ..()
-	var/obj/effect/overmap/sector/exoplanet/E = map_sectors["[z]"]
+	var/obj/effect/overmap/visitable/sector/exoplanet/E = map_sectors["[z]"]
 	if(!istype(E))
 		return
 	var/nx = x
@@ -141,7 +141,7 @@
 
 /turf/simulated/planet_edge/Bumped(atom/movable/A)
 	. = ..()
-	var/obj/effect/overmap/sector/exoplanet/E = map_sectors["[z]"]
+	var/obj/effect/overmap/visitable/sector/exoplanet/E = map_sectors["[z]"]
 	if(!istype(E))
 		return
 	if(E.planetary_area && istype(loc, world.area))
@@ -160,3 +160,8 @@
 	var/turf/T = locate(new_x, new_y, A.z)
 	if(T && !T.density)
 		A.forceMove(T)
+		if(isliving(A))
+			var/mob/living/L = A
+			if(L.pulling)
+				var/atom/movable/AM = L.pulling
+				AM.forceMove(T)

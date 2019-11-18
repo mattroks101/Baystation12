@@ -24,13 +24,10 @@
 	return ..()
 
 //when thrown on impact, bottles smash and spill their contents
-/obj/item/weapon/reagent_containers/food/drinks/bottle/throw_impact(atom/hit_atom, var/speed)
+/obj/item/weapon/reagent_containers/food/drinks/bottle/throw_impact(atom/hit_atom, var/datum/thrownthing/TT)
 	..()
-
-	var/mob/M = thrower
-	if(isGlass && istype(M) && M.a_intent != I_HELP)
-		var/throw_dist = get_dist(throw_source, loc)
-		if(speed > throw_speed || smash_check(throw_dist)) //not as reliable as smashing directly
+	if(isGlass && TT.thrower && TT.thrower.a_intent != I_HELP)
+		if(TT.speed > throw_speed || smash_check(TT.dist_travelled)) //not as reliable as smashing directly
 			if(reagents)
 				hit_atom.visible_message("<span class='notice'>The contents of \the [src] splash all over [hit_atom]!</span>")
 				reagents.splash(hit_atom, reagents.total_volume)
@@ -126,7 +123,7 @@
 		var/obj/item/organ/affecting = H.get_organ(hit_zone) //headcheck should ensure that affecting is not null
 		user.visible_message("<span class='danger'>[user] smashes [src] into [H]'s [affecting.name]!</span>")
 		// You are going to knock someone out for longer if they are not wearing a helmet.
-		var/blocked = target.get_blocked_ratio(hit_zone, BRUTE) * 100 
+		var/blocked = target.get_blocked_ratio(hit_zone, BRUTE, damage = 10) * 100
 		var/weaken_duration = smash_duration + min(0, force - blocked + 10)
 		if(weaken_duration)
 			target.apply_effect(min(weaken_duration, 5), WEAKEN, blocked) // Never weaken more than a flash!

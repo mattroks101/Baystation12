@@ -9,6 +9,11 @@
 	else
 		verbs -= /obj/item/modular_computer/proc/remove_pen
 
+	if(card_slot)
+		verbs |= /obj/item/weapon/stock_parts/computer/card_slot/proc/verb_eject_id
+	else
+		verbs -= /obj/item/weapon/stock_parts/computer/card_slot/proc/verb_eject_id
+
 // Forcibly shut down the device. To be used when something bugs out and the UI is nonfunctional.
 /obj/item/modular_computer/verb/emergency_shutdown()
 	set name = "Forced Shutdown"
@@ -197,10 +202,10 @@
 
 	..()
 
-/obj/item/modular_computer/examine(var/mob/user)
+/obj/item/modular_computer/examine(mob/user)
 	. = ..()
 
-	if(enabled && .)
+	if(enabled)
 		to_chat(user, "The time [stationtime2text()] is displayed in the corner of the screen.")
 
 	if(card_slot && card_slot.stored_card)

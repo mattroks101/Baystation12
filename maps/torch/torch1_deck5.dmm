@@ -1128,7 +1128,7 @@
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/hangar)
 "cA" = (
-/obj/effect/overmap/ship/landable/guppy,
+/obj/effect/overmap/visitable/ship/landable/guppy,
 /obj/machinery/atmospherics/pipe/manifold/visible{
 	dir = 8
 	},
@@ -2120,7 +2120,7 @@
 	dir = 4
 	},
 /obj/effect/shuttle_landmark/torch/hangar/exploration_shuttle,
-/obj/effect/overmap/ship/landable/exploration_shuttle,
+/obj/effect/overmap/visitable/ship/landable/exploration_shuttle,
 /turf/simulated/floor/tiled,
 /area/exploration_shuttle/airlock)
 "el" = (
@@ -3749,8 +3749,10 @@
 /area/command/pilot)
 "iL" = (
 /obj/machinery/door/airlock/mining{
+	autoset_access = 0;
 	id_tag = null;
-	name = "Warehouse"
+	name = "Warehouse";
+	req_access = list(list("ACCESS_CARGO","ACCESS_MINING"))
 	},
 /obj/structure/cable/green{
 	d1 = 1;
@@ -6684,7 +6686,7 @@
 	name = "Warehouse Door Control";
 	pixel_x = 24;
 	pixel_y = 6;
-	req_access = list("ACCESS_CARGO")
+	req_access = list(list("ACCESS_CARGO","ACCESS_MINING"))
 	},
 /obj/structure/closet/crate/radiation,
 /turf/simulated/floor/plating,
@@ -8383,7 +8385,7 @@
 	},
 /obj/structure/disposalpipe/sortjunction{
 	dir = 2;
-	name = "Pilot's Lounge";
+	name = "Pilots Lounge";
 	sort_type = "Pilot's Lounge"
 	},
 /turf/simulated/floor/plating,

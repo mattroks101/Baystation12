@@ -160,6 +160,10 @@
 	nutriment_factor = 1
 	color = "#482000"
 
+/datum/reagent/nutriment/coffee/instant
+	name = "Instant Coffee Powder"
+	description = "A bitter powder made by processing coffee beans."
+
 /datum/reagent/nutriment/tea
 	name = "Tea Powder"
 	description = "A dark, tart powder made from black tea leaves."
@@ -167,6 +171,9 @@
 	taste_mult = 1.3
 	nutriment_factor = 1
 	color = "#101000"
+
+/datum/reagent/nutriment/tea/instant
+	name = "Instant Tea Powder"
 
 /datum/reagent/nutriment/coco
 	name = "Coco Powder"
@@ -833,21 +840,34 @@
 /datum/reagent/drink/coffee/soy_latte
 	name = "Soy Latte"
 	description = "A nice and tasty beverage while you are reading your hippie books."
-	taste_description = "creamy coffee"
+	taste_description = "bitter creamy coffee"
 	color = "#c65905"
 	adj_temp = 5
 
 	glass_name = "soy latte"
-	glass_desc = "A nice and refrshing beverage while you are reading."
+	glass_desc = "A nice and refreshing beverage while you are reading your hippie books."
 
 /datum/reagent/drink/coffee/soy_latte/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed)
+	..()
+	M.heal_organ_damage(0.5 * removed, 0)
+
+/datum/reagent/drink/coffee/icecoffee/soy_latte
+	name = "Iced Soy Latte"
+	description = "A nice and tasty beverage while you are reading your hippie books. This one's cold."
+	taste_description = "cold bitter creamy coffee"
+	color = "#c65905"
+
+	glass_name = "iced soy latte"
+	glass_desc = "A nice and refreshing beverage while you are reading your hippie books. This one's cold."
+
+/datum/reagent/drink/coffee/icecoffee/soy_latte/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed)
 	..()
 	M.heal_organ_damage(0.5 * removed, 0)
 
 /datum/reagent/drink/coffee/cafe_latte
 	name = "Cafe Latte"
 	description = "A nice, strong and tasty beverage while you are reading."
-	taste_description = "bitter cream"
+	taste_description = "bitter creamy coffee"
 	color = "#c65905"
 	adj_temp = 5
 
@@ -857,6 +877,83 @@
 /datum/reagent/drink/coffee/cafe_latte/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed)
 	..()
 	M.heal_organ_damage(0.5 * removed, 0)
+
+/datum/reagent/drink/coffee/icecoffee/cafe_latte
+	name = "Iced Cafe Latte"
+	description = "A nice, strong and refreshing beverage while you are reading. This one's cold."
+	taste_description = "cold bitter creamy coffee"
+	color = "#c65905"
+
+	glass_name = "iced cafe latte"
+	glass_desc = "A nice, strong and refreshing beverage while you are reading. This one's cold."
+
+/datum/reagent/drink/coffee/icecoffee/cafe_latte/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed)
+	..()
+	M.heal_organ_damage(0.5 * removed, 0)
+
+/datum/reagent/drink/coffee/cafe_latte/mocha
+	name = "Mocha Latte"
+	description = "Coffee and chocolate, smooth and creamy."
+	taste_description = "bitter creamy chocolate"
+
+	glass_name = "mocha latte"
+	glass_desc = "Coffee and chocolate, smooth and creamy."
+
+/datum/reagent/drink/coffee/soy_latte/mocha
+	name = "Mocha Soy Latte"
+	description = "Coffee, soy, and chocolate, smooth and creamy."
+	taste_description = "bitter creamy chocolate"
+
+	glass_name = "mocha soy latte"
+	glass_desc = "Coffee, soy, and chocolate, smooth and creamy."
+
+/datum/reagent/drink/coffee/icecoffee/cafe_latte/mocha
+	name = "Iced Mocha Latte"
+	description = "Coffee and chocolate, smooth and creamy. This one's cold."
+	taste_description = "cold bitter creamy chocolate"
+
+	glass_name = "iced mocha latte"
+	glass_desc = "Coffee and chocolate, smooth and creamy. This one's cold."
+
+/datum/reagent/drink/coffee/icecoffee/soy_latte/mocha
+	name = "Iced Soy Mocha Latte"
+	description = "Coffee, soy, and chocolate, smooth and creamy. This one's cold."
+	taste_description = "cold bitter creamy chocolate"
+
+	glass_name = "iced soy mocha latte"
+	glass_desc = "Coffee, soy, and chocolate, smooth and creamy. This one's cold."
+
+/datum/reagent/drink/coffee/cafe_latte/pumpkin
+	name = "Pumpkin Spice Latte"
+	description = "Smells and tastes like Autumn."
+	taste_description = "bitter creamy pumpkin spice"
+
+	glass_name = "pumpkin spice latte"
+	glass_desc = "Smells and tastes like Autumn."
+
+/datum/reagent/drink/coffee/soy_latte/pumpkin
+	name = "Pumpkin Spice Soy Latte"
+	description = "Smells and tastes like Autumn."
+	taste_description = "bitter creamy pumpkin spice"
+
+	glass_name = "pumpkin spice soy latte"
+	glass_desc = "Smells and tastes like Autumn."
+
+/datum/reagent/drink/coffee/icecoffee/cafe_latte/pumpkin
+	name = "Iced Pumpkin Spice Latte"
+	description = "Smells and tastes like Autumn. This one's cold"
+	taste_description = "cold bitter creamy pumpkin spice"
+
+	glass_name = "iced pumpkin spice latte"
+	glass_desc = "Smells and tastes like Autumn. This one's cold."
+
+/datum/reagent/drink/coffee/icecoffee/soy_latte/pumpkin
+	name = "Iced Pumpkin Spice Soy Latte"
+	description = "Smells and tastes like Autumn. This one's cold"
+	taste_description = "cold bitter creamy pumpkin spice"
+
+	glass_name = "iced pumpkin spice soy latte"
+	glass_desc = "Smells and tastes like Autumn. This one's cold."
 
 /datum/reagent/drink/hot_coco
 	name = "Hot Chocolate"
@@ -2154,6 +2251,38 @@
 	glass_name = "Baron Grey tea"
 	glass_desc = "Black tea prepared with standard orange flavoring. Much less fancy than the bergamot in Earl Grey, but the chances of you getting any of that stuff out here is pretty slim."
 
+/datum/reagent/drink/tea/barongrey/latte
+	name = "London Fog"
+	description = "A blend of Earl Grey (Or more likely Baron Grey) and steamed milk, making a pleasant tangy tea latte."
+	taste_description = "creamy, tangy black tea"
+
+	glass_name = "London Fog"
+	glass_desc = "A blend of Earl Grey (Or more likely Baron Grey) and steamed milk, making a pleasant tangy tea latte."
+
+/datum/reagent/drink/tea/barongrey/soy_latte
+	name = "Soy London Fog"
+	description = "A blend of Earl Grey (Or more likely Baron Grey) and steamed soy milk, making a pleasant tangy tea latte."
+	taste_description = "creamy, tangy black tea"
+
+	glass_name = "Soy London Fog"
+	glass_desc = "A blend of Earl Grey (Or more likely Baron Grey) and steamed soy milk, making a pleasant tangy tea latte."
+
+/datum/reagent/drink/tea/icetea/barongrey/latte
+	name = "Iced London Fog"
+	description = "A blend of Earl Grey (Or more likely Baron Grey) and steamed milk, making a pleasant tangy tea latte. This one's cold."
+	taste_description = "cold, creamy, tangy black tea"
+
+	glass_name = "iced london fog"
+	glass_desc = "A blend of Earl Grey (Or more likely Baron Grey) and steamed milk, making a pleasant tangy tea latte. This one's cold."
+
+/datum/reagent/drink/tea/icetea/barongrey/soy_latte
+	name = "Iced Soy London Fog"
+	description = "A blend of Earl Grey (Or more likely Baron Grey) and steamed soy milk, making a pleasant tangy tea latte. This one's cold."
+	taste_description = "cold, creamy, tangy black tea"
+
+	glass_name = "iced soy london fog"
+	glass_desc = "A blend of Earl Grey (Or more likely Baron Grey) and steamed soy milk, making a pleasant tangy tea latte. This one's cold."
+
 //green tea
 /datum/reagent/drink/tea/green
 	name = "Green Tea"
@@ -2189,3 +2318,127 @@
 
 	glass_name = "Maghrebi mint tea"
 	glass_desc = "Iced green tea prepared with mint and sugar. Refreshing!"
+
+/datum/reagent/drink/tea/chai
+	name = "Chai Tea"
+	description = "A spiced, dark tea. Goes great with milk."
+	taste_description = "spiced black tea"
+	color = "#151000"
+
+	glass_name = "chai tea"
+	glass_desc = "A spiced, dark tea. Goes great with milk."
+
+/datum/reagent/drink/tea/icetea/chai
+	name = "Iced Chai Tea"
+	description = "It's the chai tea you know and love, but now it's cold."
+	taste_description = "cold spiced black tea"
+	color = "#151000"
+
+	glass_name = "iced chai tea"
+	glass_desc = "It's the chai tea you know and love, but now it's cold."
+
+/datum/reagent/drink/tea/icetea/chai/sweet
+	name = "Sweet Chai Tea"
+	description = "It's the chai tea you know and love, but now it's cold. And sweet."
+	taste_description = "sweet spiced black tea"
+
+	glass_name = "sweet chai tea"
+	glass_desc = "It's the chai tea you know and love, but now it's cold. And sweet."
+
+/datum/reagent/drink/tea/chai/latte
+	name = "Chai Latte"
+	description = "A warm, inviting cup of spiced, dark tea mixed with steamed milk."
+	taste_description = "creamy spiced tea"
+	color = "#c8a988"
+
+	glass_name = "chai latte"
+	glass_desc = "A warm, inviting cup of spiced, dark tea mixed with steamed milk."
+
+/datum/reagent/drink/tea/chai/soy_latte
+	name = "Chai Soy Latte"
+	description = "A warm, inviting cup of spiced, dark tea mixed with steamed soy milk."
+	taste_description = "creamy spiced tea"
+	color = "#c8a988"
+
+	glass_name = "chai soy latte"
+	glass_desc = "A warm, inviting cup of spiced, dark tea mixed with steamed soy milk."
+
+/datum/reagent/drink/tea/icetea/chai/latte
+	name = "Iced Chai Latte"
+	description = "A warm, inviting cup of spiced, dark tea mixed with steamed milk. This one's cold."
+	taste_description = "cold creamy spiced tea"
+	color = "#c8a988"
+
+	glass_name = "iced chai latte"
+	glass_desc = "A warm, inviting cup of spiced, dark tea mixed with steamed milk. This one's cold."
+
+/datum/reagent/drink/tea/icetea/chai/soy_latte
+	name = "Iced Chai Soy Latte"
+	description = "A warm, inviting cup of spiced, dark tea mixed with steamed soy milk. This one's cold."
+	taste_description = "cold creamy spiced tea"
+	color = "#c8a988"
+
+	glass_name = "iced chai soy latte"
+	glass_desc = "A warm, inviting cup of spiced, dark tea mixed with steamed soy milk. This one's cold."
+
+/datum/reagent/drink/tea/red
+	name = "Rooibos Tea"
+	description = "A caffeine-free dark red tea, flavorful and full of antioxidants."
+	taste_description = "nutty red tea"
+	color = "#ab4c3a"
+
+	glass_name = "rooibos tea"
+	glass_desc = "A caffeine-free dark red tea, flavorful and full of antioxidants."
+
+/datum/reagent/drink/tea/icetea/red
+	name = "Iced Rooibos Tea"
+	description = "It's the red tea you know and love, but now it's cold."
+	taste_description = "cold nutty red tea"
+	color = "#ab4c3a"
+
+	glass_name = "iced rooibos tea"
+	glass_desc = "It's the red tea you know and love, but now it's cold."
+
+/datum/reagent/drink/tea/icetea/red/sweet
+	name = "Sweet Rooibos Tea"
+	description = "It's the red tea you know and love, but now it's cold. And sweet."
+	taste_description = "sweet nutty red tea"
+
+	glass_name = "sweet rooibos tea"
+	glass_desc = "It's the red tea you know and love, but now it's cold. And sweet."
+
+/datum/reagent/drink/syrup_chocolate
+	name = "Chocolate Syrup"
+	description = "Thick chocolate syrup used to flavor drinks."
+	taste_description = "chocolate"
+	color = "#542a0c"
+
+	glass_name = "chocolate syrup"
+	glass_desc = "Thick chocolate syrup used to flavor drinks."
+
+/datum/reagent/drink/syrup_caramel
+	name = "Caramel Syrup"
+	description = "Thick caramel syrup used to flavor drinks."
+	taste_description = "caramel"
+	color = "#85461e"
+
+	glass_name = "caramel syrup"
+	glass_desc = "Thick caramel syrup used to flavor drinks."
+
+/datum/reagent/drink/syrup_vanilla
+	name = "Vanilla Syrup"
+	description = "Thick vanilla syrup used to flavor drinks."
+	taste_description = "vanilla"
+	color = "#f3e5ab"
+
+	glass_name = "vanilla syrup"
+	glass_desc = "Thick vanilla syrup used to flavor drinks."
+
+/datum/reagent/drink/syrup_pumpkin
+	name = "Pumpkin Spice Syrup"
+	description = "Thick spiced pumpkin syrup used to flavor drinks."
+	taste_description = "spiced pumpkin"
+	color = "#d88b4c"
+
+	glass_name = "pumpkin spice syrup"
+	glass_desc = "Thick spiced pumpkin syrup used to flavor drinks."

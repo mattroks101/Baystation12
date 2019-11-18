@@ -21,6 +21,22 @@
 	var/obj/item/modular_computer/C = holder
 	return C.computer_emagged
 
+/datum/extension/interactive/ntos/device/system_shutdown()
+	..()
+	var/obj/item/modular_computer/C = holder
+	C.enabled = FALSE
+
+/datum/extension/interactive/ntos/device/system_boot()
+	..()
+	var/obj/item/modular_computer/C = holder
+	C.enabled = TRUE
+
+/datum/extension/interactive/ntos/device/extension_act(href, href_list, user)
+	. = ..()
+	var/obj/item/modular_computer/C = holder
+	if(istype(C) && LAZYLEN(C.interact_sounds) && CanPhysicallyInteractWith(user, C))
+		playsound(C, pick(C.interact_sounds), 40)
+
 // Hack to make status bar work
 
 /obj/item/modular_computer/initial_data()

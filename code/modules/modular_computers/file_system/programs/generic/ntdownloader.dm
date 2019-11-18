@@ -59,7 +59,7 @@
 	if(PRG.available_on_syndinet && !computer.emagged())
 		return 0
 
-	if(!computer || !computer.store_file(PRG))
+	if(!computer || !computer.try_store_file(PRG))
 		return 0
 
 	return 1
@@ -106,7 +106,7 @@
 	// Download speed according to connectivity state. NTNet server is assumed to be on unlimited speed so we're limited by our local connectivity
 	download_netspeed = 0
 	// Speed defines are found in misc.dm
-	switch(ntnet_status)
+	switch(computer.get_ntnet_status(NTNET_SOFTWAREDOWNLOAD))
 		if(1)
 			download_netspeed = NTNETSPEED_LOWSIGNAL
 		if(2)

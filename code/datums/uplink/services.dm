@@ -68,9 +68,9 @@
 		deactivate()
 	. = ..()
 
-/obj/item/device/uplink_service/examine(var/user)
-	. = ..(user, 1)
-	if(.)
+/obj/item/device/uplink_service/examine(mob/user, distance)
+	. = ..()
+	if(distance <= 1)
 		switch(state)
 			if(AWAITING_ACTIVATION)
 				to_chat(user, "It is labeled '[service_label]' and appears to be awaiting activation.")
@@ -83,7 +83,7 @@
 	if(state != AWAITING_ACTIVATION)
 		to_chat(user, "<span class='warning'>\The [src] won't activate again.</span>")
 		return
-	var/obj/effect/overmap/O = map_sectors["[get_z(src)]"]
+	var/obj/effect/overmap/visitable/O = map_sectors["[get_z(src)]"]
 	var/choice = alert(user, "This will only affect your current location[istype(O) ? " ([O])" : ""]. Proceed?","Confirmation", "Yes", "No")
 	if(choice != "Yes")
 		return
