@@ -74,7 +74,9 @@ LEGACY_RECORD_STRUCTURE(virus_records, virus_record)
 		return
 
 	if(mob.radiation > 50)
-		if(prob(1))
+		if((mob.species.name == SPECIES_DIONA) && prob(mob.radiation/25))
+			cure(mob)
+		else if(prob(1))
 			majormutate()
 
 	if(prob(mob.virus_immunity()) && prob(stage)) // Increasing chance of curing as the virus progresses
@@ -203,7 +205,7 @@ var/global/list/virusDB = list()
 		var/datum/computer_file/data/virus_record/V = virusDB["[uniqueID]"]
 		.= V.fields["name"]
 
-/datum/disease2/disease/proc/get_info(skill = SKILL_MAX, verbose = 1, given_effects)
+/datum/disease2/disease/proc/get_info(skill = HAS_PERK, verbose = 1, given_effects)
 	if(!given_effects)
 		given_effects = effects
 	var/r = list()
@@ -216,13 +218,10 @@ var/global/list/virusDB = list()
 		r = "[name()]"
 
 	var/list/dat = list()
-	if(skill >= SKILL_BASIC)
+	if(skill >= HAS_PERK)
 		if(verbose)
 			r += "<u>Rate of Progression:</u> [speed * 100]%<br>"
 			var/species = affected_species.Copy()
-			for(var/i = 1, i <= (SKILL_MAX - skill), i++)
-				if(prob(30))
-					pick_n_take(species)
 			r += "<u>Species Affected:</u> [jointext(species, ", ")]<br>"
 			r += "<u>Symptoms:</u><br>"
 

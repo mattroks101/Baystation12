@@ -14,12 +14,6 @@
 /obj/effect/shuttle_landmark/torch/deck4/exploration_shuttle,
 /turf/space,
 /area/space)
-"aae" = (
-/obj/effect/landmark{
-	name = "carpspawn"
-	},
-/turf/space,
-/area/space)
 "aaf" = (
 /turf/simulated/wall/r_wall/hull,
 /area/medical/virology)
@@ -18214,6 +18208,7 @@
 	dir = 4
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
+/obj/structure/table/standard,
 /turf/simulated/floor/tiled/dark,
 /area/medical/surgery2)
 "fDJ" = (
@@ -34834,7 +34829,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -36464,7 +36459,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -37064,7 +37059,6 @@ aaa
 aaa
 aaa
 aaa
-aae
 aaa
 aaa
 aaa
@@ -37094,7 +37088,8 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
+aaa
 aaa
 aaa
 aaa
@@ -37278,7 +37273,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -39660,7 +39655,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -41139,7 +41134,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -41282,7 +41277,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -44516,7 +44511,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -44580,7 +44575,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -45724,7 +45719,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -46795,7 +46790,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -49430,7 +49425,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -49762,7 +49757,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -50835,7 +50830,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -54683,7 +54678,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -55216,7 +55211,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -58308,7 +58303,7 @@ aUu
 xPU
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -58650,7 +58645,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -61331,7 +61326,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -61498,7 +61493,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -61718,7 +61713,7 @@ acd
 aaa
 acd
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -62138,7 +62133,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa
@@ -63724,7 +63719,7 @@ aaa
 aaa
 aaa
 aaa
-aae
+aaa
 aaa
 aaa
 aaa

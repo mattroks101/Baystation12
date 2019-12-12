@@ -1076,14 +1076,14 @@
 
 	if(!is_physically_disabled())
 		var/turf/above = GetAbove(src)
-		if(shadow)
-			if(client.eye == shadow)
+		if(bound_overlay)
+			if(client.eye == bound_overlay)
 				reset_view(0)
 				return
 			if(istype(above, /turf/simulated/open))
 				to_chat(src, "<span class='notice'>You look up.</span>")
 				if(client)
-					reset_view(shadow)
+					reset_view(bound_overlay)
 				return
 		to_chat(src, "<span class='notice'>You can see \the [above].</span>")
 	else
@@ -1145,7 +1145,7 @@
 	maxHealth = species.total_health
 	remove_extension(src, /datum/extension/armor)
 	if(species.natural_armour_values)
-		set_extension(src, /datum/extension/armor, /datum/extension/armor, species.natural_armour_values)
+		set_extension(src, /datum/extension/armor, species.natural_armour_values)
 
 	default_pixel_x = initial(pixel_x) + species.pixel_offset_x
 	default_pixel_y = initial(pixel_y) + species.pixel_offset_y
