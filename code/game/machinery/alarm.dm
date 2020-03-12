@@ -43,7 +43,6 @@
 
 //all air alarms in area are connected via magic
 /area
-	var/obj/machinery/alarm/master_air_alarm
 	var/list/air_vent_names = list()
 	var/list/air_scrub_names = list()
 	var/list/air_vent_info = list()
@@ -128,9 +127,6 @@
 
 /obj/machinery/alarm/Destroy()
 	unregister_radio(src, frequency)
-	if(alarm_area && alarm_area.master_air_alarm == src)
-		alarm_area.master_air_alarm = null
-		elect_master(exclude_self = TRUE)
 	return ..()
 
 /obj/machinery/alarm/New(var/loc, var/dir, atom/frame)
@@ -168,25 +164,12 @@
 			trace_gas += g
 
 	set_frequency(frequency)
-	if (!master_is_operating())
-		elect_master()
 	update_icon()
 
 /obj/machinery/alarm/get_req_access()
 	if(!locked)
 		return list()
 	return ..()
-
-// Request updates for air vents and scrubbers which appear to have been added.
-/obj/machinery/alarm/power_change()
-	. = ..()
-	if(. && !(stat & NOPOWER) && alarm_area)
-		for(var/id_tag in alarm_area.air_vent_names)
-			if(!alarm_area.air_vent_info[id_tag])
-				send_signal(id_tag, list("status" = TRUE))
-		for(var/id_tag in alarm_area.air_scrub_names)
-			if(!alarm_area.air_scrub_info[id_tag])
-				send_signal(id_tag, list("status" = TRUE))
 
 /obj/machinery/alarm/Process()
 	if((stat & (NOPOWER|BROKEN)) || shorted || buildstage != 2)
@@ -319,20 +302,6 @@
 
 	return 0
 
-
-/obj/machinery/alarm/proc/master_is_operating()
-	return alarm_area.master_air_alarm && !(alarm_area.master_air_alarm.stat & (NOPOWER|BROKEN))
-
-
-/obj/machinery/alarm/proc/elect_master(exclude_self = FALSE)
-	for (var/obj/machinery/alarm/AA in alarm_area)
-		if(exclude_self && AA == src)
-			continue
-		if (!(AA.stat & (NOPOWER|BROKEN)))
-			alarm_area.master_air_alarm = AA
-			return 1
-	return 0
-
 /obj/machinery/alarm/proc/get_danger_level(var/current_value, var/list/danger_levels)
 	if((current_value >= danger_levels[4] && danger_levels[4] > 0) || current_value <= danger_levels[1])
 		return 2
@@ -382,14 +351,6 @@
 	set_light(0.25, 0.1, 1, 2, new_color)
 
 /obj/machinery/alarm/receive_signal(datum/signal/signal)
-	if(stat & (NOPOWER|BROKEN))
-		return
-	if (alarm_area.master_air_alarm != src)
-		if (master_is_operating())
-			return
-		elect_master()
-		if (alarm_area.master_air_alarm != src)
-			return
 	if(!signal || signal.encryption)
 		return
 	if(alarm_id == signal.data["alarm_id"] && signal.data["command"] == "shutdown")
@@ -420,10 +381,7 @@
 	else if (device_type=="AScr")
 		new_name = "[alarm_area.name] Air Scrubber #[alarm_area.air_scrub_names.len+1]"
 		alarm_area.air_scrub_names[m_id] = new_name
-	else
-		return
-	spawn (10)
-		send_signal(m_id, list("init" = new_name) )
+	send_signal(m_id, list("init" = new_name) )
 
 /obj/machinery/alarm/proc/set_frequency(new_frequency)
 	radio_controller.remove_object(src, frequency)
@@ -457,25 +415,25 @@
 	switch(mode)
 		if(AALARM_MODE_SCRUBBING)
 			for(var/device_id in alarm_area.air_scrub_names)
-				send_signal(device_id, list("power"= 1, "co2_scrub"= 1, "set_scrubbing"= SCRUBBER_SCRUB, "panic_siphon"= 0) )
+				send_signal(device_id, list("set_power"= 1, "set_scrub_gas" = list(GAS_CO2 = 1), "set_scrubbing"= SCRUBBER_SCRUB, "panic_siphon"= 0) )
 			for(var/device_id in alarm_area.air_vent_names)
 				send_signal(device_id, list("set_power"= 1, "set_checks"= "default", "set_external_pressure"= "default") )
 
 		if(AALARM_MODE_PANIC, AALARM_MODE_CYCLE)
 			for(var/device_id in alarm_area.air_scrub_names)
-				send_signal(device_id, list("power"= 1, "panic_siphon"= 1) )
+				send_signal(device_id, list("set_power"= 1, "panic_siphon"= 1) )
 			for(var/device_id in alarm_area.air_vent_names)
 				send_signal(device_id, list("set_power"= 0) )
 
 		if(AALARM_MODE_REPLACEMENT)
 			for(var/device_id in alarm_area.air_scrub_names)
-				send_signal(device_id, list("power"= 1, "panic_siphon"= 1) )
+				send_signal(device_id, list("set_power"= 1, "panic_siphon"= 1) )
 			for(var/device_id in alarm_area.air_vent_names)
 				send_signal(device_id, list("set_power"= 1, "set_checks"= "default", "set_external_pressure"= "default") )
 
 		if(AALARM_MODE_FILL)
 			for(var/device_id in alarm_area.air_scrub_names)
-				send_signal(device_id, list("power"= 0) )
+				send_signal(device_id, list("set_power"= 0) )
 			for(var/device_id in alarm_area.air_vent_names)
 				send_signal(device_id, list("set_power"= 1, "set_checks"= "default", "set_external_pressure"= "default") )
 
@@ -1091,7 +1049,7 @@ FIRE ALARM
 		var/second = round(src.time) % 60
 		var/minute = (round(src.time) - second) / 60
 		var/dat = "<HTML><HEAD></HEAD><BODY><TT><B>Fire alarm</B> [d1]\n<HR>The current alert level is <b>[security_state.current_security_level.name]</b><br><br>\nTimer System: [d2]<BR>\nTime Left: [(minute ? "[minute]:" : null)][second] <A href='?src=\ref[src];tp=-30'>-</A> <A href='?src=\ref[src];tp=-1'>-</A> <A href='?src=\ref[src];tp=1'>+</A> <A href='?src=\ref[src];tp=30'>+</A>\n</TT></BODY></HTML>"
-		user << browse(dat, "window=firealarm")
+		show_browser(user, dat, "window=firealarm")
 		onclose(user, "firealarm")
 	else
 		A = A.loc
@@ -1106,7 +1064,7 @@ FIRE ALARM
 		var/second = round(src.time) % 60
 		var/minute = (round(src.time) - second) / 60
 		var/dat = "<HTML><HEAD></HEAD><BODY><TT><B>[stars("Fire alarm")]</B> [d1]\n<HR>The current security level is <b>[security_state.current_security_level.name]</b><br><br>\nTimer System: [d2]<BR>\nTime Left: [(minute ? text("[]:", minute) : null)][second] <A href='?src=\ref[src];tp=-30'>-</A> <A href='?src=\ref[src];tp=-1'>-</A> <A href='?src=\ref[src];tp=1'>+</A> <A href='?src=\ref[src];tp=30'>+</A>\n</TT></BODY></HTML>"
-		user << browse(dat, "window=firealarm")
+		show_browser(user, dat, "window=firealarm")
 		onclose(user, "firealarm")
 	return
 
@@ -1225,7 +1183,7 @@ Just a object used in constructing fire alarms
 		var/second = time % 60
 		var/minute = (time - second) / 60
 		var/dat = text("<HTML><HEAD></HEAD><BODY><TT><B>Party Button</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
-		user << browse(dat, "window=partyalarm")
+		show_browser(user, dat, "window=partyalarm")
 		onclose(user, "partyalarm")
 	else
 		if (A.fire)
@@ -1239,7 +1197,7 @@ Just a object used in constructing fire alarms
 		var/second = time % 60
 		var/minute = (time - second) / 60
 		var/dat = text("<HTML><HEAD></HEAD><BODY><TT><B>[]</B> []\n<HR>\nTimer System: []<BR>\nTime Left: [][] <A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT></BODY></HTML>", stars("Party Button"), d1, d2, (minute ? text("[]:", minute) : null), second, src, src, src, src)
-		user << browse(dat, "window=partyalarm")
+		show_browser(user, dat, "window=partyalarm")
 		onclose(user, "partyalarm")
 	return
 

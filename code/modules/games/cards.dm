@@ -2,7 +2,7 @@
 	var/name = "playing card"
 	var/card_icon = "card_back"
 	var/back_icon = "card_back"
-	var/desc = "regular old playing card."
+	var/desc = "A regular old playing card."
 
 /datum/playingcard/proc/card_image(concealed, deck_icon)
 	return image(deck_icon, concealed ? back_icon : card_icon)
@@ -225,7 +225,7 @@
 	w_class = ITEM_SIZE_TINY
 
 	var/concealed = 0
-	var/list/cards = list()
+	var/list/datum/playingcard/cards = list()
 
 /obj/item/weapon/hand/attack_self(var/mob/user)
 	concealed = !concealed

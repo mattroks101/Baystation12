@@ -63,7 +63,7 @@
 	public_methods = list(
 		/decl/public_access/public_method/toggle_power,
 		/decl/public_access/public_method/purge_pump,
-		/decl/public_access/public_method/refresh	
+		/decl/public_access/public_method/refresh
 	)
 	stock_part_presets = list(
 		/decl/stock_part_preset/radio/receiver/vent_pump = 1,
@@ -276,7 +276,7 @@
 			return 1
 
 		to_chat(user, "<span class='notice'>Now welding \the [src].</span>")
-		playsound(src.loc, 'sound/items/Welder2.ogg', 50, 1)
+		playsound(src, 'sound/items/Welder.ogg', 50, 1)
 
 		if(!do_after(user, 20, src))
 			to_chat(user, "<span class='notice'>You must remain close to finish this task.</span>")
@@ -291,6 +291,7 @@
 
 		welded = !welded
 		update_icon()
+		playsound(src, 'sound/items/Welder2.ogg', 50, 1)
 		user.visible_message("<span class='notice'>\The [user] [welded ? "welds \the [src] shut" : "unwelds \the [src]"].</span>", \
 			"<span class='notice'>You [welded ? "weld \the [src] shut" : "unweld \the [src]"].</span>", \
 			"You hear welding.")
@@ -338,7 +339,7 @@
 		popup.open()
 		return
 	else
-		return ..()	
+		return ..()
 
 /obj/machinery/atmospherics/unary/vent_pump/proc/get_console_data()
 	. = list()
@@ -409,7 +410,7 @@
 /decl/public_access/public_variable/pressure_bound/write_var(obj/machinery/atmospherics/unary/vent_pump/machine, new_value)
 	if(new_value == "default")
 		new_value = machine.internal_pressure_bound_default
-	new_value = Clamp(new_value, 0, MAX_PUMP_PRESSURE)
+	new_value = Clamp(text2num(new_value), 0, MAX_PUMP_PRESSURE)
 	. = ..()
 	if(.)
 		machine.internal_pressure_bound = new_value
@@ -470,6 +471,7 @@
 
 /decl/stock_part_preset/radio/receiver/vent_pump/tank
 	frequency = ATMOS_TANK_FREQ
+	filter = RADIO_ATMOSIA
 
 /decl/stock_part_preset/radio/event_transmitter/vent_pump/tank
 	frequency = ATMOS_TANK_FREQ
